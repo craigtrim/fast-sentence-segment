@@ -1,9 +1,9 @@
 ifeq ($(OS),Windows_NT)
 	os_shell := powershell
-	copy_lib := .\resources\scripts\copy.ps1
+	download_en_core_web_sm := .\resources\scripts\download-en_core_web_sm.ps1
 else
-	os_shell := $(SHELL)
-	copy_lib := resources/scripts/copy.sh
+	os_shell := bash
+	download_en_core_web_sm := .\resources\scripts\download-en_core_web_sm.sh
 endif
 
 # -----------------------------------------------------------------
@@ -22,10 +22,11 @@ build:
 	make test
 	poetry build
 
-copy:
-	$(os_shell) $(copy_lib)
+
+get_model:
+	$(os_shell) $(download_en_core_web_sm)
 
 all:
+	make get_model
 	make build
-#	make copy
 	poetry run python -m pip install --upgrade pip

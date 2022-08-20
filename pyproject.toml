@@ -2,13 +2,16 @@
 authors = ["Craig Trim <craigtrim@gmail.com>"]
 description = "Fast and Efficient Sentence Segmentation"
 name = "fast-sentence-segment"
-version = "0.1.1    "
+version = "0.1.1"
 
 [tool.poetry.dependencies]
+baseblock = "*"
 python = "3.8.5"
+spacy = "3.3"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "*"
+en-core-web-sm = {path = "resources/lib/en_core_web_sm-3.3.0.tar.gz"}
 pytest = "*"
 
 [build-system]
