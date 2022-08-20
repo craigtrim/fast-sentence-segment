@@ -1,0 +1,16 @@
+[tool.poetry]
+authors = ["Craig Trim <craigtrim@gmail.com>"]
+description = "Fast and Efficient Sentence Segmentation"
+name = "fast-sentence-segment"
+version = "0.1.1    "
+
+[tool.poetry.dependencies]
+python = "3.8.5"
+
+[tool.poetry.dev-dependencies]
+autopep8 = "*"
+pytest = "*"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
