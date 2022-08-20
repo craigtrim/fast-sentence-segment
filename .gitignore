@@ -61,3 +61,5 @@ poetry.lock
 config.ps1
 *.xlsx
 publish_to_pypi.*
+*.tar
+*.tar.gz
