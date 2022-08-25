@@ -2,7 +2,7 @@
 authors = ["Craig Trim <craigtrim@gmail.com>"]
 description = "Fast and Efficient Sentence Segmentation"
 name = "fast-sentence-segment"
-version = "0.1.1"
+version = "0.1.2"
 
 [tool.poetry.dependencies]
 baseblock = "*"
