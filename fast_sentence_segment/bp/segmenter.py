@@ -47,8 +47,8 @@ class Segmenter(BaseObject):
             ValueError: input must be a string
 
         Returns:
-            list:   returns a list of lists.  
-                    Each outer list is a paragraph.  
+            list:   returns a list of lists.
+                    Each outer list is a paragraph.
                     Each inner list contains 1..* sentences
         """
 

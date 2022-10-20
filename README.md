@@ -27,4 +27,3 @@ This usage
 results = segment_text(input_text, flatten=True)
 ```
 Will return a list of strings, regardless of paragraph delimitation.
-

@@ -2,10 +2,10 @@
 from fast_sentence_segment import Segmenter
 
 
-## ---------------------------------------------------------- ##
+# ---------------------------------------------------------- ##
 # Purpose:    Test Basic I/O
 #             for complex and complete tokenization tests, use a regression suite
-## ---------------------------------------------------------- ##
+# ---------------------------------------------------------- ##
 
 
 def execute(input_text: str,

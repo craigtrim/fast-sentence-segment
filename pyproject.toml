@@ -1,8 +1,28 @@
 [tool.poetry]
-authors = ["Craig Trim <craigtrim@gmail.com>"]
+authors = [
+  "Craig Trim <craigtrim@gmail.com>",
+]
+
+maintainers = [
+  "Craig Trim <craigtrim@gmail.com>",
+]
+
 description = "Fast and Efficient Sentence Segmentation"
+license = "None"
 name = "fast-sentence-segment"
-version = "0.1.2"
+readme = "README.md"
+version = "0.1.4"
+
+keywords = ["nlp", "text", "preprocess", "segment"]
+repository = "https://github.com/craigtrim/fast-sentence-segment"
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/craigtrim/fast-sentence-segment/issues"
 
 [tool.poetry.dependencies]
 baseblock = "*"
@@ -12,8 +32,30 @@ spacy = "3.3"
 [tool.poetry.dev-dependencies]
 autopep8 = "*"
 en-core-web-sm = {path = "resources/lib/en_core_web_sm-3.3.0.tar.gz"}
+flakeheaven = "*"
+mypy = "*"
+plac = "*"
+pre-commit = "^2.20.0"
 pytest = "*"
+
+[tool.poetry.build]
+generate-setup-file = true
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core>=1.0.0"]
+
+[tool.flakeheaven]
+base = "https://raw.githubusercontent.com/flakeheaven/flakeheaven/main/pyproject.toml"
+exclude = ["__init__.py", "README.md", "setup.py", ".venv", ".git"]
+format = "grouped"
+max_line_length = 500
+show_source = true
+
+[tool.flakeheaven.plugins]
+# F401 (Missing Import)
+# F403 (Unable to Detect Undefined Names)
+"flake8-*" = ["+*"]
+flake8-bandit = ["-*", "+S1??"]
+flake8-docstrings = ["-*"]
+pyflakes = ["+*", "-F401", "-F403"]

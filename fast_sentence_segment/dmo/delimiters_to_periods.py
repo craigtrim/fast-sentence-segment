@@ -35,4 +35,3 @@ class DelimitersToPeriods(BaseObject):
             return input_text.replace(delimiter, '.')
 
         return input_text
-

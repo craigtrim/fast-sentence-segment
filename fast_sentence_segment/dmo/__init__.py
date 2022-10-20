@@ -3,3 +3,4 @@ from .delimiters_to_periods import DelimitersToPeriods
 from .newlines_to_periods import NewlinesToPeriods
 from .post_process_sentences import PostProcessStructure
 from .spacy_doc_segmenter import SpacyDocSegmenter
+from .numbered_list_normalizer import NumberedListNormalizer

@@ -40,7 +40,7 @@ class SpacyDocSegmenter(BaseObject):
     def _is_valid_sentence(a_sentence: str) -> bool:
         """
         Purpose:
-            enable filtering of invalid sentences            
+            enable filtering of invalid sentences
         :return:
             True        if the sentence is a valid one
         """
@@ -66,7 +66,7 @@ class SpacyDocSegmenter(BaseObject):
                 s = s[3:]
 
             if s.endswith('.  ..'):
-                s = s[:len(s)-3].strip()
+                s = s[:len(s) - 3].strip()
 
             normalized.append(s)
 

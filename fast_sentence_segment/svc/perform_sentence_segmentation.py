@@ -5,13 +5,12 @@
 
 import spacy
 
-
 from baseblock import BaseObject
-
 
 from fast_sentence_segment.dmo import NewlinesToPeriods
 from fast_sentence_segment.dmo import DelimitersToPeriods
 from fast_sentence_segment.dmo import BulletPointCleaner
+from fast_sentence_segment.dmo import NumberedListNormalizer
 from fast_sentence_segment.dmo import SpacyDocSegmenter
 from fast_sentence_segment.dmo import PostProcessStructure
 
@@ -22,9 +21,16 @@ class PerformSentenceSegmentation(BaseObject):
     __nlp = None
 
     def __init__(self):
-        """
+        """ Change Log
+
         Created:
             30-Sept-2021
+            craigtrim@gmail.com
+        Updated:
+            19-Oct-2022
+            craigtrim@gmail.com
+            *   add numbered-list normalization
+                https://github.com/craigtrim/fast-sentence-segment/issues/1
         """
         BaseObject.__init__(self, __name__)
         if not self.__nlp:
@@ -32,6 +38,7 @@ class PerformSentenceSegmentation(BaseObject):
 
         self._delimiters_to_periods = DelimitersToPeriods.process
         self._newlines_to_periods = NewlinesToPeriods.process
+        self._normalize_numbered_lists = NumberedListNormalizer().process
         self._clean_bullet_points = BulletPointCleaner.process
         self._spacy_segmenter = SpacyDocSegmenter(self.__nlp).process
         self._post_process = PostProcessStructure().process
@@ -59,26 +66,41 @@ class PerformSentenceSegmentation(BaseObject):
 
     def _process(self,
                  input_text: str) -> list:
-        input_text = self._delimiters_to_periods(delimiter=',',
-                                                 input_text=input_text)
 
-        input_text = self._delimiters_to_periods(delimiter=';',
-                                                 input_text=input_text)
+        input_text = self._delimiters_to_periods(
+            delimiter=',',
+            input_text=input_text)
+
+        input_text = self._delimiters_to_periods(
+            delimiter=';',
+            input_text=input_text)
+
+        input_text = self._normalize_numbered_lists(input_text)
 
         input_text = self._newlines_to_periods(input_text)
 
         input_text = self._clean_spacing(input_text)
-
         if "." not in input_text:
             return [input_text]
 
         input_text = self._clean_bullet_points(input_text)
+        if "." not in input_text:
+            return [input_text]
 
         input_text = self._clean_punctuation(input_text)
+        if "." not in input_text:
+            return [input_text]
 
         sentences = self._spacy_segmenter(input_text)
+        if "." not in input_text:
+            return [input_text]
 
         sentences = self._post_process(sentences)
+
+        sentences = [
+            self._normalize_numbered_lists(x, denormalize=True)
+            for x in sentences
+        ]
 
         return sentences
 
