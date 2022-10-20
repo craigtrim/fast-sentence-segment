@@ -14,7 +14,7 @@ cymem @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/49/1e/f2/9
 distlib @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/39/da/c3/ab17b81e190e93caf2917bf84aeb94d0f40def8ab957f0d40534680d78/distlib-0.3.6-py2.py3-none-any.whl
 en-core-web-sm @ file:///C:/Users/Craig/git/bast-ai/craigtrim/fast-sentence/fast-sentence-segment/resources/lib/en_core_web_sm-3.3.0.tar.gz
 entrypoints @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/e1/87/5c/599600a1c57c18ae8d12a6b599957cfbe1667774faa8167ca7c152c988/entrypoints-0.4-py3-none-any.whl
-fast-sentence-segment==0.1.4
+fast-sentence-segment==0.1.5
 filelock @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/83/4c/29/792ca11b704c8a65412f813133eb87b8d286f23c20ea0b9b959210c713/filelock-3.8.0-py3-none-any.whl
 flake8 @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/0d/4b/21/8c766e4015d3210fdbf8d1091620d52db306cd8c85ba8f2b37ebf48a75/flake8-4.0.1-py2.py3-none-any.whl
 flakeheaven @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/6c/df/81/21b7f6c95784c829ab2ba8570cee1d495345399e97ba39bb2003678312/flakeheaven-3.0.0-py3-none-any.whl

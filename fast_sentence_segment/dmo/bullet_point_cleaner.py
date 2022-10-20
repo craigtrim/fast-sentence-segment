@@ -10,9 +10,15 @@ class BulletPointCleaner(BaseObject):
     """ Prevent Bullet Points from Triggering False Positive Segmentation """
 
     def __init__(self):
-        """
+        """ Change Log
+
         Created:
             30-Sept-2021
+            craigtrim@gmail.com
+        Updated:
+            19-Oct-2022
+            craigtrim@gmail.com
+            *   clean up for segment_text_3_test.py
         """
         BaseObject.__init__(self, __name__)
 
@@ -26,6 +32,9 @@ class BulletPointCleaner(BaseObject):
         :return:
             preprocessed input text
         """
+        if input_text.startswith("-"):
+            input_text = input_text[1:]  # segment_text_3_test.py
+
         if "  " in input_text:
             input_text = input_text.replace("  ", " ")
 
@@ -34,7 +43,13 @@ class BulletPointCleaner(BaseObject):
         while ".." in input_text:
             input_text = input_text.replace("..", ".")
 
+        while ". -" in input_text:  # segment_text_3_test.py
+            input_text = input_text.replace(". -", ". ")
+
         while ". . " in input_text:
             input_text = input_text.replace(". . ", ".")
+
+        while '  ' in input_text:
+            input_text = input_text.replace('  ', ' ')
 
         return input_text
