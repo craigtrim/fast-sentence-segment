@@ -11,7 +11,7 @@ description = "Fast and Efficient Sentence Segmentation"
 license = "None"
 name = "fast-sentence-segment"
 readme = "README.md"
-version = "0.1.6"
+version = "0.1.7"
 
 keywords = ["nlp", "text", "preprocess", "segment"]
 repository = "https://github.com/craigtrim/fast-sentence-segment"
@@ -27,11 +27,11 @@ classifiers = [
 [tool.poetry.dependencies]
 baseblock = "*"
 python = "^3.8.5"
-spacy = "3.3"
+spacy = "3.5.0"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "*"
-en-core-web-sm = {path = "resources/lib/en_core_web_sm-3.3.0.tar.gz"}
+en-core-web-sm = {path = "resources/lib/en_core_web_sm-3.5.0.tar.gz"}
 flakeheaven = "*"
 mypy = "*"
 plac = "*"
