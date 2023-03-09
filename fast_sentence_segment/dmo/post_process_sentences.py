@@ -13,6 +13,9 @@ class PostProcessStructure(BaseObject):
         '..': '. ',
         '. .': '. ',
 
+        ',.': ', ',
+        ', .': ', ',
+
         '!.': '! ',
         '! .': '! ',
 
