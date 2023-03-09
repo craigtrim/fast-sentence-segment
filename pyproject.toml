@@ -11,7 +11,7 @@ description = "Fast and Efficient Sentence Segmentation"
 license = "None"
 name = "fast-sentence-segment"
 readme = "README.md"
-version = "0.1.8"
+version = "0.1.9"
 
 keywords = ["nlp", "text", "preprocess", "segment"]
 repository = "https://github.com/craigtrim/fast-sentence-segment"

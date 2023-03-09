@@ -16,7 +16,7 @@ distlib @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/39/da/c3
 en-core-web-sm @ file:///D:/Dropbox/git/graffl/fast-sentence/fast-sentence-segment/resources/lib/en_core_web_sm-3.5.0.tar.gz
 entrypoints @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/e1/87/5c/599600a1c57c18ae8d12a6b599957cfbe1667774faa8167ca7c152c988/entrypoints-0.4-py3-none-any.whl
 exceptiongroup @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/d3/7f/6b/10f6e6e0967604bfde200ef502f79994f92268326a594f2bde94ac7602/exceptiongroup-1.1.0-py3-none-any.whl
-fast-sentence-segment==0.1.8
+fast-sentence-segment==0.1.9
 filelock @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/2b/cf/95/fef8d90d8a2e06b1c5087a95dc480251ba5b634b49f35a8c2a042fd479/filelock-3.9.0-py3-none-any.whl
 flake8 @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/0d/4b/21/8c766e4015d3210fdbf8d1091620d52db306cd8c85ba8f2b37ebf48a75/flake8-4.0.1-py2.py3-none-any.whl
 flakeheaven @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/32/c8/4a/a731c3fa7fc9d03434898eb8096cd1e045f18245dc81f9762aedcc14a8/flakeheaven-3.2.1-py3-none-any.whl

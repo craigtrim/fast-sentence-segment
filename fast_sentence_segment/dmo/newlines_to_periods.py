@@ -49,6 +49,9 @@ class NewlinesToPeriods(BaseObject):
         # result = replace(input_text=input_text,
         #                  variant='\n',
         #                  canon=' . ')
-        result = input_text.replace('\n', ' . ')
+
+        # 20230309; don't replace a newline with a period
+        #           that too often causes confusion and puts a period where one should not exist
+        result = input_text.replace('\n', ' ')
 
         return result
