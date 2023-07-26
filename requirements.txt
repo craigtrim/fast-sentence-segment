@@ -1,64 +1,63 @@
-attrs @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/44/e7/a8/a68c7ec40f03187211e880c161885fa25a2295b065a8ff907978270fa1/attrs-22.2.0-py3-none-any.whl
-autopep8 @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/99/fa/8e/112982d07bedbc9f4184629dd998ac5b3cb0a01cdee98ded03128c72bc/autopep8-1.6.0-py2.py3-none-any.whl
-baseblock @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/c4/b7/a2/e82ef31388ad01191bd8e9744ea4a9939eba90b1068c675152c4aafffc/baseblock-0.2.21-py3-none-any.whl
-blis @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/9e/fb/db/dcd527c94406d1a4462ede029d260b2e46fa98bf0ad18e643aaae67444/blis-0.7.9-cp38-cp38-win_amd64.whl
-catalogue @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/b1/02/9e/79deabfc053e07122eb1e335f309bbfcffe0ab73f5dd334016eac62505/catalogue-2.0.8-py3-none-any.whl
-certifi @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/17/c7/62/fff2f22fc119ec960e5bf6a5a33f66a167ed2e253f2874f8a7575f3cd9/certifi-2022.12.7-py3-none-any.whl
-cffi @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/7d/26/a2/6695b21ce04407fbecceb61a88eaae991c2069deb1f071d3de97929651/cffi-1.15.1-cp38-cp38-win_amd64.whl
-cfgv @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/07/9a/ee/962c2dab45907e4fd1a13afc30753a15fe678f1dcf2c862a9794ed748b/cfgv-3.3.1-py2.py3-none-any.whl
-charset-normalizer @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/14/22/11/d4d816b2ee83968e7e0449012372171826f0516ab8d46ccf99c4971325/charset_normalizer-3.1.0-cp38-cp38-win_amd64.whl
-click @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/bd/9c/91/fc982221d93312eb60d91ed31ec2945771bec0eb111953316ae8293dce/click-8.1.3-py3-none-any.whl
-colorama @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/5d/f1/8c/c1c1952a392eb2dff9d3654deb2b438418fab27dd8d7b0e3845d63c93b/colorama-0.4.6-py2.py3-none-any.whl
-confection @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/d0/5b/de/7ee62056157ed80aaf818a4885d4b0f71734cf47919d75bf6fecfa4e78/confection-0.0.4-py3-none-any.whl
-cryptography @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/65/2a/4c/f6717081acbec78b21d75e841e83618840e754e5739f8b67364de0f8e3/cryptography-38.0.1-cp36-abi3-win_amd64.whl
-cymem @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/49/1e/f2/960052bb716392aac63f000e30e177525310775fc7f50937a217612855/cymem-2.0.7-cp38-cp38-win_amd64.whl
-distlib @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/39/da/c3/ab17b81e190e93caf2917bf84aeb94d0f40def8ab957f0d40534680d78/distlib-0.3.6-py2.py3-none-any.whl
-en-core-web-sm @ file:///D:/Dropbox/git/graffl/fast-sentence/fast-sentence-segment/resources/lib/en_core_web_sm-3.5.0.tar.gz
-entrypoints @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/e1/87/5c/599600a1c57c18ae8d12a6b599957cfbe1667774faa8167ca7c152c988/entrypoints-0.4-py3-none-any.whl
-exceptiongroup @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/d3/7f/6b/10f6e6e0967604bfde200ef502f79994f92268326a594f2bde94ac7602/exceptiongroup-1.1.0-py3-none-any.whl
-fast-sentence-segment==0.1.9
-filelock @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/2b/cf/95/fef8d90d8a2e06b1c5087a95dc480251ba5b634b49f35a8c2a042fd479/filelock-3.9.0-py3-none-any.whl
-flake8 @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/0d/4b/21/8c766e4015d3210fdbf8d1091620d52db306cd8c85ba8f2b37ebf48a75/flake8-4.0.1-py2.py3-none-any.whl
-flakeheaven @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/32/c8/4a/a731c3fa7fc9d03434898eb8096cd1e045f18245dc81f9762aedcc14a8/flakeheaven-3.2.1-py3-none-any.whl
-identify @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/b7/c9/b5/44a811c16eb20036ba76bc8af6b51841e75e406af618819a036b938b98/identify-2.5.19-py2.py3-none-any.whl
-idna @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/16/15/44/cca0e0c3c9cc74731a4729bf2edfa1adcc24fb9f63a9578a3af5992311/idna-3.4-py3-none-any.whl
-iniconfig @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/b7/65/0f/0f8fad7658f1ecec412c1a0d7d0c8c9007e8315f7809171bb2416f5c76/iniconfig-2.0.0-py3-none-any.whl
-Jinja2 @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/33/db/47/0926a99dba6f131e3566591eed52f286b44bcfddcbe351f4116fc4d26f/Jinja2-3.1.2-py3-none-any.whl
-langcodes @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/85/c8/bd/d81d9511ccfafdff98adc794afb6a21385b4e6ba69a89dc3b9a2d173c6/langcodes-3.3.0-py3-none-any.whl
-MarkupSafe @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/4c/ea/0e/2674e8f8d0726f5dd2bcdf4a854efa324ed4e1b555fb32519df5c00528/MarkupSafe-2.1.2-cp38-cp38-win_amd64.whl
-mccabe @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/37/6e/69/4a33a4d6c80c775b1ee205face2c6e07b762c8602bb0f0d236ebe790c5/mccabe-0.6.1-py2.py3-none-any.whl
-murmurhash @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/4a/f4/ca/dd4d28c10d129d19ee1060bef2ec905f5d162b75215b0601b4f42f580d/murmurhash-1.0.9-cp38-cp38-win_amd64.whl
-mypy @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/d4/bc/d7/833c6a4d6bea067f187fd5ecc4fbf62c3168ec39435f81c1f0381cf731/mypy-1.1.1-cp38-cp38-win_amd64.whl
-mypy-extensions @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/32/62/b3/ed3dd0c562ac09968687a10a7eb10d7df0cb249e1be7d3b612a28e4d0c/mypy_extensions-1.0.0-py3-none-any.whl
-nodeenv @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/1a/03/e5/de6684b555631eb3f02f87073b2e23d5ef94639e918bef36960f706d0e/nodeenv-1.7.0-py2.py3-none-any.whl
-numpy @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/0d/9c/68/3d881c4f75df1d18611c724a80f1345efee168bad1a717638dd301f3f6/numpy-1.24.2-cp38-cp38-win_amd64.whl
-packaging @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/a5/11/69/db7a1c9814119195caa92a54beffb890fe475c0d2cdcb6443af473f1a6/packaging-23.0-py3-none-any.whl
-pathy @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/5d/35/b0/f0305e7cdc6bd0fe0d1db32469e59c699a7ddf6f57efa8af13da6e0ae5/pathy-0.10.1-py3-none-any.whl
-plac @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/b7/aa/db/b1aa6f4b595a5af688ff0984fbe7fbe83673d94016d9d361a6c9aaca81/plac-1.3.5-py2.py3-none-any.whl
-platformdirs @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/f5/7f/64/0b56462f04eb5cf39fd5699a5d92c0ca8efad8cb2556e81af03ce13dba/platformdirs-3.1.0-py3-none-any.whl
-pluggy @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/38/05/d7/70e2b0d553c780097b692ed658b0f553a28f16028d848a98174b1a2249/pluggy-1.0.0-py2.py3-none-any.whl
-pre-commit @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/70/d8/9c/17f7de4bba444e7b68f10aec7fddac6bd2e4eac0d04371e81392a50bd5/pre_commit-2.21.0-py2.py3-none-any.whl
-preshed @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/9a/59/6b/b03acec2a4afbfbd59fb12de9b4a28521c49035039a6f87126f2ee0128/preshed-3.0.8-cp38-cp38-win_amd64.whl
-pycodestyle @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/c8/b5/c4/20e98d955193296673ec9d57510115c96ea8c60a7e2cd212c3999f9d20/pycodestyle-2.8.0-py2.py3-none-any.whl
-pycparser @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/7a/f7/3b/fd50e9d7e1c02d2d2e8631fca716f6b6ffe3742f322e4a170eb3f2f41b/pycparser-2.21-py2.py3-none-any.whl
-pydantic @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/dc/13/ee/7ae616720c2323844d07cfd08509ffd574902eec029605c78b8e323492/pydantic-1.10.6-cp38-cp38-win_amd64.whl
-pyflakes @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/f2/d6/08/0d69fadd16b2e7ec2870ad6286f0929fbb102236d0ae0890816d760f32/pyflakes-2.4.0-py2.py3-none-any.whl
-Pygments @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/11/c3/19/323ade7174ed2185ba69b5e252002cacb45e37a67fa8eb8f5e9b4387d1/Pygments-2.14.0-py3-none-any.whl
-pytest @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/7f/6c/58/73cd070c328a8d94b2a9e9d56822110efe853a80128da97b25df1ffdb6/pytest-7.2.2-py3-none-any.whl
-PyYAML @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/f7/e8/05/c16a713e7ee8d7b7dff0acfe3bfd713a63078d60be83d2ebb0f09288c3/PyYAML-6.0-cp38-cp38-win_amd64.whl
-requests @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/3d/1f/aa/5e8217c68413908512431e37461a959c5f978e280e5d533e90eb0bb47e/requests-2.28.2-py3-none-any.whl
-smart-open @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/30/32/e9/ab66583097a65a77df1a12552d41587038be0d6162495c4e386f79c106/smart_open-6.3.0-py3-none-any.whl
-spacy @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/83/7c/74/f9b93f9c185c3a615dfdeac8ad9918edd4ddde6898dfaae3cce75cebd8/spacy-3.5.0-cp38-cp38-win_amd64.whl
-spacy-legacy @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/27/f4/fc/8dfd69f7b1df2808796022ff4eb7a16758bb0ebbfad97d382428abcffe/spacy_legacy-3.0.12-py2.py3-none-any.whl
-spacy-loggers @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/f0/4a/4c/909ca3557ff22e1aecc5cf95a614d15f5a9b62742f3f648bc7f59d51c9/spacy_loggers-1.0.4-py3-none-any.whl
-srsly @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/6d/17/f5/65dae20eea6522c6f554808cfc200ba56df5dc3c7aa83527afadd62a68/srsly-2.4.6-cp38-cp38-win_amd64.whl
-thinc @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/77/9a/05/8002d549ffe37fe5ac0902f00eb65dc4a11c0d88e47eaecb98ec5648f2/thinc-8.1.9-cp38-cp38-win_amd64.whl
-toml @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/9f/8c/c3/7b4f6778d60f3c9fa11f8fd0e48243bbad25a04975e0a01006b6350594/toml-0.10.2-py2.py3-none-any.whl
-tomli @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/36/bd/11/98fa2af866c73d00f2498ade62c7fcf28db8656714b7b7a44e9cb2f855/tomli-2.0.1-py3-none-any.whl
-tqdm @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/45/3b/83/11e9b65ddcb85f0eaa322e1d88111befee9da675e5fe1a2b952ea8fc03/tqdm-4.65.0-py3-none-any.whl
-typer @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/96/bb/b7/bc5e0c31a6b2e773d054d8aa2cd7a2e5005a9515898a24dcca823f1417/typer-0.7.0-py3-none-any.whl
-typing_extensions @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/05/3e/be/3f521835cc5953a7eb965030d329644d576ce76edebf642b1858afe013/typing_extensions-4.5.0-py3-none-any.whl
-unicodedata2 @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/38/1f/5e/d8c8b6fed84e6813d314bfdf1725a24db3085d274b2fcd37716d55c01d/unicodedata2-15.0.0-cp38-cp38-win_amd64.whl
-urllib3 @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/5e/22/48/bfaeae20b869238a924df6d3691bbf3d8ebb819b57f61da6e860705a07/urllib3-1.26.14-py2.py3-none-any.whl
-virtualenv @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/50/71/42/3e2a2c521a6eab203e067c110ee3bcfd3fabbb63f15b756e813e0593be/virtualenv-20.20.0-py3-none-any.whl
-wasabi @ file:///C:/Users/Craig/AppData/Local/pypoetry/Cache/artifacts/c9/19/b1/e5c0a7a5b7387a72205f9250f03b8f0c3a917d0889e54c74ac3abc1f9a/wasabi-1.1.1-py3-none-any.whl
+autopep8==1.6.0
+baseblock==0.2.24
+blis==0.7.10
+catalogue==2.0.9
+certifi==2023.7.22
+cffi==1.15.1
+cfgv==3.3.1
+charset-normalizer==3.2.0
+click==8.1.6
+colorama==0.4.6
+confection==0.1.0
+cryptography==38.0.1
+cymem==2.0.7
+distlib==0.3.7
+en-core-web-sm @ file:///D:/git/graffl/fast-sentence/fast-sentence-segment/resources/lib/en_core_web_sm-3.5.0.tar.gz
+entrypoints==0.4
+exceptiongroup==1.1.2
+-e git+ssh://git@github.com/craigtrim/fast-sentence-segment.git@f608ba8c2a84b57fb968541e5fb6defca5054a21#egg=fast_sentence_segment
+filelock==3.12.2
+flake8==4.0.1
+flakeheaven==3.3.0
+identify==2.5.26
+idna==3.4
+iniconfig==2.0.0
+Jinja2==3.1.2
+langcodes==3.3.0
+MarkupSafe==2.1.3
+mccabe==0.6.1
+murmurhash==1.0.9
+mypy==1.4.1
+mypy-extensions==1.0.0
+nodeenv==1.8.0
+numpy==1.24.4
+packaging==23.1
+pathy==0.10.2
+plac==1.3.5
+platformdirs==3.9.1
+pluggy==1.2.0
+pre-commit==2.21.0
+preshed==3.0.8
+pycodestyle==2.8.0
+pycparser==2.21
+pydantic==1.10.12
+pyflakes==2.4.0
+Pygments==2.15.1
+pytest==7.4.0
+PyYAML==6.0
+requests==2.31.0
+smart-open==6.3.0
+spacy==3.5.0
+spacy-legacy==3.0.12
+spacy-loggers==1.0.4
+srsly==2.4.7
+thinc==8.1.10
+toml==0.10.2
+tomli==2.0.1
+tqdm==4.65.0
+typer==0.7.0
+typing_extensions==4.7.1
+unicodedata2==15.0.0
+urllib3==2.0.4
+virtualenv==20.24.2
+wasabi==1.1.2
