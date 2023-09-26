@@ -5,7 +5,7 @@ ifeq ($(OS),Windows_NT)
 else
 	os_shell := bash
 	copy_setup := resources/scripts/copy_setup.sh
-	download_en_core_web_sm := .\resources\scripts\download-en_core_web_sm.sh
+	download_en_core_web_sm := ./resources/scripts/download-en_core_web_sm.sh
 endif
 
 copy_setup:
@@ -42,3 +42,6 @@ all:
 	make linters
 	make freeze
 	poetry run python -m pip install --upgrade pip
+
+# 	added on 25-Sept-2023 for specific dev setup -- feel free to comment out	
+	cp dist/fast_sentence_segment-0.1.10-py3-none-any.whl ../aws-textract-cleaner/resources/lib
