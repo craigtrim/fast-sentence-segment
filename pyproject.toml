@@ -8,7 +8,7 @@ maintainers = [
 ]
 
 description = "Fast and Efficient Sentence Segmentation"
-license = "None"
+license = "MIT"
 name = "fast-sentence-segment"
 readme = "README.md"
 version = "0.1.10"

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fast Sentence Segment - Python NLP Library</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --bg-secondary: #161b22;
+            --fg: #c9d1d9;
+            --fg-muted: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-purple: #a371f7;
+            --border: #30363d;
+            --code-bg: #1f2428;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .tagline {
+            font-size: 1.25rem;
+            color: var(--fg-muted);
+            margin-bottom: 2rem;
+        }
+
+        .badges {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            color: var(--fg-muted);
+        }
+
+        .badge.python { border-color: #3572A5; color: #3572A5; }
+        .badge.spacy { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .badge.mit { border-color: var(--accent-green); color: var(--accent-green); }
+
+        section {
+            margin: 3rem 0;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--fg);
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .code-block code {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            color: var(--fg);
+        }
+
+        .code-block .comment { color: var(--fg-muted); }
+        .code-block .keyword { color: var(--accent-purple); }
+        .code-block .string { color: var(--accent-green); }
+        .code-block .function { color: var(--accent-blue); }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .feature h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent-blue);
+        }
+
+        .feature p {
+            color: var(--fg-muted);
+            font-size: 0.95rem;
+        }
+
+        .example {
+            margin: 2rem 0;
+        }
+
+        .example h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            color: var(--fg);
+        }
+
+        .cta {
+            text-align: center;
+            padding: 3rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin: 3rem 0;
+        }
+
+        .cta h2 {
+            margin-bottom: 1rem;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: var(--bg);
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--fg);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--fg-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .install-cmd {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            margin: 1rem auto;
+            max-width: 400px;
+        }
+
+        .install-cmd .prompt {
+            color: var(--fg-muted);
+        }
+
+        .install-cmd .cmd {
+            color: var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fast Sentence Segment</h1>
+            <p class="tagline">Fast and efficient sentence segmentation using spaCy.<br>Handles abbreviations, quoted text, and multi-paragraph documents.</p>
+            <div class="badges">
+                <span class="badge python">Python</span>
+                <span class="badge spacy">spaCy 3.5</span>
+                <span class="badge mit">MIT License</span>
+            </div>
+        </header>
+
+        <section>
+            <h2>Quick Start</h2>
+            <div class="install-cmd">
+                <span class="prompt">$</span>
+                <span class="cmd">pip install fast-sentence-segment</span>
+            </div>
+            <div class="code-block">
+                <code>
+<span class="keyword">from</span> fast_sentence_segment <span class="keyword">import</span> segment_text
+
+text = <span class="string">"Here is a Dr. who says something. And what else? I don't know."</span>
+
+results = <span class="function">segment_text</span>(text)
+<span class="comment"># Returns: [['Here is a Dr. who says something.', 'And what else?', "I don't know."]]</span>
+                </code>
+            </div>
+        </section>
+
+        <section>
+            <h2>Features</h2>
+            <div class="features">
+                <div class="feature">
+                    <h3>Paragraph-Aware</h3>
+                    <p>Returns sentences grouped by paragraph, preserving document structure for downstream processing.</p>
+                </div>
+                <div class="feature">
+                    <h3>Abbreviation Handling</h3>
+                    <p>Correctly handles "Dr.", "Mr.", "etc." and other abbreviations without false sentence splits.</p>
+                </div>
+                <div class="feature">
+                    <h3>Cached Processing</h3>
+                    <p>Built-in LRU cache for repeated text processing, improving performance on duplicate content.</p>
+                </div>
+                <div class="feature">
+                    <h3>Flexible Output</h3>
+                    <p>Get nested lists by paragraph or use flatten=True for a simple list of sentences.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Examples</h2>
+
+            <div class="example">
+                <h3>Multi-Paragraph Text</h3>
+                <div class="code-block">
+                    <code>
+text = <span class="string">"""First paragraph here. It has two sentences.
+
+Second paragraph starts here. With multiple sentences."""</span>
+
+results = <span class="function">segment_text</span>(text)
+<span class="comment"># [</span>
+<span class="comment">#     ['First paragraph here.', 'It has two sentences.'],</span>
+<span class="comment">#     ['Second paragraph starts here.', 'With multiple sentences.']</span>
+<span class="comment"># ]</span>
+                    </code>
+                </div>
+            </div>
+
+            <div class="example">
+                <h3>Flattened Output</h3>
+                <div class="code-block">
+                    <code>
+results = <span class="function">segment_text</span>(text, flatten=<span class="keyword">True</span>)
+<span class="comment"># ['First paragraph here.', 'It has two sentences.', 'Second paragraph starts here.', ...]</span>
+                    </code>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <h2>Get Started</h2>
+            <p style="color: var(--fg-muted); margin-bottom: 1.5rem;">Install via pip and start segmenting text in minutes.</p>
+            <div class="buttons">
+                <a href="https://github.com/craigtrim/fast-sentence-segment" class="btn btn-primary">View on GitHub</a>
+                <a href="https://pypi.org/project/fast-sentence-segment/" class="btn btn-secondary">PyPI Package</a>
+            </div>
+        </section>
+
+        <footer>
+            <p>Created by <a href="https://github.com/craigtrim">Craig Trim</a></p>
+            <p style="margin-top: 0.5rem;">Powered by <a href="https://spacy.io/">spaCy</a></p>
+        </footer>
+    </div>
+</body>
+</html>

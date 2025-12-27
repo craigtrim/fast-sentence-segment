@@ -15,7 +15,7 @@ install_requires = \
 
 setup_kwargs = {
     'name': 'fast-sentence-segment',
-    'version': '0.1.4',
+    'version': '0.1.10',
     'description': 'Fast and Efficient Sentence Segmentation',
     'long_description': "# Fast Sentence Segmentation (fast-sentence-segment)\nFast and Efficient Sentence Segmentation\n\nUsage\n```python\nfrom fast_sentence_segment import segment_text\n\nresults = segment_text(\n    'here is a dr. who says something.  and then again, what else?  i dont know.  Do you?')\n\nassert results == [\n    [\n        'here is a dr. who says something.',\n        'and then again, what else?',\n        'i dont know.',\n        'Do you?'\n    ]\n]\n```\n\nWhy use a double-scripted list?\n\nThe segementation process will segment into paragraphs and sentences.  A paragraph is composed of 1..* sentences, hence each list of lists is equivalent to a paragraph.\n\nThis usage\n```python\nresults = segment_text(input_text, flatten=True)\n```\nWill return a list of strings, regardless of paragraph delimitation.\n",
     'author': 'Craig Trim',
