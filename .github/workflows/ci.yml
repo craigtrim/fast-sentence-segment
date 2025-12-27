@@ -27,19 +27,11 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v4
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install main dependencies only
+        run: poetry install --no-interaction --only main
 
-      - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
-
-      - name: Install project
-        run: poetry install --no-interaction
+      - name: Install test tools
+        run: poetry run pip install pytest mypy
 
       - name: Download spaCy model
         run: poetry run python -m spacy download en_core_web_sm
@@ -63,8 +55,11 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1
 
-      - name: Install dependencies
-        run: poetry install --no-interaction
+      - name: Install main dependencies only
+        run: poetry install --no-interaction --only main
+
+      - name: Install lint tools
+        run: poetry run pip install "flake8>=4.0.1,<5.0.0" "flakeheaven>=3.3.0"
 
       - name: Run flakeheaven
         run: poetry run flakeheaven lint fast_sentence_segment
