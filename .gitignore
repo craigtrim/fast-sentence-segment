@@ -63,3 +63,4 @@ config.ps1
 publish_to_pypi.*
 *.tar
 *.tar.gz
+config.sh
