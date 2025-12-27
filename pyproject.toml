@@ -29,14 +29,10 @@ python = "^3.9"
 spacy = "^3.8.0"
 
 [tool.poetry.dev-dependencies]
-autopep8 = "*"
 en-core-web-sm = {path = "resources/lib/en_core_web_sm-3.8.0.tar.gz"}
-flake8 = ">=4.0.1,<5.0.0"
-flakeheaven = "^3.3.0"
-mypy = "*"
-plac = "*"
 pre-commit = "^2.20.0"
 pytest = "*"
+ruff = "*"
 
 [tool.poetry.build]
 generate-setup-file = true
@@ -45,14 +41,9 @@ generate-setup-file = true
 build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core>=1.0.0"]
 
-[tool.flakeheaven]
-exclude = ["__init__.py", "README.md", "setup.py", ".venv", ".git"]
-format = "grouped"
-max_line_length = 500
-show_source = true
+[tool.ruff]
+line-length = 200
+exclude = ["__init__.py", ".venv", ".git"]
 
-[tool.flakeheaven.plugins]
-# F401 (Missing Import)
-# F403 (Unable to Detect Undefined Names)
-pyflakes = ["+*", "-F401", "-F403"]
-pycodestyle = ["+*", "-E501"]
+[tool.ruff.lint]
+ignore = ["F401", "F403", "E501"]

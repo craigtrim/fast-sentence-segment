@@ -43,7 +43,7 @@ class PerformParagraphSegmentation(BaseObject):
         if input_text is None or not len(input_text):
             raise ValueError("Empty Input")
 
-        if type(input_text) != str:
+        if not isinstance(input_text, str):
             self.logger.warning(f"Invalid Input Text: {input_text}")
             return []
 

@@ -28,7 +28,7 @@ build:
 
 linters:
 	poetry run pre-commit run --all-files
-	poetry run flakeheaven lint
+	poetry run ruff check fast_sentence_segment
 
 all:
 	make get_model
