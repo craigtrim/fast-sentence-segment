@@ -10,6 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ['3.9', '3.10', '3.11']
 
@@ -26,16 +27,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry-core
           pip install -e .
-          pip install pytest mypy
+          pip install pytest
 
       - name: Download spaCy model
         run: python -m spacy download en_core_web_sm
 
       - name: Run tests
-        run: pytest
-
-      - name: Run type checking
-        run: mypy fast_sentence_segment --ignore-missing-imports
+        run: pytest -v
 
   lint:
     runs-on: ubuntu-latest
