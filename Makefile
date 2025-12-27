@@ -1,15 +1,10 @@
 ifeq ($(OS),Windows_NT)
 	os_shell := powershell
-	copy_setup := resources/scripts/copy_setup.ps1
-	download_en_core_web_sm := .\resources\scripts\download-en_core_web_sm.ps1
+	download_en_core_web_sm := .\resources\scripts\download-spacy-model.ps1
 else
 	os_shell := bash
-	copy_setup := resources/scripts/copy_setup.sh
-	download_en_core_web_sm := ./resources/scripts/download-en_core_web_sm.sh
+	download_en_core_web_sm := ./resources/scripts/download-spacy-model.sh
 endif
-
-copy_setup:
-	$(os_shell) $(copy_setup)
 
 get_model:
 	$(os_shell) $(download_en_core_web_sm)
@@ -30,7 +25,6 @@ build:
 	make install
 	make test
 	poetry build
-	make copy_setup
 
 linters:
 	poetry run pre-commit run --all-files
@@ -40,8 +34,4 @@ all:
 	make get_model
 	make build
 	make linters
-	make freeze
 	poetry run python -m pip install --upgrade pip
-
-# 	added on 25-Sept-2023 for specific dev setup -- feel free to comment out	
-	cp dist/fast_sentence_segment-0.1.10-py3-none-any.whl ../aws-textract-cleaner/resources/lib
