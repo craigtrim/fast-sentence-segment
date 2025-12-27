@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.9', '3.10', '3.11']
 
     steps:
       - uses: actions/checkout@v4
@@ -21,26 +21,20 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-
-      - name: Install main dependencies only
-        run: poetry install --no-interaction --only main
-
-      - name: Install test tools
-        run: poetry run pip install pytest mypy
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest mypy
 
       - name: Download spaCy model
-        run: poetry run python -m spacy download en_core_web_sm
+        run: python -m spacy download en_core_web_sm
 
       - name: Run tests
-        run: poetry run pytest
+        run: pytest
 
       - name: Run type checking
-        run: poetry run mypy fast_sentence_segment --ignore-missing-imports
+        run: mypy fast_sentence_segment --ignore-missing-imports
 
   lint:
     runs-on: ubuntu-latest
@@ -52,14 +46,11 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-
-      - name: Install main dependencies only
-        run: poetry install --no-interaction --only main
-
-      - name: Install lint tools
-        run: poetry run pip install "flake8>=4.0.1,<5.0.0" "flakeheaven>=3.3.0"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install "flake8>=4.0.1,<5.0.0" "flakeheaven>=3.3.0"
 
       - name: Run flakeheaven
-        run: poetry run flakeheaven lint fast_sentence_segment
+        run: flakeheaven lint fast_sentence_segment
