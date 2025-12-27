@@ -64,3 +64,4 @@ publish_to_pypi.*
 *.tar
 *.tar.gz
 config.sh
+release.sh

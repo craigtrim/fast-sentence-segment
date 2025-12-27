@@ -14,7 +14,7 @@ cymem==2.0.11
 distlib==0.4.0
 en_core_web_sm @ file:///Users/craigtrim/git/graffl/fast-sentence-segment/resources/lib/en_core_web_sm-3.5.0.tar.gz
 entrypoints==0.4
--e git+ssh://git@github.com/craigtrim/fast-sentence-segment.git@809ff6cee02c8f3d9a764a7c599a2d358128509e#egg=fast_sentence_segment
+-e git+ssh://git@github.com/craigtrim/fast-sentence-segment.git@56872b6d37f22b7fd7c665317c26a9c511ced2b0#egg=fast_sentence_segment
 filelock==3.16.1
 flake8==4.0.1
 flakeheaven==3.3.0
