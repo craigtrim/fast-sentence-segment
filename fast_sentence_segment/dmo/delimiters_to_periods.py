@@ -3,7 +3,7 @@
 """ Convert Delimiters into Periods """
 
 
-from baseblock import BaseObject
+from fast_sentence_segment.core import BaseObject
 
 
 class DelimitersToPeriods(BaseObject):

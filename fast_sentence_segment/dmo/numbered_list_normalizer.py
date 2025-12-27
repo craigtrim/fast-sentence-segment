@@ -3,7 +3,7 @@
 """ Normalize Numbered Lists to prevent False Positive Segmentation """
 
 
-from baseblock import BaseObject
+from fast_sentence_segment.core import BaseObject
 
 
 class NumberedListNormalizer(BaseObject):

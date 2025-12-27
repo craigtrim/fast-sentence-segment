@@ -3,7 +3,7 @@
 """ Paragraph Segmentation """
 
 
-from baseblock import BaseObject
+from fast_sentence_segment.core import BaseObject
 
 
 class PerformParagraphSegmentation(BaseObject):

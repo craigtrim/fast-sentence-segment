@@ -5,10 +5,7 @@
 
 from functools import lru_cache
 
-from baseblock import Enforcer
-from baseblock import Stopwatch
-from baseblock import BaseObject
-
+from fast_sentence_segment.core import BaseObject, Stopwatch
 from fast_sentence_segment.svc import PerformParagraphSegmentation
 from fast_sentence_segment.svc import PerformSentenceSegmentation
 
@@ -52,8 +49,8 @@ class Segmenter(BaseObject):
                     Each inner list contains 1..* sentences
         """
 
-        if self.isEnabledForDebug:
-            Enforcer.is_str(input_text)
+        if self.isEnabledForDebug and not isinstance(input_text, str):
+            raise ValueError(f"Expected str, got {type(input_text)}")
 
         sw = Stopwatch()
 

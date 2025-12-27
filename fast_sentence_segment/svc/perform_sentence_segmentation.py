@@ -5,7 +5,7 @@
 
 import spacy
 
-from baseblock import BaseObject
+from fast_sentence_segment.core import BaseObject
 
 from fast_sentence_segment.dmo import NewlinesToPeriods
 from fast_sentence_segment.dmo import DelimitersToPeriods
