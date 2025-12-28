@@ -3,24 +3,21 @@
 """ Normalize Numbered Lists to prevent False Positive Segmentation """
 
 
+import re
+
 from fast_sentence_segment.core import BaseObject
 
 
 class NumberedListNormalizer(BaseObject):
     """ Normalize Numbered Lists to prevent False Positive Segmentation """
 
-    __d_candidate_list_elements = {
-        "1. ": "1_ ",
-        "2. ": "2_ ",
-        "3. ": "3_ ",
-        "4. ": "4_ ",
-        "5. ": "5_ ",
-        "6. ": "6_ ",
-        "7. ": "7_ ",
-        "8. ": "8_ ",
-        "9. ": "9_ ",
-        "10. ": "10_ ",
-    }
+    # Pattern 1: start of string OR newline, followed by number, period, space
+    __normalize_line_start = re.compile(r'(^|\n\s*)(\d{1,2})\. ')
+    __denormalize_line_start = re.compile(r'(^|\n\s*)(\d{1,2})_ ')
+
+    # Pattern 2: inline numbered list ". N. " (period + space + number + period + space)
+    __normalize_inline = re.compile(r'(\. )(\d{1,2})\. ')
+    __denormalize_inline = re.compile(r'(\. )(\d{1,2})_ ')
 
     def __init__(self):
         """
@@ -28,6 +25,11 @@ class NumberedListNormalizer(BaseObject):
             19-Oct-2022
             craigtrim@gmail.com
             *   https://github.com/craigtrim/fast-sentence-segment/issues/1
+        Updated:
+            27-Dec-2024
+            craigtrim@gmail.com
+            *   fix to only match at line starts, not mid-sentence
+                https://github.com/craigtrim/fast-sentence-segment/issues/3
         """
         BaseObject.__init__(self, __name__)
 
@@ -36,18 +38,10 @@ class NumberedListNormalizer(BaseObject):
                 denormalize: bool = False) -> str:
 
         if not denormalize:
-            for candidate in self.__d_candidate_list_elements:
-                if candidate in input_text:
-                    input_text = input_text.replace(
-                        candidate, self.__d_candidate_list_elements[candidate])
-
-        else:  # reverse the process
-            d_rev = {self.__d_candidate_list_elements[k]: k
-                     for k in self.__d_candidate_list_elements}
-
-            for candidate in d_rev:
-                if candidate in input_text:
-                    input_text = input_text.replace(
-                        candidate, d_rev[candidate])
+            input_text = self.__normalize_line_start.sub(r'\1\2_ ', input_text)
+            input_text = self.__normalize_inline.sub(r'\1\2_ ', input_text)
+        else:
+            input_text = self.__denormalize_line_start.sub(r'\1\2. ', input_text)
+            input_text = self.__denormalize_inline.sub(r'\1\2. ', input_text)
 
         return input_text

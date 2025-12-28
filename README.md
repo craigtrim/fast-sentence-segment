@@ -3,17 +3,25 @@
 [![PyPI version](https://img.shields.io/pypi/v/fast-sentence-segment.svg)](https://pypi.org/project/fast-sentence-segment/)
 [![Python versions](https://img.shields.io/pypi/pyversions/fast-sentence-segment.svg)](https://pypi.org/project/fast-sentence-segment/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![spaCy](https://img.shields.io/badge/spaCy-3.5-blue.svg)](https://spacy.io/)
+[![spaCy](https://img.shields.io/badge/spaCy-3.8-blue.svg)](https://spacy.io/)
 
-Fast and efficient sentence segmentation using spaCy. Handles complex edge cases like abbreviations (Dr., Mr., etc.), quoted text, and multi-paragraph documents.
+Fast and efficient sentence segmentation using spaCy with surgical post-processing fixes. Handles complex edge cases like abbreviations (Dr., Mr., etc.), ellipses, quoted text, and multi-paragraph documents.
+
+## Why This Library?
+
+1. **Keep it local**: LLM API calls cost money and send your data to third parties. Run sentence segmentation entirely on your machine.
+2. **spaCy perfected**: spaCy is a great local model, but it makes mistakes. We've surgically fixed its edge cases so you don't have to.
 
 ## Features
 
 - **Paragraph-aware segmentation**: Returns sentences grouped by paragraph
-- **Abbreviation handling**: Correctly handles "Dr.", "Mr.", "etc." without false splits
+- **Abbreviation handling**: Correctly handles "Dr.", "Mr.", "etc.", "p.m.", "a.m." without false splits
+- **Ellipsis preservation**: Keeps `...` intact while detecting sentence boundaries
+- **Question/exclamation splitting**: Properly splits on `?` and `!` followed by capital letters
 - **Cached processing**: LRU cache for repeated text processing
 - **Flexible output**: Nested lists (by paragraph) or flattened list of sentences
 - **Bullet point & numbered list normalization**: Cleans common list formats
+- **CLI tool**: Command-line interface for quick segmentation
 
 ## Installation
 
@@ -79,12 +87,38 @@ segmenter = Segmenter()
 results = segmenter.input_text("Your text here.")
 ```
 
+### Command Line Interface
+
+Segment text directly from the terminal:
+
+```bash
+# Direct text input
+segment "Hello world. How are you? I am fine."
+
+# Numbered output
+segment -n "First sentence. Second sentence."
+
+# From stdin
+echo "Some text here. Another sentence." | segment
+
+# From file
+segment -f document.txt
+```
+
 ## API Reference
 
 | Function | Parameters | Returns | Description |
 |----------|------------|---------|-------------|
 | `segment_text()` | `input_text: str`, `flatten: bool = False` | `list` | Main entry point for segmentation |
 | `Segmenter.input_text()` | `input_text: str` | `list[list[str]]` | Cached paragraph-aware segmentation |
+
+### CLI Options
+
+| Option | Description |
+|--------|-------------|
+| `text` | Text to segment (positional argument) |
+| `-f, --file` | Read text from file |
+| `-n, --numbered` | Number output lines |
 
 ## Why Nested Lists?
 
@@ -98,9 +132,18 @@ Use `flatten=True` when you only need sentences without paragraph context.
 
 ## Requirements
 
-- Python 3.8.5+
-- spaCy 3.5.3
+- Python 3.9+
+- spaCy 3.8+
 - en_core_web_sm spaCy model
+
+## How It Works
+
+This library uses spaCy for initial sentence segmentation, then applies surgical post-processing fixes for cases where spaCy's default behavior is incorrect:
+
+1. **Pre-processing**: Normalize numbered lists, preserve ellipses with placeholders
+2. **spaCy segmentation**: Use spaCy's sentence boundary detection
+3. **Post-processing**: Split on abbreviation boundaries, handle `?`/`!` + capital patterns
+4. **Denormalization**: Restore placeholders to original text
 
 ## License
 

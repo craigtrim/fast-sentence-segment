@@ -7,10 +7,13 @@ import spacy
 
 from fast_sentence_segment.core import BaseObject
 
+from fast_sentence_segment.dmo import AbbreviationMerger
+from fast_sentence_segment.dmo import AbbreviationSplitter
+from fast_sentence_segment.dmo import EllipsisNormalizer
 from fast_sentence_segment.dmo import NewlinesToPeriods
-from fast_sentence_segment.dmo import DelimitersToPeriods
 from fast_sentence_segment.dmo import BulletPointCleaner
 from fast_sentence_segment.dmo import NumberedListNormalizer
+from fast_sentence_segment.dmo import QuestionExclamationSplitter
 from fast_sentence_segment.dmo import SpacyDocSegmenter
 from fast_sentence_segment.dmo import PostProcessStructure
 
@@ -31,17 +34,36 @@ class PerformSentenceSegmentation(BaseObject):
             craigtrim@gmail.com
             *   add numbered-list normalization
                 https://github.com/craigtrim/fast-sentence-segment/issues/1
+        Updated:
+            27-Dec-2024
+            craigtrim@gmail.com
+            *   add abbreviation-aware sentence splitting
+                https://github.com/craigtrim/fast-sentence-segment/issues/3
         """
         BaseObject.__init__(self, __name__)
         if not self.__nlp:
             self.__nlp = spacy.load("en_core_web_sm")
 
-        self._delimiters_to_periods = DelimitersToPeriods.process
         self._newlines_to_periods = NewlinesToPeriods.process
         self._normalize_numbered_lists = NumberedListNormalizer().process
+        self._normalize_ellipses = EllipsisNormalizer().process
         self._clean_bullet_points = BulletPointCleaner.process
         self._spacy_segmenter = SpacyDocSegmenter(self.__nlp).process
+        self._abbreviation_merger = AbbreviationMerger().process
+        self._abbreviation_splitter = AbbreviationSplitter().process
+        self._question_exclamation_splitter = QuestionExclamationSplitter().process
         self._post_process = PostProcessStructure().process
+
+    def _denormalize(self, text: str) -> str:
+        """ Restore normalized placeholders to original form """
+        text = self._normalize_numbered_lists(text, denormalize=True)
+        text = self._normalize_ellipses(text, denormalize=True)
+        return text
+
+    @staticmethod
+    def _has_sentence_punct(text: str) -> bool:
+        """ Check if text has sentence-ending punctuation """
+        return "." in text or "?" in text or "!" in text
 
     @staticmethod
     def _clean_punctuation(input_text: str) -> str:
@@ -67,38 +89,47 @@ class PerformSentenceSegmentation(BaseObject):
     def _process(self,
                  input_text: str) -> list:
 
-        input_text = self._delimiters_to_periods(
-            delimiter=',',
-            input_text=input_text)
-
-        input_text = self._delimiters_to_periods(
-            delimiter=';',
-            input_text=input_text)
+        # Normalize tabs to spaces
+        input_text = input_text.replace('\t', ' ')
 
         input_text = self._normalize_numbered_lists(input_text)
+        input_text = self._normalize_ellipses(input_text)
 
         input_text = self._newlines_to_periods(input_text)
 
         input_text = self._clean_spacing(input_text)
-        if "." not in input_text:
-            return [input_text]
+        if not self._has_sentence_punct(input_text):
+            return [self._denormalize(input_text)]
 
         input_text = self._clean_bullet_points(input_text)
-        if "." not in input_text:
-            return [input_text]
+        if not self._has_sentence_punct(input_text):
+            return [self._denormalize(input_text)]
 
         input_text = self._clean_punctuation(input_text)
-        if "." not in input_text:
-            return [input_text]
+        if not self._has_sentence_punct(input_text):
+            return [self._denormalize(input_text)]
 
         sentences = self._spacy_segmenter(input_text)
-        if "." not in input_text:
-            return [input_text]
+        if not self._has_sentence_punct(input_text):
+            return [self._denormalize(input_text)]
+
+        # Merge sentences incorrectly split at abbreviations (issue #3)
+        sentences = self._abbreviation_merger(sentences)
+
+        # Split sentences at abbreviation boundaries (issue #3)
+        sentences = self._abbreviation_splitter(sentences)
+
+        # Split sentences at ? and ! boundaries (issue #3)
+        sentences = self._question_exclamation_splitter(sentences)
 
         sentences = self._post_process(sentences)
 
         sentences = [
             self._normalize_numbered_lists(x, denormalize=True)
+            for x in sentences
+        ]
+        sentences = [
+            self._normalize_ellipses(x, denormalize=True)
             for x in sentences
         ]
 
