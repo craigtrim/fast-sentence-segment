@@ -10,7 +10,7 @@ Fast and efficient sentence segmentation using spaCy with surgical post-processi
 ## Why This Library?
 
 1. **Keep it local**: LLM API calls cost money and send your data to third parties. Run sentence segmentation entirely on your machine.
-2. **spaCy perfected**: spaCy is a great local model, but it makes mistakes. We've surgically fixed its edge cases so you don't have to.
+2. **spaCy perfected**: spaCy is a great local model, but it makes mistakes. This library fixes most of spaCy's shortcomings.
 
 ## Features
 
