@@ -73,8 +73,14 @@ results = segment_text(text)
 
 ```json
 [
-  ["Gandalf spoke softly.", "\"All we have to decide is what to do with the time given us.\"."],
-  ["Frodo nodded.", "The weight of the Ring pressed against his chest."]
+  [
+    "Gandalf spoke softly.",
+    "\"All we have to decide is what to do with the time given us.\"."
+  ],
+  [
+    "Frodo nodded.",
+    "The weight of the Ring pressed against his chest."
+  ]
 ]
 ```
 
