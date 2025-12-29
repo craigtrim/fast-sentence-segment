@@ -40,11 +40,20 @@ python -m spacy download en_core_web_sm
 ```python
 from fast_sentence_segment import segment_text
 
-text = "Here is a Dr. who says something. And then again, what else? I don't know. Do you?"
+text = "Do you like Dr. Who? I prefer Dr. Strange! Mr. T is also cool."
 
-results = segment_text(text)
-# Returns: [['Here is a Dr. who says something.', 'And then again, what else?', "I don't know.", 'Do you?']]
+results = segment_text(text, flatten=True)
 ```
+
+```json
+[
+  "Do you like Dr. Who?",
+  "I prefer Dr. Strange!",
+  "Mr. T is also cool."
+]
+```
+
+Notice how "Dr. Who?" stays together as a single sentence—the library correctly recognizes that a title followed by a single-word name ending in `?` or `!` is a name reference, not a sentence boundary.
 
 ## Usage
 
@@ -55,16 +64,18 @@ The `segment_text` function returns a list of lists, where each inner list repre
 ```python
 from fast_sentence_segment import segment_text
 
-text = """First paragraph here. It has two sentences.
+text = """Gandalf spoke softly. "All we have to decide is what to do with the time given us."
 
-Second paragraph starts here. This one also has multiple sentences. And a third."""
+Frodo nodded. The weight of the Ring pressed against his chest."""
 
 results = segment_text(text)
-# Returns:
-# [
-#     ['First paragraph here.', 'It has two sentences.'],
-#     ['Second paragraph starts here.', 'This one also has multiple sentences.', 'And a third.']
-# ]
+```
+
+```json
+[
+  ["Gandalf spoke softly.", "\"All we have to decide is what to do with the time given us.\"."],
+  ["Frodo nodded.", "The weight of the Ring pressed against his chest."]
+]
 ```
 
 ### Flattened Output
@@ -72,8 +83,17 @@ results = segment_text(text)
 If you don't need paragraph boundaries, use the `flatten` parameter:
 
 ```python
+text = "At 9 a.m. the hobbits set out. By 3 p.m. they reached Rivendell. Mr. Frodo was exhausted."
+
 results = segment_text(text, flatten=True)
-# Returns: ['First paragraph here.', 'It has two sentences.', 'Second paragraph starts here.', ...]
+```
+
+```json
+[
+  "At 9 a.m. the hobbits set out.",
+  "By 3 p.m. they reached Rivendell.",
+  "Mr. Frodo was exhausted."
+]
 ```
 
 ### Direct Segmenter Access
@@ -93,16 +113,28 @@ Segment text directly from the terminal:
 
 ```bash
 # Direct text input
-segment "Hello world. How are you? I am fine."
+echo "Have you seen Dr. Who? It's brilliant!" | segment
+```
 
+```
+Have you seen Dr. Who?
+It's brilliant!
+```
+
+```bash
 # Numbered output
-segment -n "First sentence. Second sentence."
+segment -n "Gandalf paused... You shall not pass! The Balrog roared."
+```
 
-# From stdin
-echo "Some text here. Another sentence." | segment
+```
+1. Gandalf paused...
+2. You shall not pass!
+3. The Balrog roared.
+```
 
+```bash
 # From file
-segment -f document.txt
+segment -f silmarillion.txt
 ```
 
 ## API Reference
