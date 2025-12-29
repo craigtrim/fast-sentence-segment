@@ -4,6 +4,7 @@
 
 
 import re
+from typing import List
 
 from fast_sentence_segment.core import BaseObject
 
@@ -25,7 +26,7 @@ class QuestionExclamationSplitter(BaseObject):
         """
         BaseObject.__init__(self, __name__)
 
-    def process(self, sentences: list[str]) -> list[str]:
+    def process(self, sentences: List[str]) -> List[str]:
         """Split sentences that contain ? or ! followed by capital letter.
 
         Args:

@@ -21,14 +21,14 @@ Reference: https://github.com/craigtrim/fast-sentence-segment/issues/3
 """
 
 import re
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from fast_sentence_segment.core import BaseObject
 from fast_sentence_segment.dmo.abbreviations import TITLE_ABBREVIATIONS
 
 
 # Subset of titles that commonly precede names (not geographic like Mt., St.)
-PERSONAL_TITLES: list[str] = [
+PERSONAL_TITLES: List[str] = [
     "Dr.",
     "Mr.",
     "Mrs.",
@@ -109,7 +109,7 @@ class TitleNameMerger(BaseObject):
         merged = current + " " + name_part
         return (merged, remainder)
 
-    def process(self, sentences: list[str]) -> list[str]:
+    def process(self, sentences: List[str]) -> List[str]:
         """Process a list of sentences, merging title + single-word name splits.
 
         Args:

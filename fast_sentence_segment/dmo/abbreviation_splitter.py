@@ -11,6 +11,7 @@ Reference: https://github.com/craigtrim/fast-sentence-segment/issues/3
 """
 
 import re
+from typing import List
 
 from fast_sentence_segment.core import BaseObject
 from fast_sentence_segment.dmo.abbreviations import SENTENCE_ENDING_ABBREVIATIONS
@@ -49,7 +50,7 @@ class AbbreviationSplitter(BaseObject):
         pattern = rf"({abbrev_pattern})\s+([A-Z])"
         return re.compile(pattern)
 
-    def _split_sentence(self, sentence: str) -> list[str]:
+    def _split_sentence(self, sentence: str) -> List[str]:
         """Split a single sentence at abbreviation boundaries.
 
         Args:
@@ -78,7 +79,7 @@ class AbbreviationSplitter(BaseObject):
 
         return results if results else [sentence]
 
-    def process(self, sentences: list[str]) -> list[str]:
+    def process(self, sentences: List[str]) -> List[str]:
         """Process a list of sentences, splitting at abbreviation boundaries.
 
         Args:

@@ -11,6 +11,7 @@ Reference: https://github.com/craigtrim/fast-sentence-segment/issues/3
 """
 
 import re
+from typing import List, Optional, Tuple
 
 from fast_sentence_segment.core import BaseObject
 
@@ -23,7 +24,7 @@ from fast_sentence_segment.core import BaseObject
 # The extract_pattern MUST have a capture group for the portion to merge.
 # Whatever is NOT captured remains as a separate sentence.
 
-MERGE_PATTERNS: list[tuple[str, str]] = [
+MERGE_PATTERNS: List[Tuple[str, str]] = [
 
     # ext. 5, Ext. 123, EXT. 42
     (r"(?i)\bext\.$", r"^(\d+\.?)\s*"),
@@ -76,7 +77,7 @@ class AbbreviationMerger(BaseObject):
             for ending, extract in MERGE_PATTERNS
         ]
 
-    def _try_merge(self, current: str, next_sent: str) -> tuple[str, str] | None:
+    def _try_merge(self, current: str, next_sent: str) -> Optional[Tuple[str, str]]:
         """Try to merge two sentences based on known patterns.
 
         Args:
@@ -103,7 +104,7 @@ class AbbreviationMerger(BaseObject):
 
         return None
 
-    def process(self, sentences: list[str]) -> list[str]:
+    def process(self, sentences: List[str]) -> List[str]:
         """Process a list of sentences, merging incorrectly split ones.
 
         Args:
