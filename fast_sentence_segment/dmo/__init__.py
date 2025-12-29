@@ -1,5 +1,6 @@
 from .abbreviation_merger import AbbreviationMerger
 from .abbreviation_splitter import AbbreviationSplitter
+from .title_name_merger import TitleNameMerger
 from .bullet_point_cleaner import BulletPointCleaner
 from .ellipsis_normalizer import EllipsisNormalizer
 from .newlines_to_periods import NewlinesToPeriods
