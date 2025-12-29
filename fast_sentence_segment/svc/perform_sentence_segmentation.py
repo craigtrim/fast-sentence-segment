@@ -9,6 +9,7 @@ from fast_sentence_segment.core import BaseObject
 
 from fast_sentence_segment.dmo import AbbreviationMerger
 from fast_sentence_segment.dmo import AbbreviationSplitter
+from fast_sentence_segment.dmo import TitleNameMerger
 from fast_sentence_segment.dmo import EllipsisNormalizer
 from fast_sentence_segment.dmo import NewlinesToPeriods
 from fast_sentence_segment.dmo import BulletPointCleaner
@@ -52,6 +53,7 @@ class PerformSentenceSegmentation(BaseObject):
         self._abbreviation_merger = AbbreviationMerger().process
         self._abbreviation_splitter = AbbreviationSplitter().process
         self._question_exclamation_splitter = QuestionExclamationSplitter().process
+        self._title_name_merger = TitleNameMerger().process
         self._post_process = PostProcessStructure().process
 
     def _denormalize(self, text: str) -> str:
@@ -115,6 +117,9 @@ class PerformSentenceSegmentation(BaseObject):
 
         # Merge sentences incorrectly split at abbreviations (issue #3)
         sentences = self._abbreviation_merger(sentences)
+
+        # Merge title + single-word name splits (e.g., "Dr." + "Who?" -> "Dr. Who?")
+        sentences = self._title_name_merger(sentences)
 
         # Split sentences at abbreviation boundaries (issue #3)
         sentences = self._abbreviation_splitter(sentences)
