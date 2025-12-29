@@ -8,7 +8,9 @@ Reference: https://github.com/craigtrim/fast-sentence-segment/issues/3
 
 # Abbreviations that can END a sentence and be followed by a new sentence.
 # When these are followed by a capital letter, it likely indicates a sentence break.
-SENTENCE_ENDING_ABBREVIATIONS: list[str] = [
+from typing import List
+
+SENTENCE_ENDING_ABBREVIATIONS: List[str] = [
     # Time
     "a.m.",
     "p.m.",
@@ -50,7 +52,7 @@ SENTENCE_ENDING_ABBREVIATIONS: list[str] = [
 # Abbreviations that are NEVER sentence-enders because they're
 # typically followed by a name or noun (e.g., "Dr. Smith", "Mt. Everest").
 # Do NOT split after these even when followed by a capital letter.
-TITLE_ABBREVIATIONS: list[str] = [
+TITLE_ABBREVIATIONS: List[str] = [
     # Personal titles
     "Dr.",
     "Mr.",
