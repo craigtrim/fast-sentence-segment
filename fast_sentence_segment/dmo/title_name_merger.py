@@ -21,6 +21,7 @@ Reference: https://github.com/craigtrim/fast-sentence-segment/issues/3
 """
 
 import re
+from typing import Optional, Tuple
 
 from fast_sentence_segment.core import BaseObject
 from fast_sentence_segment.dmo.abbreviations import TITLE_ABBREVIATIONS
@@ -75,7 +76,7 @@ class TitleNameMerger(BaseObject):
         # Note: The spaCy segmenter may add a trailing period to sentences ending in ?/!
         self._single_word_with_punct = re.compile(r"^([A-Z][a-zA-Z\-]*[?!]+\.?)\s*(.*)$")
 
-    def _try_merge(self, current: str, next_sent: str) -> tuple[str, str] | None:
+    def _try_merge(self, current: str, next_sent: str) -> Optional[Tuple[str, str]]:
         """Try to merge two sentences if they match the title + single-word name pattern.
 
         Args:
