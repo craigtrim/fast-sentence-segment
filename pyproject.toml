@@ -11,14 +11,26 @@ description = "Fast and Efficient Sentence Segmentation"
 license = "MIT"
 name = "fast-sentence-segment"
 readme = "README.md"
-version = "1.2.2"
+version = "1.3.0"
 
 keywords = ["nlp", "text", "preprocess", "segment"]
 repository = "https://github.com/craigtrim/fast-sentence-segment"
 
 classifiers = [
   "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Text Processing :: Linguistic",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Operating System :: OS Independent",
+  "Typing :: Typed",
 ]
 
 [tool.poetry.urls]
