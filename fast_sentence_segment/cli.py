@@ -8,6 +8,7 @@ import sys
 import time
 
 from fast_sentence_segment import segment_text
+from fast_sentence_segment.dmo.group_quoted_sentences import format_grouped_sentences
 
 logging.disable(logging.CRITICAL)
 
@@ -120,8 +121,11 @@ def file_main():
     elapsed = time.perf_counter() - start
 
     with open(args.output_file, "w", encoding="utf-8") as f:
-        for sentence in sentences:
-            f.write(sentence + "\n")
+        if args.unwrap:
+            f.write(format_grouped_sentences(sentences) + "\n")
+        else:
+            for sentence in sentences:
+                f.write(sentence + "\n")
 
     print(f"\r  {' ' * 20}\r", end="")
     _done(f"{len(sentences):,} sentences in {elapsed:.2f}s")
