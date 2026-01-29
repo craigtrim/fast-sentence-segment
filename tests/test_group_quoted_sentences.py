@@ -1,15 +1,19 @@
 # -*- coding: UTF-8 -*-
 """Tests for quote-aware sentence grouping.
 
-Related GitHub Issue:
+Related GitHub Issues:
     #5 - Normalize quotes and group open-quote sentences in unwrap mode
     https://github.com/craigtrim/fast-sentence-segment/issues/5
+
+    #6 - Review findings from Issue #5
+    https://github.com/craigtrim/fast-sentence-segment/issues/6
 """
 
 import pytest
 from fast_sentence_segment.dmo.group_quoted_sentences import (
     group_quoted_sentences,
     format_grouped_sentences,
+    MAX_QUOTE_GROUP_SIZE,
 )
 
 
@@ -85,6 +89,61 @@ class TestGroupQuotedSentences:
         sentences = ['"Start.', 'Middle.', 'End.']
         result = group_quoted_sentences(sentences)
         assert result == [['"Start.', 'Middle.', 'End.']]
+
+
+class TestStrayQuoteRecovery:
+    """Test mitigation for stray/malformed quote characters.
+
+    A stray double quote (e.g., OCR artifact) corrupts the open/close
+    state. The MAX_QUOTE_GROUP_SIZE safety limit prevents a single stray
+    quote from swallowing all subsequent sentences into one group.
+
+    Related GitHub Issue:
+        #6 - Review findings from Issue #5 (finding #5)
+        https://github.com/craigtrim/fast-sentence-segment/issues/6
+    """
+
+    def test_stray_quote_triggers_reset(self):
+        """A stray quote followed by many sentences triggers a group reset."""
+        # One sentence with a stray opening quote, then many normal sentences
+        sentences = ['"Stray artifact.'] + [
+            f'Normal sentence {i}.' for i in range(MAX_QUOTE_GROUP_SIZE + 5)
+        ]
+        result = group_quoted_sentences(sentences)
+
+        # The first group should be capped at MAX_QUOTE_GROUP_SIZE
+        assert len(result[0]) == MAX_QUOTE_GROUP_SIZE
+
+        # Subsequent sentences should NOT be swallowed into the first group
+        remaining = sum(len(g) for g in result[1:])
+        assert remaining == len(sentences) - MAX_QUOTE_GROUP_SIZE
+
+    def test_legitimate_long_quote_under_limit(self):
+        """A properly closed quote under the limit groups normally."""
+        sentences = ['"Start.'] + [
+            f'Middle {i}.' for i in range(5)
+        ] + ['End."', 'Outside.']
+        result = group_quoted_sentences(sentences)
+        # All quoted sentences in one group, outside in another
+        assert len(result) == 2
+        assert len(result[0]) == 7  # "Start. + 5 middles + End."
+        assert result[1] == ['Outside.']
+
+    def test_stray_quote_does_not_affect_later_groups(self):
+        """After a reset, subsequent quoted passages group correctly."""
+        # Stray quote + enough to trigger reset + normal quoted passage
+        stray_block = ['"Stray.'] + [
+            f'Filler {i}.' for i in range(MAX_QUOTE_GROUP_SIZE)
+        ]
+        normal_block = ['"Hello.', 'World."', 'Narration.']
+        sentences = stray_block + normal_block
+        result = group_quoted_sentences(sentences)
+
+        # Find the last two groups -- they should be the normal quoted
+        # passage and the narration
+        last_groups = result[-2:]
+        assert last_groups[-2] == ['"Hello.', 'World."']
+        assert last_groups[-1] == ['Narration.']
 
 
 class TestFormatGroupedSentences:

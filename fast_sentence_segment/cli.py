@@ -102,6 +102,10 @@ def file_main():
         "--unwrap", action="store_true",
         help="Unwrap hard-wrapped lines (e.g., Project Gutenberg e-texts)",
     )
+    parser.add_argument(
+        "--no-normalize-quotes", action="store_true",
+        help="Disable unicode quote normalization to ASCII equivalents",
+    )
     args = parser.parse_args()
 
     _header("segment-file")
@@ -117,7 +121,10 @@ def file_main():
         text = f.read()
 
     start = time.perf_counter()
-    sentences = segment_text(text.strip(), flatten=True, unwrap=args.unwrap)
+    normalize = not args.no_normalize_quotes
+    sentences = segment_text(
+        text.strip(), flatten=True, unwrap=args.unwrap, normalize=normalize,
+    )
     elapsed = time.perf_counter() - start
 
     with open(args.output_file, "w", encoding="utf-8") as f:
