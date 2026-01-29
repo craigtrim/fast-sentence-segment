@@ -66,3 +66,5 @@ publish_to_pypi.*
 config.sh
 release.sh
 requirements.txt
+.claude
+pypi.key
