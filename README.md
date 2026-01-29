@@ -129,13 +129,16 @@ segment -n -f silmarillion.txt
 
 # File-to-file (one sentence per line)
 segment-file --input-file book.txt --output-file sentences.txt
+
+# Unwrap hard-wrapped e-texts (Project Gutenberg, etc.)
+segment-file --input-file book.txt --output-file sentences.txt --unwrap
 ```
 
 ## API Reference
 
 | Function | Parameters | Returns | Description |
 |----------|------------|---------|-------------|
-| `segment_text()` | `input_text: str`, `flatten: bool = False` | `list` | Main entry point for segmentation |
+| `segment_text()` | `input_text: str`, `flatten: bool = False`, `unwrap: bool = False` | `list` | Main entry point for segmentation |
 | `Segmenter.input_text()` | `input_text: str` | `list[list[str]]` | Cached paragraph-aware segmentation |
 
 ### CLI Commands
@@ -143,7 +146,7 @@ segment-file --input-file book.txt --output-file sentences.txt
 | Command | Description |
 |---------|-------------|
 | `segment [text]` | Segment text from argument, `-f FILE`, or stdin. Use `-n` for numbered output. |
-| `segment-file --input-file IN --output-file OUT` | Segment a file and write one sentence per line to the output file. |
+| `segment-file --input-file IN --output-file OUT [--unwrap]` | Segment a file and write one sentence per line. Use `--unwrap` for hard-wrapped e-texts. |
 
 ## Why Nested Lists?
 
