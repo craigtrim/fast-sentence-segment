@@ -11,13 +11,13 @@ description = "Fast and Efficient Sentence Segmentation"
 license = "MIT"
 name = "fast-sentence-segment"
 readme = "README.md"
-version = "1.2.1"
+version = "1.2.2"
 
 keywords = ["nlp", "text", "preprocess", "segment"]
 repository = "https://github.com/craigtrim/fast-sentence-segment"
 
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
@@ -36,6 +36,7 @@ ruff = "*"
 
 [tool.poetry.scripts]
 segment = "fast_sentence_segment.cli:main"
+segment-file = "fast_sentence_segment.cli:file_main"
 
 [tool.poetry.build]
 generate-setup-file = true
