@@ -20,6 +20,8 @@ SENTENCE_ENDING_ABBREVIATIONS: List[str] = [
     # Common sentence-enders
     "etc.",
     "ext.",
+    "approx.",
+    "dept.",
 
     # Academic degrees (when at end of sentence)
     "Ph.D.",
@@ -32,6 +34,9 @@ SENTENCE_ENDING_ABBREVIATIONS: List[str] = [
     "J.D.",
     "D.D.S.",
     "R.N.",
+    "M.B.A.",
+    "LL.B.",
+    "LL.M.",
 
     # Business (when at end of sentence)
     "Inc.",
@@ -39,6 +44,14 @@ SENTENCE_ENDING_ABBREVIATIONS: List[str] = [
     "Ltd.",
     "Co.",
     "Bros.",
+    "LLC.",
+    "LLP.",
+
+    # Academic/legal citations (can end sentences)
+    "ibid.",
+    "Ibid.",
+    "cf.",
+    "Cf.",
 
     # Countries/Regions (when at end of sentence)
     "U.S.",
@@ -62,23 +75,59 @@ TITLE_ABBREVIATIONS: List[str] = [
     "Sr.",
     "Jr.",
     "Rev.",
+    "Hon.",
+    "Esq.",
+
+    # French/formal titles (common in translated literature)
+    "Mme.",
+    "Mlle.",
+    "Messrs.",
+
+    # Military ranks
     "Gen.",
     "Col.",
     "Capt.",
     "Lt.",
     "Sgt.",
+    "Maj.",
+    "Cpl.",
+    "Pvt.",
+    "Adm.",
+    "Cmdr.",
+
+    # Political titles
     "Rep.",
     "Sen.",
     "Gov.",
     "Pres.",
-    "Hon.",
+
+    # Ecclesiastical titles
+    "Fr.",
+    "Msgr.",
 
     # Geographic prefixes
     "St.",
     "Mt.",
     "Ft.",
+    "Ave.",
+    "Blvd.",
+    "Rd.",
 
-    # Other prefixes
+    # Latin terms (never end sentences -- always introduce clauses)
+    # Include common inconsistent forms: with/without internal periods,
+    # and with trailing comma (the most common real-world form)
+    "i.e.",
+    "i.e.,",
+    "ie.",
+    "ie.,",
+    "e.g.",
+    "e.g.,",
+    "eg.",
+    "eg.,",
+    "viz.",
+    "viz.,",
+
+    # Reference/numbering prefixes
     "Fig.",
     "fig.",
     "Sec.",
@@ -93,4 +142,8 @@ TITLE_ABBREVIATIONS: List[str] = [
     "no.",
     "Pt.",
     "pt.",
+
+    # Legal / adversarial
+    "vs.",
+    "Vs.",
 ]
