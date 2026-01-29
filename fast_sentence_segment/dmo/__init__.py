@@ -11,3 +11,4 @@ from .numbered_list_normalizer import NumberedListNormalizer
 from .unwrap_hard_wrapped_text import unwrap_hard_wrapped_text
 from .normalize_quotes import normalize_quotes
 from .group_quoted_sentences import group_quoted_sentences, format_grouped_sentences
+from .strip_trailing_period_after_quote import StripTrailingPeriodAfterQuote

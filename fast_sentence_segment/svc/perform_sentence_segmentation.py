@@ -17,6 +17,7 @@ from fast_sentence_segment.dmo import NumberedListNormalizer
 from fast_sentence_segment.dmo import QuestionExclamationSplitter
 from fast_sentence_segment.dmo import SpacyDocSegmenter
 from fast_sentence_segment.dmo import PostProcessStructure
+from fast_sentence_segment.dmo import StripTrailingPeriodAfterQuote
 
 
 class PerformSentenceSegmentation(BaseObject):
@@ -55,6 +56,7 @@ class PerformSentenceSegmentation(BaseObject):
         self._question_exclamation_splitter = QuestionExclamationSplitter().process
         self._title_name_merger = TitleNameMerger().process
         self._post_process = PostProcessStructure().process
+        self._strip_trailing_period = StripTrailingPeriodAfterQuote().process
 
     def _denormalize(self, text: str) -> str:
         """ Restore normalized placeholders to original form """
@@ -128,6 +130,9 @@ class PerformSentenceSegmentation(BaseObject):
         sentences = self._question_exclamation_splitter(sentences)
 
         sentences = self._post_process(sentences)
+
+        # Strip spurious trailing periods after closing quotes (issue #7)
+        sentences = self._strip_trailing_period(sentences)
 
         sentences = [
             self._normalize_numbered_lists(x, denormalize=True)

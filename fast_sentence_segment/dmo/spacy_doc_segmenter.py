@@ -23,18 +23,31 @@ class SpacyDocSegmenter(BaseObject):
 
     @staticmethod
     def _append_period(a_sentence: str) -> str:
+        """Append a period if the sentence lacks terminal punctuation.
+
+        Checks for terminal punctuation (. ? ! :) after stripping any
+        trailing quote characters (" '). This prevents a spurious period
+        from being appended to sentences like:
+            'He said "Hello."'  ->  unchanged (not 'He said "Hello.".')
+
+        Related GitHub Issue:
+            #7 - Spurious trailing period appended after sentence-final
+                 closing quote
+            https://github.com/craigtrim/fast-sentence-segment/issues/7
+
+        Args:
+            a_sentence: A sentence that may or may not have terminal
+                punctuation.
+
+        Returns:
+            The sentence with a period appended if it lacked terminal
+            punctuation, otherwise unchanged.
         """
-        Purpose:
-            if the sentence is not terminated with a period, then add one
-        :return:
-            a sentence terminated by a period
-        """
-        __blacklist = [':', '?', '!']
-        if not a_sentence.strip().endswith('.'):
-            for ch in __blacklist:
-                if not a_sentence.endswith(ch):
-                    return f"{a_sentence}."
-        return a_sentence
+        # Strip trailing quotes to inspect the actual punctuation
+        stripped = a_sentence.strip().rstrip('"\'')
+        if stripped and stripped[-1] in '.?!:':
+            return a_sentence
+        return f"{a_sentence}."
 
     @staticmethod
     def _is_valid_sentence(a_sentence: str) -> bool:
