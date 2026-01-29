@@ -12,6 +12,6 @@ class TestQuotedText:
         assert result == ['He said "Hello there" to me.']
 
     def test_quote_with_period_inside(self):
-        # Period added after closing quote to ensure sentence ending
+        # Spurious trailing period after closing quote removed (issue #7)
         result = segment_text('"Hello." He waved.', flatten=True)
-        assert result == ['"Hello.".', 'He waved.']
+        assert result == ['"Hello."', 'He waved.']
