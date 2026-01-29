@@ -3,11 +3,15 @@ from .svc import *
 from .dmo import *
 
 from .bp.segmenter import Segmenter
+from .dmo.unwrap_hard_wrapped_text import unwrap_hard_wrapped_text
 
 segment = Segmenter().input_text
 
 
-def segment_text(input_text: str, flatten: bool = False) -> list:
+def segment_text(input_text: str, flatten: bool = False, unwrap: bool = False) -> list:
+    if unwrap:
+        input_text = unwrap_hard_wrapped_text(input_text)
+
     results = segment(input_text)
 
     if flatten:
