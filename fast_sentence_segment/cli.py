@@ -97,12 +97,18 @@ def file_main():
         "--output-file", required=True,
         help="Path to output file",
     )
+    parser.add_argument(
+        "--unwrap", action="store_true",
+        help="Unwrap hard-wrapped lines (e.g., Project Gutenberg e-texts)",
+    )
     args = parser.parse_args()
 
     _header("segment-file")
     _param("Input", args.input_file)
     _param("Output", args.output_file)
     _param("Size", _file_size(args.input_file))
+    if args.unwrap:
+        _param("Unwrap", "enabled")
 
     print(f"\n  {YELLOW}Segmenting...{RESET}", end="", flush=True)
 
@@ -110,7 +116,7 @@ def file_main():
         text = f.read()
 
     start = time.perf_counter()
-    sentences = segment_text(text.strip(), flatten=True)
+    sentences = segment_text(text.strip(), flatten=True, unwrap=args.unwrap)
     elapsed = time.perf_counter() - start
 
     with open(args.output_file, "w", encoding="utf-8") as f:
