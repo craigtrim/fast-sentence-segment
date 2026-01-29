@@ -4,6 +4,8 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/fast-sentence-segment.svg)](https://pypi.org/project/fast-sentence-segment/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![spaCy](https://img.shields.io/badge/spaCy-3.8-blue.svg)](https://spacy.io/)
+[![Downloads](https://static.pepy.tech/badge/fast-sentence-segment)](https://pepy.tech/project/fast-sentence-segment)
+[![Downloads/Month](https://static.pepy.tech/badge/fast-sentence-segment/month)](https://pepy.tech/project/fast-sentence-segment)
 
 Fast and efficient sentence segmentation using spaCy with surgical post-processing fixes. Handles complex edge cases like abbreviations (Dr., Mr., etc.), ellipses, quoted text, and multi-paragraph documents.
 
@@ -115,32 +117,18 @@ results = segmenter.input_text("Your text here.")
 
 ### Command Line Interface
 
-Segment text directly from the terminal:
-
 ```bash
-# Direct text input
+# Inline text
+segment "Gandalf paused... You shall not pass! The Balrog roared."
+
+# Pipe from stdin
 echo "Have you seen Dr. Who? It's brilliant!" | segment
-```
 
-```
-Have you seen Dr. Who?
-It's brilliant!
-```
-
-```bash
 # Numbered output
-segment -n "Gandalf paused... You shall not pass! The Balrog roared."
-```
+segment -n -f silmarillion.txt
 
-```
-1. Gandalf paused...
-2. You shall not pass!
-3. The Balrog roared.
-```
-
-```bash
-# From file
-segment -f silmarillion.txt
+# File-to-file (one sentence per line)
+segment-file --input-file book.txt --output-file sentences.txt
 ```
 
 ## API Reference
@@ -150,13 +138,12 @@ segment -f silmarillion.txt
 | `segment_text()` | `input_text: str`, `flatten: bool = False` | `list` | Main entry point for segmentation |
 | `Segmenter.input_text()` | `input_text: str` | `list[list[str]]` | Cached paragraph-aware segmentation |
 
-### CLI Options
+### CLI Commands
 
-| Option | Description |
-|--------|-------------|
-| `text` | Text to segment (positional argument) |
-| `-f, --file` | Read text from file |
-| `-n, --numbered` | Number output lines |
+| Command | Description |
+|---------|-------------|
+| `segment [text]` | Segment text from argument, `-f FILE`, or stdin. Use `-n` for numbered output. |
+| `segment-file --input-file IN --output-file OUT` | Segment a file and write one sentence per line to the output file. |
 
 ## Why Nested Lists?
 
