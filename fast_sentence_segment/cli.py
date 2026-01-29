@@ -3,11 +3,43 @@
 
 import argparse
 import logging
+import os
 import sys
+import time
 
 from fast_sentence_segment import segment_text
 
 logging.disable(logging.CRITICAL)
+
+# ANSI color codes
+BOLD = "\033[1m"
+DIM = "\033[2m"
+CYAN = "\033[36m"
+GREEN = "\033[32m"
+YELLOW = "\033[33m"
+RESET = "\033[0m"
+
+
+def _header(title: str):
+    print(f"\n{BOLD}{CYAN}{title}{RESET}")
+    print(f"{DIM}{'─' * 40}{RESET}")
+
+
+def _param(label: str, value: str):
+    print(f"  {DIM}{label}:{RESET} {value}")
+
+
+def _done(msg: str):
+    print(f"\n  {GREEN}✓{RESET} {msg}")
+
+
+def _file_size(path: str) -> str:
+    size = os.path.getsize(path)
+    if size < 1024:
+        return f"{size} B"
+    elif size < 1024 * 1024:
+        return f"{size / 1024:.1f} KB"
+    return f"{size / (1024 * 1024):.1f} MB"
 
 
 def main():
@@ -50,6 +82,45 @@ def main():
             print(f"{i}. {sentence}")
         else:
             print(sentence)
+
+
+def file_main():
+    parser = argparse.ArgumentParser(
+        prog="segment-file",
+        description="Segment a text file into sentences and write to an output file",
+    )
+    parser.add_argument(
+        "--input-file", required=True,
+        help="Path to input text file",
+    )
+    parser.add_argument(
+        "--output-file", required=True,
+        help="Path to output file",
+    )
+    args = parser.parse_args()
+
+    _header("segment-file")
+    _param("Input", args.input_file)
+    _param("Output", args.output_file)
+    _param("Size", _file_size(args.input_file))
+
+    print(f"\n  {YELLOW}Segmenting...{RESET}", end="", flush=True)
+
+    with open(args.input_file, "r", encoding="utf-8") as f:
+        text = f.read()
+
+    start = time.perf_counter()
+    sentences = segment_text(text.strip(), flatten=True)
+    elapsed = time.perf_counter() - start
+
+    with open(args.output_file, "w", encoding="utf-8") as f:
+        for sentence in sentences:
+            f.write(sentence + "\n")
+
+    print(f"\r  {' ' * 20}\r", end="")
+    _done(f"{len(sentences):,} sentences in {elapsed:.2f}s")
+    _done(f"Written to {args.output_file}")
+    print()
 
 
 if __name__ == "__main__":
