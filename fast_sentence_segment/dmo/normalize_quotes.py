@@ -1,44 +1,80 @@
 # -*- coding: UTF-8 -*-
-"""Normalize unicode double quote variants to ASCII double quotes.
+"""Normalize unicode quote variants to ASCII equivalents.
 
-E-texts use a variety of double quote characters (curly/smart quotes,
-unicode variants). This module normalizes all double quote variants
-to the standard ASCII double quote character (").
+E-texts use a variety of quote characters (curly/smart quotes, unicode
+variants, primes, guillemets). This module normalizes all quote variants
+to their standard ASCII equivalents: double quote (") and single
+quote/apostrophe (').
 
-Related GitHub Issue:
+Related GitHub Issues:
     #5 - Normalize quotes and group open-quote sentences in unwrap mode
     https://github.com/craigtrim/fast-sentence-segment/issues/5
+
+    #6 - Review findings from Issue #5
+    https://github.com/craigtrim/fast-sentence-segment/issues/6
 """
 
 import re
 
-# Unicode double quote variants to normalize to ASCII "
-# Covers: left/right double quotation marks, low-9, high-reversed-9,
-# and left/right-pointing double angle quotation marks (guillemets).
+# Unicode double quote variants to normalize to ASCII " (U+0022).
+#
+# U+201C  " LEFT DOUBLE QUOTATION MARK
+# U+201D  " RIGHT DOUBLE QUOTATION MARK
+# U+201E  „ DOUBLE LOW-9 QUOTATION MARK
+# U+201F  ‟ DOUBLE HIGH-REVERSED-9 QUOTATION MARK
+# U+00AB  « LEFT-POINTING DOUBLE ANGLE QUOTATION MARK
+# U+00BB  » RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK
+# U+2033  ″ DOUBLE PRIME
+# U+301D  〝 REVERSED DOUBLE PRIME QUOTATION MARK
+# U+301E  〞 DOUBLE PRIME QUOTATION MARK
+# U+301F  〟 LOW DOUBLE PRIME QUOTATION MARK
+# U+FF02  ＂ FULLWIDTH QUOTATION MARK
 DOUBLE_QUOTE_PATTERN = re.compile(
-    '[\u201c\u201d\u201e\u201f\u00ab\u00bb]'
+    '[\u201c\u201d\u201e\u201f\u00ab\u00bb\u2033\u301d\u301e\u301f\uff02]'
+)
+
+# Unicode single quote variants to normalize to ASCII ' (U+0027).
+#
+# U+2018  ' LEFT SINGLE QUOTATION MARK
+# U+2019  ' RIGHT SINGLE QUOTATION MARK
+# U+201A  ‚ SINGLE LOW-9 QUOTATION MARK
+# U+201B  ‛ SINGLE HIGH-REVERSED-9 QUOTATION MARK
+# U+2039  ‹ SINGLE LEFT-POINTING ANGLE QUOTATION MARK
+# U+203A  › SINGLE RIGHT-POINTING ANGLE QUOTATION MARK
+# U+2032  ′ PRIME
+# U+FF07  ＇ FULLWIDTH APOSTROPHE
+# U+0060  ` GRAVE ACCENT (used as opening quote in some e-texts)
+# U+00B4  ´ ACUTE ACCENT (used as closing quote in some e-texts)
+SINGLE_QUOTE_PATTERN = re.compile(
+    '[\u2018\u2019\u201a\u201b\u2039\u203a\u2032\uff07\u0060\u00b4]'
 )
 
 
 def normalize_quotes(text: str) -> str:
-    """Replace all unicode double quote variants with ASCII double quote.
+    """Replace all unicode quote variants with their ASCII equivalents.
 
-    Normalizes the following characters to ASCII " (U+0022):
-        - U+201C  left double quotation mark
-        - U+201D  right double quotation mark
-        - U+201E  double low-9 quotation mark
-        - U+201F  double high-reversed-9 quotation mark
-        - U+00AB  left-pointing double angle quotation mark
-        - U+00BB  right-pointing double angle quotation mark
+    Double quote variants are normalized to ASCII " (U+0022).
+    Single quote variants are normalized to ASCII ' (U+0027).
 
     Args:
-        text: Input text potentially containing unicode double quotes.
+        text: Input text potentially containing unicode quotes.
 
     Returns:
-        Text with all double quote variants replaced by ASCII ".
+        Text with all quote variants replaced by ASCII equivalents.
 
     Example:
         >>> normalize_quotes('\u201cHello,\u201d she said.')
         '"Hello," she said.'
+        >>> normalize_quotes('It\u2019s fine.')
+        "It's fine."
+
+    Related GitHub Issues:
+        #5 - Normalize quotes and group open-quote sentences in unwrap mode
+        https://github.com/craigtrim/fast-sentence-segment/issues/5
+
+        #6 - Review findings from Issue #5
+        https://github.com/craigtrim/fast-sentence-segment/issues/6
     """
-    return DOUBLE_QUOTE_PATTERN.sub('"', text)
+    text = DOUBLE_QUOTE_PATTERN.sub('"', text)
+    text = SINGLE_QUOTE_PATTERN.sub("'", text)
+    return text
