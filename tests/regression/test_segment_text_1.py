@@ -19,7 +19,7 @@ def test_segment_text():
         # 20221019; note the removal of '. - ' per segment_text_3_test
         'where in the u.s is that st. do you know?',
         'i dont know.',
-        "Do you???'."
+        "Do you???'"
     ]
 
 

@@ -7,7 +7,7 @@ import time
 
 from fast_sentence_segment import segment_text
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 BOOK_PATH = os.path.join(DATA_DIR, "doyle-the-hound-of-the-baskervilles.txt")
 
 
