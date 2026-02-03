@@ -2,6 +2,7 @@ from .abbreviation_merger import AbbreviationMerger
 from .abbreviation_splitter import AbbreviationSplitter
 from .title_name_merger import TitleNameMerger
 from .bullet_point_cleaner import BulletPointCleaner
+from .dehyphenator import Dehyphenator
 from .ellipsis_normalizer import EllipsisNormalizer
 from .newlines_to_periods import NewlinesToPeriods
 from .post_process_sentences import PostProcessStructure
