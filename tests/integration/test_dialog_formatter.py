@@ -32,15 +32,19 @@ class TestDialogFormatterBasic:
         assert result == '"Hello there," she said.'
 
     def test_multiple_unquoted_sentences(self):
-        """Multiple narrative sentences are kept together."""
+        """Multiple narrative sentences each get their own paragraph for clean ebook formatting."""
         sentences = [
             "The sun was setting.",
             "Birds flew across the sky.",
             "It was peaceful.",
         ]
         result = format_dialog(sentences)
-        # Narrative sentences should be grouped together
-        assert "The sun was setting.\nBirds flew across the sky." in result
+        # Each narrative sentence should be its own paragraph (separated by \n\n)
+        paragraphs = result.split("\n\n")
+        assert len(paragraphs) == 3
+        assert paragraphs[0] == "The sun was setting."
+        assert paragraphs[1] == "Birds flew across the sky."
+        assert paragraphs[2] == "It was peaceful."
 
 
 class TestDialogFormatterQuotedSpeech:
@@ -70,15 +74,19 @@ class TestDialogFormatterQuotedSpeech:
         assert "\n\n" in result
 
     def test_narrative_after_dialog_gets_break(self):
-        """Narrative text after dialog gets a paragraph break."""
+        """Narrative text after dialog - each gets its own paragraph."""
         sentences = [
             '"Hello there," said Jack.',
             "The room fell silent.",
             "Everyone looked at him.",
         ]
         result = format_dialog(sentences)
-        # Dialog and narrative should be separated
-        assert "\n\n" in result
+        paragraphs = result.split("\n\n")
+        # Dialog and each narrative sentence gets its own paragraph
+        assert len(paragraphs) == 3
+        assert "Hello there" in paragraphs[0]
+        assert "silent" in paragraphs[1]
+        assert "looked" in paragraphs[2]
 
     def test_dialog_tag_keeps_quote_together(self):
         """A quote with dialog tag stays together."""
@@ -129,9 +137,9 @@ class TestDialogFormatterComplexScenarios:
         ]
         result = format_dialog(sentences)
 
-        # Should have paragraph breaks between different types
+        # Should have paragraph breaks between each sentence
         paragraphs = result.split("\n\n")
-        assert len(paragraphs) >= 2
+        assert len(paragraphs) == 3
 
     def test_question_and_response_pattern(self):
         """Questions and responses are properly separated."""
@@ -167,7 +175,7 @@ class TestDialogFormatterEdgeCases:
         assert "\n\n" in result
 
     def test_long_narrative_passage(self):
-        """Long narrative passage stays as one paragraph."""
+        """Long narrative passage - each sentence gets its own paragraph."""
         sentences = [
             "He laughed so heartily at the recollection.",
             "The waiter with the chocolate laughed too.",
@@ -175,12 +183,12 @@ class TestDialogFormatterEdgeCases:
         ]
         result = format_dialog(sentences)
         paragraphs = result.split("\n\n")
-        # All narrative (including embedded speech) stays together
+        # Each narrative sentence gets its own paragraph for ebook formatting
         # Note: "He said, '...'" starts with narrative, not a quote
-        assert len(paragraphs) == 1
+        assert len(paragraphs) == 3
 
     def test_narrative_then_direct_dialog(self):
-        """Narrative followed by direct dialog gets paragraph break."""
+        """Narrative followed by direct dialog - each gets paragraph break."""
         sentences = [
             "He laughed so heartily at the recollection.",
             "The waiter laughed too.",
@@ -188,10 +196,11 @@ class TestDialogFormatterEdgeCases:
         ]
         result = format_dialog(sentences)
         paragraphs = result.split("\n\n")
-        # Narrative grouped, then direct dialog is new paragraph
-        assert len(paragraphs) == 2
-        assert "laughed" in paragraphs[0]
-        assert "Fine day" in paragraphs[1]
+        # Each narrative sentence and dialog gets its own paragraph
+        assert len(paragraphs) == 3
+        assert "heartily" in paragraphs[0]
+        assert "waiter" in paragraphs[1]
+        assert "Fine day" in paragraphs[2]
 
     def test_incomplete_quote_handling(self):
         """Incomplete quotes (no closing) are handled gracefully."""

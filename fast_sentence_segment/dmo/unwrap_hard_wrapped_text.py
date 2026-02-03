@@ -69,6 +69,10 @@ def unwrap_hard_wrapped_text(text: str) -> str:
         # Then join remaining lines with spaces
         lines = block.splitlines()
         joined = ' '.join(line.strip() for line in lines if line.strip())
+        # Normalize multiple spaces to single space (OCR artifacts, formatting)
+        # This prevents _clean_spacing from treating them as sentence boundaries
+        while '  ' in joined:
+            joined = joined.replace('  ', ' ')
         if joined:
             unwrapped.append(joined)
 

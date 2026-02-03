@@ -39,8 +39,29 @@ ALL_QUOTES = DOUBLE_QUOTES + SINGLE_QUOTES
 
 
 def _count_quotes(text: str) -> int:
-    """Count quote characters in text (both single and double)."""
-    return sum(1 for c in text if c in ALL_QUOTES)
+    """Count actual quote characters in text, excluding mid-word apostrophes.
+
+    Apostrophes in contractions (don't, can't) and possessives (Jack's, Joselito's)
+    are NOT counted as quotes because they don't indicate dialog boundaries.
+
+    A quote character is considered an apostrophe (not a quote) if:
+    - It's preceded by a letter AND followed by a letter (mid-word: don't, Joselito's)
+    """
+    count = 0
+    for i, c in enumerate(text):
+        if c not in ALL_QUOTES:
+            continue
+
+        # Check if this is a mid-word apostrophe
+        prev_is_letter = i > 0 and text[i - 1].isalpha()
+        next_is_letter = i < len(text) - 1 and text[i + 1].isalpha()
+
+        if prev_is_letter and next_is_letter:
+            # Mid-word apostrophe (contraction/possessive) - don't count
+            continue
+
+        count += 1
+    return count
 
 
 def _starts_with_quote(text: str) -> bool:
@@ -229,6 +250,10 @@ def format_dialog(sentences: List[str]) -> str:
             should_start_new_para = False
         elif starts_quote:
             # New quote starting - always new paragraph
+            should_start_new_para = True
+        elif is_narrative and prev_was_narrative:
+            # Consecutive narrative sentences - each gets its own paragraph
+            # This gives clean ebook formatting with paragraph breaks
             should_start_new_para = True
         elif is_narrative and prev_was_complete and not prev_was_narrative:
             # Narrative after complete dialog - new paragraph

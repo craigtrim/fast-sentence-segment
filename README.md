@@ -133,21 +133,24 @@ segment-file --input-file book.txt --output-file sentences.txt
 
 # Unwrap hard-wrapped e-texts (Project Gutenberg, etc.)
 segment-file --input-file book.txt --output-file sentences.txt --unwrap
+
+# Dialog-aware formatting (implies --unwrap)
+segment -f book.txt --format
 ```
 
 ## API Reference
 
 | Function | Parameters | Returns | Description |
 |----------|------------|---------|-------------|
-| `segment_text()` | `input_text: str`, `flatten: bool = False`, `unwrap: bool = False` | `list` | Main entry point for segmentation |
+| `segment_text()` | `input_text: str`, `flatten: bool = False`, `unwrap: bool = False`, `format: str = None` | `list` or `str` | Main entry point for segmentation. Use `format="dialog"` for dialog-aware output. |
 | `Segmenter.input_text()` | `input_text: str` | `list[list[str]]` | Cached paragraph-aware segmentation |
 
 ### CLI Commands
 
 | Command | Description |
 |---------|-------------|
-| `segment [text]` | Segment text from argument, `-f FILE`, or stdin. Use `-n` for numbered output. |
-| `segment-file --input-file IN --output-file OUT [--unwrap]` | Segment a file and write one sentence per line. Use `--unwrap` for hard-wrapped e-texts. |
+| `segment [text]` | Segment text from argument, `-f FILE`, or stdin. Use `-n` for numbered output, `--format` for dialog-aware paragraph grouping. |
+| `segment-file --input-file IN --output-file OUT [--unwrap] [--format]` | Segment a file and write one sentence per line. Use `--unwrap` for hard-wrapped e-texts, `--format` for dialog-aware formatting. |
 
 ## Why Nested Lists?
 
