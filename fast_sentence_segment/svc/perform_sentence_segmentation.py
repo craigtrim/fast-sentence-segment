@@ -18,6 +18,7 @@ from fast_sentence_segment.dmo import QuestionExclamationSplitter
 from fast_sentence_segment.dmo import SpacyDocSegmenter
 from fast_sentence_segment.dmo import PostProcessStructure
 from fast_sentence_segment.dmo import StripTrailingPeriodAfterQuote
+from fast_sentence_segment.dmo import Dehyphenator
 
 
 class PerformSentenceSegmentation(BaseObject):
@@ -46,6 +47,7 @@ class PerformSentenceSegmentation(BaseObject):
         if not self.__nlp:
             self.__nlp = spacy.load("en_core_web_sm")
 
+        self._dehyphenate = Dehyphenator.process
         self._newlines_to_periods = NewlinesToPeriods.process
         self._normalize_numbered_lists = NumberedListNormalizer().process
         self._normalize_ellipses = EllipsisNormalizer().process
@@ -95,6 +97,10 @@ class PerformSentenceSegmentation(BaseObject):
 
         # Normalize tabs to spaces
         input_text = input_text.replace('\t', ' ')
+
+        # Dehyphenate words split across lines (issue #8)
+        # Must happen before newlines are converted to periods
+        input_text = self._dehyphenate(input_text)
 
         input_text = self._normalize_numbered_lists(input_text)
         input_text = self._normalize_ellipses(input_text)

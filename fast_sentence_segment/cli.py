@@ -62,6 +62,11 @@ def main():
         action="store_true",
         help="Number output lines",
     )
+    parser.add_argument(
+        "--unwrap",
+        action="store_true",
+        help="Unwrap hard-wrapped lines and dehyphenate split words",
+    )
     args = parser.parse_args()
 
     # Get input text
@@ -77,7 +82,7 @@ def main():
         sys.exit(1)
 
     # Segment and output
-    sentences = segment_text(text.strip(), flatten=True)
+    sentences = segment_text(text.strip(), flatten=True, unwrap=args.unwrap)
     for i, sentence in enumerate(sentences, 1):
         if args.numbered:
             print(f"{i}. {sentence}")
