@@ -2,9 +2,11 @@
 """CLI for fast-sentence-segment."""
 
 import argparse
+import itertools
 import logging
 import os
 import sys
+import threading
 import time
 
 from fast_sentence_segment import segment_text
@@ -19,6 +21,34 @@ CYAN = "\033[36m"
 GREEN = "\033[32m"
 YELLOW = "\033[33m"
 RESET = "\033[0m"
+
+
+class Spinner:
+    """Animated spinner for long-running operations."""
+
+    def __init__(self, message: str):
+        self.message = message
+        self.running = False
+        self.thread = None
+        self.frames = itertools.cycle(["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
+
+    def _spin(self):
+        while self.running:
+            frame = next(self.frames)
+            print(f"\r  {YELLOW}{frame}{RESET} {self.message}", end="", flush=True)
+            time.sleep(0.08)
+
+    def __enter__(self):
+        self.running = True
+        self.thread = threading.Thread(target=self._spin)
+        self.thread.start()
+        return self
+
+    def __exit__(self, *args):
+        self.running = False
+        if self.thread:
+            self.thread.join()
+        print(f"\r  {' ' * (len(self.message) + 4)}\r", end="", flush=True)
 
 
 def _header(title: str):
@@ -117,29 +147,28 @@ def file_main():
     _param("Input", args.input_file)
     _param("Output", args.output_file)
     _param("Size", _file_size(args.input_file))
-    if args.unwrap:
-        _param("Unwrap", "enabled")
-
-    print(f"\n  {YELLOW}Segmenting...{RESET}", end="", flush=True)
+    _param("Unwrap", "enabled" if args.unwrap else "disabled")
+    _param("Normalize quotes", "disabled" if args.no_normalize_quotes else "enabled")
 
     with open(args.input_file, "r", encoding="utf-8") as f:
         text = f.read()
 
     start = time.perf_counter()
     normalize = not args.no_normalize_quotes
-    sentences = segment_text(
-        text.strip(), flatten=True, unwrap=args.unwrap, normalize=normalize,
-    )
+    with Spinner("Segmenting text..."):
+        sentences = segment_text(
+            text.strip(), flatten=True, unwrap=args.unwrap, normalize=normalize,
+        )
     elapsed = time.perf_counter() - start
 
-    with open(args.output_file, "w", encoding="utf-8") as f:
-        if args.unwrap:
-            f.write(format_grouped_sentences(sentences) + "\n")
-        else:
-            for sentence in sentences:
-                f.write(sentence + "\n")
+    with Spinner("Writing output..."):
+        with open(args.output_file, "w", encoding="utf-8") as f:
+            if args.unwrap:
+                f.write(format_grouped_sentences(sentences) + "\n")
+            else:
+                for sentence in sentences:
+                    f.write(sentence + "\n")
 
-    print(f"\r  {' ' * 20}\r", end="")
     _done(f"{len(sentences):,} sentences in {elapsed:.2f}s")
     _done(f"Written to {args.output_file}")
     print()
