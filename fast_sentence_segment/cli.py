@@ -246,24 +246,25 @@ def file_main():
 
     # Process directory
     if args.input_dir:
-        if not os.path.isdir(args.input_dir):
-            print(f"  {YELLOW}Error:{RESET} Directory not found: {args.input_dir}")
+        input_dir = os.path.expanduser(args.input_dir)
+        if not os.path.isdir(input_dir):
+            print(f"  {YELLOW}Error:{RESET} Directory not found: {input_dir}")
             sys.exit(1)
 
         # Find all .txt files
         txt_files = sorted([
-            f for f in os.listdir(args.input_dir)
+            f for f in os.listdir(input_dir)
             if f.endswith(".txt") and not f.endswith("-clean.txt")
         ])
 
         if not txt_files:
-            print(f"  {YELLOW}Error:{RESET} No .txt files found in {args.input_dir}")
+            print(f"  {YELLOW}Error:{RESET} No .txt files found in {input_dir}")
             sys.exit(1)
 
         _header("segment-file (batch)")
         print(f"  {DIM}Processing {len(txt_files)} files in directory{RESET}")
         print()
-        _param("Directory", args.input_dir)
+        _param("Directory", input_dir)
         _param("Files", str(len(txt_files)))
         _param("Unwrap", "enabled" if unwrap else "disabled")
         _param("Normalize quotes", "disabled" if not normalize else "enabled")
@@ -272,7 +273,7 @@ def file_main():
 
         format_value = "dialog" if args.format else None
         for i, filename in enumerate(txt_files, 1):
-            input_path = os.path.join(args.input_dir, filename)
+            input_path = os.path.join(input_dir, filename)
             output_path = _generate_output_path(input_path)
             print(f"  {BOLD}[{i}/{len(txt_files)}]{RESET} {filename}")
             _process_single_file(input_path, output_path, unwrap, normalize, format_value)
@@ -283,18 +284,20 @@ def file_main():
         return
 
     # Process single file
-    if not os.path.isfile(args.input_file):
-        print(f"  {YELLOW}Error:{RESET} File not found: {args.input_file}")
+    input_file = os.path.expanduser(args.input_file)
+    if not os.path.isfile(input_file):
+        print(f"  {YELLOW}Error:{RESET} File not found: {input_file}")
         sys.exit(1)
 
-    output_file = args.output_file or _generate_output_path(args.input_file)
+    output_file = args.output_file or _generate_output_path(input_file)
+    output_file = os.path.expanduser(output_file)
 
     _header("segment-file")
     print(f"  {DIM}Segmenting text file into sentences{RESET}")
     print()
 
     format_value = "dialog" if args.format else None
-    _process_single_file(args.input_file, output_file, unwrap, normalize, format_value)
+    _process_single_file(input_file, output_file, unwrap, normalize, format_value)
 
     print(f"\n  {GREEN}Done!{RESET}")
     print()
