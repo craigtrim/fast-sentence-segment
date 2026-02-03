@@ -66,6 +66,54 @@ class SpacyDocSegmenter(BaseObject):
         return True
 
     @staticmethod
+    def _merge_orphaned_quotes(sentences: list) -> list:
+        """Merge orphaned opening quotes with the following sentence.
+
+        spaCy sometimes splits on opening quotes, producing sentences like:
+            ["'", "Oh, the funeral..."]
+        This merges them into:
+            ["'Oh, the funeral..."]
+
+        Also handles trailing orphaned quotes that should belong to next sentence:
+            ["He said. '", "Hello!'"]
+        Becomes:
+            ["He said.", "'Hello!'"]
+        """
+        if not sentences:
+            return sentences
+
+        result = []
+        i = 0
+        while i < len(sentences):
+            sent = sentences[i]
+            # Check if this sentence is just an opening quote
+            if sent.strip() in ("'", '"', "'.", '".'):
+                # Merge with the next sentence if available
+                if i + 1 < len(sentences):
+                    quote_char = sent.strip().rstrip('.')
+                    result.append(quote_char + sentences[i + 1])
+                    i += 2
+                    continue
+            result.append(sent)
+            i += 1
+
+        # Second pass: handle trailing orphaned quotes
+        # Pattern: sentence ends with `. '` or `. "` - move quote to next sentence
+        fixed = []
+        for i, sent in enumerate(result):
+            # Check for trailing orphaned quote (`. '` or `? '` or `! '`)
+            if len(sent) >= 3 and sent[-2:] in (" '", ' "') and sent[-3] in '.?!':
+                # Strip the trailing quote
+                trailing_quote = sent[-1]
+                sent = sent[:-2]
+                # Prepend to next sentence if available
+                if i + 1 < len(result) and not result[i + 1].startswith(('"', "'")):
+                    result[i + 1] = trailing_quote + result[i + 1]
+            fixed.append(sent)
+
+        return fixed
+
+    @staticmethod
     def _cleanse(sentences: list) -> str:
         sentences = [sent for sent in sentences
                      if sent != '..']
@@ -102,6 +150,9 @@ class SpacyDocSegmenter(BaseObject):
 
         sentences = [sent for sent in sentences if
                      sent and len(sent) and sent != 'None']
+
+        # Merge orphaned opening quotes with following sentence
+        sentences = self._merge_orphaned_quotes(sentences)
 
         sentences = [self._append_period(sent)
                      for sent in sentences]
