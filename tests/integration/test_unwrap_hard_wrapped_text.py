@@ -44,6 +44,34 @@ class TestUnwrapHardWrappedText:
         result = unwrap_hard_wrapped_text(text)
         assert result == ""
 
+    def test_double_spaces_normalized(self):
+        """Double spaces in original text are normalized to single spaces.
+
+        This prevents _clean_spacing from treating them as sentence boundaries
+        and creating spurious periods like "His colour. mounted" from "His colour  mounted".
+        """
+        text = "His colour  mounted; he fixed his neighbour's pale eye."
+        result = unwrap_hard_wrapped_text(text)
+        assert result == "His colour mounted; he fixed his neighbour's pale eye."
+
+    def test_triple_spaces_normalized(self):
+        """Triple or more spaces are normalized to single space."""
+        text = "The ship   sailed   into the harbor."
+        result = unwrap_hard_wrapped_text(text)
+        assert result == "The ship sailed into the harbor."
+
+    def test_multiple_double_spaces(self):
+        """Multiple double-space occurrences are all normalized."""
+        text = "Jack  Aubrey's  face  changed."
+        result = unwrap_hard_wrapped_text(text)
+        assert result == "Jack Aubrey's face changed."
+
+    def test_mixed_spacing_normalization(self):
+        """Various spacing issues from OCR are normalized."""
+        text = "He could not  but acknowledge  that he had been   beating the time."
+        result = unwrap_hard_wrapped_text(text)
+        assert result == "He could not but acknowledge that he had been beating the time."
+
 
 class TestSegmentTextUnwrap:
 
@@ -85,3 +113,17 @@ class TestSegmentTextUnwrap:
         assert len(result) >= 2
         assert "Watson" in result[0]
         assert "Holmes" in result[1]
+
+    def test_unwrap_honorific_at_line_end(self):
+        """Honorifics like Mr. at end of line should stay with the following name.
+
+        In hard-wrapped text, "Mr." may appear at the end of a line with the
+        name continuing on the next line. After unwrapping, "Mr. William"
+        should be on the same line, not split.
+        """
+        text = "To Mr.\nWilliam Marshall, then, Master of His Majesty's sloop the Sophie."
+        result = segment_text(text, flatten=True, unwrap=True)
+        # Should be a single sentence with "Mr. William" together
+        assert len(result) == 1
+        assert "Mr. William" in result[0]
+        assert "To Mr." in result[0]
