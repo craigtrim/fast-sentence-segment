@@ -97,6 +97,11 @@ def main():
         action="store_true",
         help="Unwrap hard-wrapped lines and dehyphenate split words",
     )
+    parser.add_argument(
+        "--format",
+        choices=["dialog"],
+        help="Output format: 'dialog' for dialog-aware paragraph formatting",
+    )
     args = parser.parse_args()
 
     # Get input text
@@ -112,12 +117,79 @@ def main():
         sys.exit(1)
 
     # Segment and output
-    sentences = segment_text(text.strip(), flatten=True, unwrap=args.unwrap)
-    for i, sentence in enumerate(sentences, 1):
-        if args.numbered:
-            print(f"{i}. {sentence}")
-        else:
-            print(sentence)
+    result = segment_text(
+        text.strip(), flatten=True, unwrap=args.unwrap, format=args.format
+    )
+
+    # If format is used, result is a string
+    if args.format:
+        print(result)
+    else:
+        # Result is a list of sentences
+        for i, sentence in enumerate(result, 1):
+            if args.numbered:
+                print(f"{i}. {sentence}")
+            else:
+                print(sentence)
+
+
+def _generate_output_path(input_path: str) -> str:
+    """Generate output path by inserting -clean before extension."""
+    base, ext = os.path.splitext(input_path)
+    return f"{base}-clean{ext}"
+
+
+def _process_single_file(
+    input_file: str, output_file: str, unwrap: bool, normalize: bool, format: str = None
+):
+    """Process a single file and write output."""
+    # Show configuration
+    _param("Input", input_file)
+    _param("Output", output_file)
+    _param("Size", _file_size(input_file))
+    _param("Unwrap", "enabled" if unwrap else "disabled")
+    _param("Normalize quotes", "disabled" if not normalize else "enabled")
+    _param("Format", format if format else "default (one sentence per line)")
+    print()
+
+    # Step 1: Read file
+    print(f"  {YELLOW}→{RESET} Reading input file...")
+    with open(input_file, "r", encoding="utf-8") as f:
+        text = f.read()
+    print(f"  {GREEN}✓{RESET} Read {len(text):,} characters")
+
+    # Step 2: Segment text
+    print(f"  {YELLOW}→{RESET} Segmenting text...", end="", flush=True)
+    start = time.perf_counter()
+    result = segment_text(
+        text.strip(), flatten=True, unwrap=unwrap, normalize=normalize, format=format,
+    )
+    elapsed = time.perf_counter() - start
+
+    # Step 3: Write output
+    if format:
+        # Format mode returns a string
+        sentence_count = result.count("\n") + 1 if result else 0
+        print(f"\r  {GREEN}✓{RESET} Segmented text ({elapsed:.2f}s)")
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write(result + "\n")
+        print(f"  {GREEN}✓{RESET} Written formatted output to {output_file}")
+    else:
+        # Default mode returns a list
+        sentences = result
+        print(f"\r  {GREEN}✓{RESET} Segmented into {len(sentences):,} sentences ({elapsed:.2f}s)")
+        total = len(sentences)
+        with open(output_file, "w", encoding="utf-8") as f:
+            if unwrap:
+                f.write(format_grouped_sentences(sentences) + "\n")
+                print(f"  {GREEN}✓{RESET} Written {total:,} sentences to {output_file}")
+            else:
+                for i, sentence in enumerate(sentences, 1):
+                    f.write(sentence + "\n")
+                    if i % 500 == 0 or i == total:
+                        pct = (i / total) * 100
+                        print(f"\r  {YELLOW}→{RESET} Writing... {pct:.0f}% ({i:,}/{total:,})", end="", flush=True)
+                print(f"\r  {GREEN}✓{RESET} Written {total:,} sentences to {output_file}       ")
 
 
 def file_main():
@@ -126,12 +198,16 @@ def file_main():
         description="Segment a text file into sentences and write to an output file",
     )
     parser.add_argument(
-        "--input-file", required=True,
+        "--input-file",
         help="Path to input text file",
     )
     parser.add_argument(
-        "--output-file", required=True,
-        help="Path to output file",
+        "--input-dir",
+        help="Path to directory containing text files to process",
+    )
+    parser.add_argument(
+        "--output-file",
+        help="Path to output file (optional, defaults to input-file with -clean suffix)",
     )
     parser.add_argument(
         "--unwrap", action="store_true",
@@ -141,50 +217,75 @@ def file_main():
         "--no-normalize-quotes", action="store_true",
         help="Disable unicode quote normalization to ASCII equivalents",
     )
+    parser.add_argument(
+        "--format",
+        choices=["dialog"],
+        help="Output format: 'dialog' for dialog-aware paragraph formatting",
+    )
     args = parser.parse_args()
 
-    # Echo command immediately
+    # Validate arguments
+    if not args.input_file and not args.input_dir:
+        print(f"  {YELLOW}Error:{RESET} Either --input-file or --input-dir is required")
+        sys.exit(1)
+    if args.input_file and args.input_dir:
+        print(f"  {YELLOW}Error:{RESET} Cannot specify both --input-file and --input-dir")
+        sys.exit(1)
+    if args.input_dir and args.output_file:
+        print(f"  {YELLOW}Error:{RESET} --output-file cannot be used with --input-dir")
+        sys.exit(1)
+
+    normalize = not args.no_normalize_quotes
+
+    # Process directory
+    if args.input_dir:
+        if not os.path.isdir(args.input_dir):
+            print(f"  {YELLOW}Error:{RESET} Directory not found: {args.input_dir}")
+            sys.exit(1)
+
+        # Find all .txt files
+        txt_files = sorted([
+            f for f in os.listdir(args.input_dir)
+            if f.endswith(".txt") and not f.endswith("-clean.txt")
+        ])
+
+        if not txt_files:
+            print(f"  {YELLOW}Error:{RESET} No .txt files found in {args.input_dir}")
+            sys.exit(1)
+
+        _header("segment-file (batch)")
+        print(f"  {DIM}Processing {len(txt_files)} files in directory{RESET}")
+        print()
+        _param("Directory", args.input_dir)
+        _param("Files", str(len(txt_files)))
+        _param("Unwrap", "enabled" if args.unwrap else "disabled")
+        _param("Normalize quotes", "disabled" if not normalize else "enabled")
+        _param("Format", args.format if args.format else "default (one sentence per line)")
+        print()
+
+        for i, filename in enumerate(txt_files, 1):
+            input_path = os.path.join(args.input_dir, filename)
+            output_path = _generate_output_path(input_path)
+            print(f"  {BOLD}[{i}/{len(txt_files)}]{RESET} {filename}")
+            _process_single_file(input_path, output_path, args.unwrap, normalize, args.format)
+            print()
+
+        print(f"  {GREEN}Done! Processed {len(txt_files)} files.{RESET}")
+        print()
+        return
+
+    # Process single file
+    if not os.path.isfile(args.input_file):
+        print(f"  {YELLOW}Error:{RESET} File not found: {args.input_file}")
+        sys.exit(1)
+
+    output_file = args.output_file or _generate_output_path(args.input_file)
+
     _header("segment-file")
     print(f"  {DIM}Segmenting text file into sentences{RESET}")
     print()
 
-    # Show configuration
-    _param("Input", args.input_file)
-    _param("Output", args.output_file)
-    _param("Size", _file_size(args.input_file))
-    _param("Unwrap", "enabled" if args.unwrap else "disabled")
-    _param("Normalize quotes", "disabled" if args.no_normalize_quotes else "enabled")
-    print()
-
-    # Step 1: Read file
-    print(f"  {YELLOW}→{RESET} Reading input file...")
-    with open(args.input_file, "r", encoding="utf-8") as f:
-        text = f.read()
-    print(f"  {GREEN}✓{RESET} Read {len(text):,} characters")
-
-    # Step 2: Segment text
-    print(f"  {YELLOW}→{RESET} Segmenting text...", end="", flush=True)
-    start = time.perf_counter()
-    normalize = not args.no_normalize_quotes
-    sentences = segment_text(
-        text.strip(), flatten=True, unwrap=args.unwrap, normalize=normalize,
-    )
-    elapsed = time.perf_counter() - start
-    print(f"\r  {GREEN}✓{RESET} Segmented into {len(sentences):,} sentences ({elapsed:.2f}s)")
-
-    # Step 3: Write output
-    total = len(sentences)
-    with open(args.output_file, "w", encoding="utf-8") as f:
-        if args.unwrap:
-            f.write(format_grouped_sentences(sentences) + "\n")
-            print(f"  {GREEN}✓{RESET} Written {total:,} sentences to {args.output_file}")
-        else:
-            for i, sentence in enumerate(sentences, 1):
-                f.write(sentence + "\n")
-                if i % 500 == 0 or i == total:
-                    pct = (i / total) * 100
-                    print(f"\r  {YELLOW}→{RESET} Writing... {pct:.0f}% ({i:,}/{total:,})", end="", flush=True)
-            print(f"\r  {GREEN}✓{RESET} Written {total:,} sentences to {args.output_file}       ")
+    _process_single_file(args.input_file, output_file, args.unwrap, normalize, args.format)
 
     print(f"\n  {GREEN}Done!{RESET}")
     print()
