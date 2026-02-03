@@ -99,8 +99,8 @@ def main():
     )
     parser.add_argument(
         "--format",
-        choices=["dialog"],
-        help="Output format: 'dialog' for dialog-aware paragraph formatting",
+        action="store_true",
+        help="Format output with dialog-aware paragraph grouping",
     )
     args = parser.parse_args()
 
@@ -118,7 +118,8 @@ def main():
 
     # Segment and output
     result = segment_text(
-        text.strip(), flatten=True, unwrap=args.unwrap, format=args.format
+        text.strip(), flatten=True, unwrap=args.unwrap,
+        format="dialog" if args.format else None
     )
 
     # If format is used, result is a string
@@ -219,8 +220,8 @@ def file_main():
     )
     parser.add_argument(
         "--format",
-        choices=["dialog"],
-        help="Output format: 'dialog' for dialog-aware paragraph formatting",
+        action="store_true",
+        help="Format output with dialog-aware paragraph grouping",
     )
     args = parser.parse_args()
 
@@ -260,14 +261,15 @@ def file_main():
         _param("Files", str(len(txt_files)))
         _param("Unwrap", "enabled" if args.unwrap else "disabled")
         _param("Normalize quotes", "disabled" if not normalize else "enabled")
-        _param("Format", args.format if args.format else "default (one sentence per line)")
+        _param("Format", "dialog" if args.format else "default (one sentence per line)")
         print()
 
+        format_value = "dialog" if args.format else None
         for i, filename in enumerate(txt_files, 1):
             input_path = os.path.join(args.input_dir, filename)
             output_path = _generate_output_path(input_path)
             print(f"  {BOLD}[{i}/{len(txt_files)}]{RESET} {filename}")
-            _process_single_file(input_path, output_path, args.unwrap, normalize, args.format)
+            _process_single_file(input_path, output_path, args.unwrap, normalize, format_value)
             print()
 
         print(f"  {GREEN}Done! Processed {len(txt_files)} files.{RESET}")
@@ -285,7 +287,8 @@ def file_main():
     print(f"  {DIM}Segmenting text file into sentences{RESET}")
     print()
 
-    _process_single_file(args.input_file, output_file, args.unwrap, normalize, args.format)
+    format_value = "dialog" if args.format else None
+    _process_single_file(args.input_file, output_file, args.unwrap, normalize, format_value)
 
     print(f"\n  {GREEN}Done!{RESET}")
     print()
