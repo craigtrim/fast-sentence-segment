@@ -143,34 +143,50 @@ def file_main():
     )
     args = parser.parse_args()
 
+    # Echo command immediately
     _header("segment-file")
+    print(f"  {DIM}Segmenting text file into sentences{RESET}")
+    print()
+
+    # Show configuration
     _param("Input", args.input_file)
     _param("Output", args.output_file)
     _param("Size", _file_size(args.input_file))
     _param("Unwrap", "enabled" if args.unwrap else "disabled")
     _param("Normalize quotes", "disabled" if args.no_normalize_quotes else "enabled")
+    print()
 
+    # Step 1: Read file
+    print(f"  {YELLOW}→{RESET} Reading input file...")
     with open(args.input_file, "r", encoding="utf-8") as f:
         text = f.read()
+    print(f"  {GREEN}✓{RESET} Read {len(text):,} characters")
 
+    # Step 2: Segment text
+    print(f"  {YELLOW}→{RESET} Segmenting text...", end="", flush=True)
     start = time.perf_counter()
     normalize = not args.no_normalize_quotes
-    with Spinner("Segmenting text..."):
-        sentences = segment_text(
-            text.strip(), flatten=True, unwrap=args.unwrap, normalize=normalize,
-        )
+    sentences = segment_text(
+        text.strip(), flatten=True, unwrap=args.unwrap, normalize=normalize,
+    )
     elapsed = time.perf_counter() - start
+    print(f"\r  {GREEN}✓{RESET} Segmented into {len(sentences):,} sentences ({elapsed:.2f}s)")
 
-    with Spinner("Writing output..."):
-        with open(args.output_file, "w", encoding="utf-8") as f:
-            if args.unwrap:
-                f.write(format_grouped_sentences(sentences) + "\n")
-            else:
-                for sentence in sentences:
-                    f.write(sentence + "\n")
+    # Step 3: Write output
+    total = len(sentences)
+    with open(args.output_file, "w", encoding="utf-8") as f:
+        if args.unwrap:
+            f.write(format_grouped_sentences(sentences) + "\n")
+            print(f"  {GREEN}✓{RESET} Written {total:,} sentences to {args.output_file}")
+        else:
+            for i, sentence in enumerate(sentences, 1):
+                f.write(sentence + "\n")
+                if i % 500 == 0 or i == total:
+                    pct = (i / total) * 100
+                    print(f"\r  {YELLOW}→{RESET} Writing... {pct:.0f}% ({i:,}/{total:,})", end="", flush=True)
+            print(f"\r  {GREEN}✓{RESET} Written {total:,} sentences to {args.output_file}       ")
 
-    _done(f"{len(sentences):,} sentences in {elapsed:.2f}s")
-    _done(f"Written to {args.output_file}")
+    print(f"\n  {GREEN}Done!{RESET}")
     print()
 
 
