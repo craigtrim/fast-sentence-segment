@@ -55,6 +55,7 @@ from fast_sentence_segment.dmo import SpacyDocSegmenter
 from fast_sentence_segment.dmo import PostProcessStructure
 from fast_sentence_segment.dmo import StripTrailingPeriodAfterQuote
 from fast_sentence_segment.dmo import Dehyphenator
+from fast_sentence_segment.dmo import OcrArtifactFixer
 
 
 class PerformSentenceSegmentation(BaseObject):
@@ -84,6 +85,7 @@ class PerformSentenceSegmentation(BaseObject):
             self.__nlp = _load_spacy_model("en_core_web_sm")
 
         self._dehyphenate = Dehyphenator.process
+        self._fix_ocr_artifacts = OcrArtifactFixer.process
         self._newlines_to_periods = NewlinesToPeriods.process
         self._normalize_numbered_lists = NumberedListNormalizer().process
         self._normalize_ellipses = EllipsisNormalizer().process
@@ -137,6 +139,9 @@ class PerformSentenceSegmentation(BaseObject):
         # Dehyphenate words split across lines (issue #8)
         # Must happen before newlines are converted to periods
         input_text = self._dehyphenate(input_text)
+
+        # Fix common OCR artifacts (issue #9)
+        input_text = self._fix_ocr_artifacts(input_text)
 
         input_text = self._normalize_numbered_lists(input_text)
         input_text = self._normalize_ellipses(input_text)
