@@ -100,9 +100,12 @@ def main():
     parser.add_argument(
         "--format",
         action="store_true",
-        help="Format output with dialog-aware paragraph grouping",
+        help="Format output with dialog-aware paragraph grouping (implies --unwrap)",
     )
     args = parser.parse_args()
+
+    # --format implies --unwrap
+    unwrap = args.unwrap or args.format
 
     # Get input text
     if args.file:
@@ -118,7 +121,7 @@ def main():
 
     # Segment and output
     result = segment_text(
-        text.strip(), flatten=True, unwrap=args.unwrap,
+        text.strip(), flatten=True, unwrap=unwrap,
         format="dialog" if args.format else None
     )
 
@@ -221,9 +224,12 @@ def file_main():
     parser.add_argument(
         "--format",
         action="store_true",
-        help="Format output with dialog-aware paragraph grouping",
+        help="Format output with dialog-aware paragraph grouping (implies --unwrap)",
     )
     args = parser.parse_args()
+
+    # --format implies --unwrap
+    unwrap = args.unwrap or args.format
 
     # Validate arguments
     if not args.input_file and not args.input_dir:
@@ -259,7 +265,7 @@ def file_main():
         print()
         _param("Directory", args.input_dir)
         _param("Files", str(len(txt_files)))
-        _param("Unwrap", "enabled" if args.unwrap else "disabled")
+        _param("Unwrap", "enabled" if unwrap else "disabled")
         _param("Normalize quotes", "disabled" if not normalize else "enabled")
         _param("Format", "dialog" if args.format else "default (one sentence per line)")
         print()
@@ -269,7 +275,7 @@ def file_main():
             input_path = os.path.join(args.input_dir, filename)
             output_path = _generate_output_path(input_path)
             print(f"  {BOLD}[{i}/{len(txt_files)}]{RESET} {filename}")
-            _process_single_file(input_path, output_path, args.unwrap, normalize, format_value)
+            _process_single_file(input_path, output_path, unwrap, normalize, format_value)
             print()
 
         print(f"  {GREEN}Done! Processed {len(txt_files)} files.{RESET}")
@@ -288,7 +294,7 @@ def file_main():
     print()
 
     format_value = "dialog" if args.format else None
-    _process_single_file(args.input_file, output_file, args.unwrap, normalize, format_value)
+    _process_single_file(args.input_file, output_file, unwrap, normalize, format_value)
 
     print(f"\n  {GREEN}Done!{RESET}")
     print()
