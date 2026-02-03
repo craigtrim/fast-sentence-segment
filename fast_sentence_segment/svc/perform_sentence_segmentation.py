@@ -3,9 +3,45 @@
 """ Sentence Segmentation """
 
 
+import subprocess
+import sys
+
 import spacy
 
 from fast_sentence_segment.core import BaseObject
+
+
+def _load_spacy_model(model_name: str = "en_core_web_sm"):
+    """Load spaCy model, auto-downloading if not found."""
+    # ANSI color codes
+    bold = "\033[1m"
+    cyan = "\033[36m"
+    green = "\033[32m"
+    yellow = "\033[33m"
+    reset = "\033[0m"
+
+    try:
+        return spacy.load(model_name)
+    except OSError:
+        print(f"\n{bold}{cyan}fast-sentence-segment{reset}", file=sys.stderr)
+        print(f"{'─' * 40}", file=sys.stderr)
+        print(
+            f"  {yellow}⚠{reset}  spaCy model '{model_name}' not found.",
+            file=sys.stderr,
+        )
+        print(f"  {yellow}⏳{reset} Downloading model (one-time setup)...", file=sys.stderr)
+        print(file=sys.stderr)
+
+        subprocess.check_call(
+            [sys.executable, "-m", "spacy", "download", model_name],
+        )
+
+        print(file=sys.stderr)
+        print(f"  {green}✓{reset}  Model '{model_name}' installed successfully.", file=sys.stderr)
+        print(f"  {green}✓{reset}  You won't see this message again.", file=sys.stderr)
+        print(file=sys.stderr)
+
+        return spacy.load(model_name)
 
 from fast_sentence_segment.dmo import AbbreviationMerger
 from fast_sentence_segment.dmo import AbbreviationSplitter
@@ -45,7 +81,7 @@ class PerformSentenceSegmentation(BaseObject):
         """
         BaseObject.__init__(self, __name__)
         if not self.__nlp:
-            self.__nlp = spacy.load("en_core_web_sm")
+            self.__nlp = _load_spacy_model("en_core_web_sm")
 
         self._dehyphenate = Dehyphenator.process
         self._newlines_to_periods = NewlinesToPeriods.process
