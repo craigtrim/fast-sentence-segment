@@ -127,3 +127,14 @@ class TestSegmentTextUnwrap:
         assert len(result) == 1
         assert "Mr. William" in result[0]
         assert "To Mr." in result[0]
+
+    def test_unwrap_mid_sentence_line_break(self):
+        """Hard-wrapped lines mid-sentence should be joined.
+
+        When text is hard-wrapped in the middle of a sentence (e.g., after
+        "no pleasure"), unwrapping should join the lines into one sentence.
+        """
+        text = "straightforward winding-up that he had foreseen, but he could take no pleasure\nin it."
+        result = segment_text(text, flatten=True, unwrap=True)
+        assert len(result) == 1
+        assert "no pleasure in it" in result[0]
