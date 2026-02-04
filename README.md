@@ -2,13 +2,61 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/fast-sentence-segment.svg)](https://pypi.org/project/fast-sentence-segment/)
 [![Python versions](https://img.shields.io/pypi/pyversions/fast-sentence-segment.svg)](https://pypi.org/project/fast-sentence-segment/)
-[![Tests](https://img.shields.io/badge/tests-664-brightgreen)](https://github.com/craigtrim/fast-sentence-segment/tree/master/tests)
+[![Tests](https://img.shields.io/badge/tests-1403-brightgreen)](https://github.com/craigtrim/fast-sentence-segment/tree/master/tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Downloads](https://static.pepy.tech/badge/fast-sentence-segment)](https://pepy.tech/project/fast-sentence-segment)
 [![Downloads/Month](https://static.pepy.tech/badge/fast-sentence-segment/month)](https://pepy.tech/project/fast-sentence-segment)
 
 Fast and efficient sentence segmentation using spaCy with surgical post-processing fixes. Handles complex edge cases like abbreviations (Dr., Mr., etc.), ellipses, quoted text, and multi-paragraph documents.
+
+## Philosophy
+
+This library is not for people who are casual about accuracy.
+
+Some NLP tools take a "good enough" approach: throw some machine learning at the problem and call it done. This library takes the opposite stance. Every edge case matters. Every false split is a bug. Every missed boundary is a failure.
+
+This library is utterly pedantic and obsessive because some people are built that way, and for some people that matters. If you need sentence segmentation that handles "Dr. Smith went to Washington D.C. at 9 a.m." without flinching, "The U.S. Senate voted today" without splitting on the abbreviation, and "I work at Yahoo! Inc." without treating the exclamation mark as a sentence boundary, this is your library.
+
+If "close enough" is fine for your use case, there are simpler options. But if you have ever debugged a downstream model failure caused by a sentence segmenter that split "Fig. 1" into two sentences, you understand why this library exists.
+
+---
+
+## Comparison with wtpsplit-lite
+
+We ran a [comprehensive benchmark](https://github.com/craigtrim/fast-sentence-segment/issues/15) comparing this library against [wtpsplit-lite](https://github.com/superlinear-ai/wtpsplit-lite), a neural network approach using ONNX models.
+
+### Performance
+
+| Metric | fast-sentence-segment | wtpsplit-lite | Winner |
+|--------|:---------------------:|:-------------:|:------:|
+| Cold start | **1.4 sec** | 79 sec | FSS (57x) |
+| Short text (3 sentences) | **0.12 ms** | 3.6 ms | FSS (30x) |
+| Long text (44 sentences) | **1.5 ms** | 146 ms | FSS (100x) |
+| Memory footprint | **~0 MB** | 0.1 MB | FSS |
+
+### Accuracy (28 edge case tests)
+
+| Library | Passed | Failed | Accuracy |
+|---------|:------:|:------:|:--------:|
+| fast-sentence-segment | **24** | 4 | **85.7%** |
+| wtpsplit-lite | 16 | 12 | 57.1% |
+
+### Where This Library Wins
+
+- **Technical content**: Correctly splits after version numbers (`2.0.1.`), IP addresses (`192.168.1.1.`), decimals (`3.14.`)
+- **Lists**: Recognizes numbered and bullet list boundaries
+- **Hard-wrapped text**: Properly unwraps Project Gutenberg style line breaks
+- **Clean output**: No trailing whitespace or embedded newlines
+- **Offline operation**: No network dependency or model downloads
+
+### Where This Library Loses
+
+- **Non-English text**: Limited support for CJK (Chinese, Japanese, Korean), Thai, Hindi, and other scripts without clear period-based boundaries. If you need multilingual support, consider wtpsplit-lite.
+
+Full benchmark details: [Issue #15](https://github.com/craigtrim/fast-sentence-segment/issues/15)
+
+---
 
 ## Why This Library?
 
@@ -19,6 +67,8 @@ Fast and efficient sentence segmentation using spaCy with surgical post-processi
 
 - **Paragraph-aware segmentation**: Returns sentences grouped by paragraph
 - **Abbreviation handling**: Correctly handles "Dr.", "Mr.", "etc.", "p.m.", "a.m." without false splits
+- **Country abbreviation awareness**: "The U.S. Senate" stays together (not split after "U.S.")
+- **Company name handling**: "Yahoo! Inc." recognized as a single entity
 - **Ellipsis preservation**: Keeps `...` intact while detecting sentence boundaries
 - **Question/exclamation splitting**: Properly splits on `?` and `!` followed by capital letters
 - **Cached processing**: LRU cache for repeated text processing
@@ -56,7 +106,7 @@ results = segment_text(text, flatten=True)
 ]
 ```
 
-Notice how "Dr. Who?" stays together as a single sentence—the library correctly recognizes that a title followed by a single-word name ending in `?` or `!` is a name reference, not a sentence boundary.
+Notice how "Dr. Who?" stays together as a single sentence: the library correctly recognizes that a title followed by a single-word name ending in `?` or `!` is a name reference, not a sentence boundary.
 
 ## Usage
 
@@ -167,6 +217,7 @@ Use `flatten=True` when you only need sentences without paragraph context.
 - Python 3.9+
 - spaCy 3.8+
 - en_core_web_sm spaCy model
+- **English text only**: This library uses spaCy's English model and applies English-specific rules. It will not produce correct results for Chinese, Japanese, Korean, Thai, Hindi, or other non-English text.
 
 ## How It Works
 
@@ -174,7 +225,7 @@ This library uses spaCy for initial sentence segmentation, then applies surgical
 
 1. **Pre-processing**: Normalize numbered lists, preserve ellipses with placeholders
 2. **spaCy segmentation**: Use spaCy's sentence boundary detection
-3. **Post-processing**: Split on abbreviation boundaries, handle `?`/`!` + capital patterns
+3. **Post-processing**: Split on abbreviation boundaries, handle `?`/`!` + capital patterns, protect company names and country abbreviation + proper noun combinations
 4. **Denormalization**: Restore placeholders to original text
 
 ## License
