@@ -22,3 +22,8 @@ from .list_marker_normalizer import ListMarkerNormalizer
 from .unclosed_quote_merger import UnclosedQuoteMerger
 from .ellipsis_sentence_splitter import EllipsisSentenceSplitter
 from .ellipsis_sentence_merger import EllipsisSentenceMerger
+from .exclamation_brand_normalizer import ExclamationBrandNormalizer
+from .middle_initial_normalizer import MiddleInitialNormalizer
+from .unicode_token_normalizer import UnicodeTokenNormalizer
+from .parenthetical_merger import ParentheticalMerger
+from .leading_ellipsis_merger import LeadingEllipsisMerger
