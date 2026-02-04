@@ -147,3 +147,122 @@ TITLE_ABBREVIATIONS: List[str] = [
     "vs.",
     "Vs.",
 ]
+
+
+# Proper nouns that commonly follow country/organization abbreviations.
+# When U.S., U.K., etc. are followed by these words, do NOT split.
+# Example: "The U.S. Senate voted" should NOT become "The U.S." + "Senate voted"
+COUNTRY_ABBREV_PROPER_NOUNS: List[str] = [
+    # U.S. Government bodies
+    "Senate",
+    "Congress",
+    "House",
+    "Capitol",
+    "Supreme",
+    "Federal",
+    "National",
+    "State",
+    "Department",
+    "Administration",
+    "Agency",
+    "Bureau",
+    "Commission",
+    "Committee",
+    "Council",
+    "Court",
+    "Office",
+    "Service",
+
+    # Military
+    "Army",
+    "Navy",
+    "Marines",
+    "Marine",
+    "Air",
+    "Coast",
+    "Guard",
+    "Military",
+    "Forces",
+    "Pentagon",
+
+    # Executive
+    "President",
+    "Vice",
+    "Secretary",
+    "Attorney",
+    "General",
+    "Ambassador",
+
+    # Other government entities
+    "Postal",
+    "Census",
+    "Treasury",
+    "Interior",
+    "Justice",
+    "Defense",
+    "Homeland",
+    "Security",
+    "Border",
+    "Customs",
+    "Immigration",
+
+    # U.K. specific
+    "Parliament",
+    "Commons",
+    "Lords",
+    "Crown",
+    "Royal",
+    "Prime",
+    "Minister",
+    "Cabinet",
+    "Monarchy",
+    "Queen",
+    "King",
+
+    # U.N. specific
+    "Security",
+    "General",
+    "Assembly",
+    "Peacekeeping",
+    "Charter",
+    "Resolution",
+
+    # E.U. specific
+    "Commission",
+    "Parliament",
+    "Council",
+    "Court",
+    "Central",
+    "Bank",
+
+    # Generic institutional words
+    "Government",
+    "Embassy",
+    "Consulate",
+    "Constitution",
+    "Citizen",
+    "Citizens",
+    "Territory",
+    "Dollar",
+    "Dollars",
+    "Economy",
+    "Policy",
+    "Law",
+    "Code",
+]
+
+
+# Company names that contain exclamation marks as part of the brand.
+# Do NOT split on "!" when it's part of these company names.
+EXCLAMATION_COMPANY_NAMES: List[str] = [
+    "Yahoo!",
+    "E!",
+    "Jeopardy!",
+    "Bam!",
+    "Go!",
+    "Wham!",
+    "Kaboom!",
+    "Yum!",
+    "FreshDirect!",
+    "Boost!",
+]

@@ -14,7 +14,15 @@ import re
 from typing import List
 
 from fast_sentence_segment.core import BaseObject
-from fast_sentence_segment.dmo.abbreviations import SENTENCE_ENDING_ABBREVIATIONS
+from fast_sentence_segment.dmo.abbreviations import SENTENCE_ENDING_ABBREVIATIONS, COUNTRY_ABBREV_PROPER_NOUNS
+
+
+# Country/organization abbreviations that need special handling
+COUNTRY_ABBREVIATIONS = {"U.S.", "U.K.", "U.N.", "E.U.", "U.S.A."}
+
+
+# Set for O(1) lookup
+_PROPER_NOUN_SET = set(COUNTRY_ABBREV_PROPER_NOUNS)
 
 
 class AbbreviationSplitter(BaseObject):
@@ -50,6 +58,35 @@ class AbbreviationSplitter(BaseObject):
         pattern = rf"({abbrev_pattern})\s+([A-Z])"
         return re.compile(pattern)
 
+    def _is_country_abbrev_with_proper_noun(self, sentence: str, match: re.Match) -> bool:
+        """Check if this is a country abbreviation followed by a proper noun.
+
+        Args:
+            sentence: The sentence being processed
+            match: The regex match object
+
+        Returns:
+            True if this is a country abbreviation followed by a proper noun
+            (indicating we should NOT split here)
+        """
+        abbrev = match.group(1)
+        if abbrev not in COUNTRY_ABBREVIATIONS:
+            return False
+
+        # Get the word following the abbreviation
+        # match.group(2) is the capital letter that starts the next word
+        rest_of_sentence = sentence[match.end(1):].strip()
+        if not rest_of_sentence:
+            return False
+
+        # Extract the first word after the abbreviation
+        first_word_match = re.match(r'([A-Z][a-zA-Z]*)', rest_of_sentence)
+        if not first_word_match:
+            return False
+
+        first_word = first_word_match.group(1)
+        return first_word in _PROPER_NOUN_SET
+
     def _split_sentence(self, sentence: str) -> List[str]:
         """Split a single sentence at abbreviation boundaries.
 
@@ -61,13 +98,20 @@ class AbbreviationSplitter(BaseObject):
         """
         results = []
         remaining = sentence
+        search_start = 0
 
         while True:
-            match = self._pattern.search(remaining)
+            match = self._pattern.search(remaining, search_start)
             if not match:
                 if remaining.strip():
                     results.append(remaining.strip())
                 break
+
+            # Check if this is a country abbreviation followed by a proper noun
+            if self._is_country_abbrev_with_proper_noun(remaining, match):
+                # Don't split here, continue searching after this match
+                search_start = match.end()
+                continue
 
             split_pos = match.end(1)
 
@@ -76,6 +120,7 @@ class AbbreviationSplitter(BaseObject):
                 results.append(before)
 
             remaining = remaining[split_pos:].strip()
+            search_start = 0  # Reset search start for the new remaining string
 
         return results if results else [sentence]
 
