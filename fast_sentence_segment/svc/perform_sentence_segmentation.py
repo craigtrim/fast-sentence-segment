@@ -61,7 +61,7 @@ from fast_sentence_segment.dmo import SpacyDocSegmenter  # noqa: E402
 from fast_sentence_segment.dmo import PostProcessStructure  # noqa: E402
 from fast_sentence_segment.dmo import StripTrailingPeriodAfterQuote  # noqa: E402
 from fast_sentence_segment.dmo import Dehyphenator  # noqa: E402
-from fast_sentence_segment.dmo import OcrArtifactFixer
+from fast_sentence_segment.dmo import OcrArtifactFixer  # noqa: E402
 from fast_sentence_segment.dmo import ListItemSplitter  # noqa: E402
 from fast_sentence_segment.dmo import ListMarkerNormalizer  # noqa: E402
 from fast_sentence_segment.dmo import ExclamationBrandNormalizer  # noqa: E402
