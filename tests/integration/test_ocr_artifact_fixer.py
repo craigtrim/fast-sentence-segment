@@ -42,6 +42,39 @@ class TestOcrArtifactFixer:
         assert fixer.process("William is here") == "William is here"
 
     # ──────────────────────────────────────────────────────────────────────────
+    # "iam" -> "I am" (lowercase variant, Issue #28)
+    # ──────────────────────────────────────────────────────────────────────────
+
+    def test_iam_lowercase_basic(self, fixer):
+        """Lowercase iam correction.
+
+        Related GitHub Issue:
+            #28 - Fix lowercase iam OCR artifact not being corrected
+            https://github.com/craigtrim/fast-sentence-segment/issues/28
+        """
+        assert fixer.process("so iam going to the store") == "so I am going to the store"
+
+    def test_iam_lowercase_mid_sentence(self, fixer):
+        """Lowercase iam in middle of sentence.
+
+        Related GitHub Issue:
+            #28 - Fix lowercase iam OCR artifact not being corrected
+            https://github.com/craigtrim/fast-sentence-segment/issues/28
+        """
+        result = fixer.process("he said iam not sure about that")
+        assert result == "he said I am not sure about that"
+
+    def test_iam_lowercase_after_punctuation(self, fixer):
+        """Lowercase iam after comma.
+
+        Related GitHub Issue:
+            #28 - Fix lowercase iam OCR artifact not being corrected
+            https://github.com/craigtrim/fast-sentence-segment/issues/28
+        """
+        result = fixer.process("well, iam afraid it is so")
+        assert result == "well, I am afraid it is so"
+
+    # ──────────────────────────────────────────────────────────────────────────
     # "witha" -> "with a"
     # ──────────────────────────────────────────────────────────────────────────
 
