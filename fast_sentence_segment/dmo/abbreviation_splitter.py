@@ -14,11 +14,15 @@ import re
 from typing import List
 
 from fast_sentence_segment.core import BaseObject
-from fast_sentence_segment.dmo.abbreviations import SENTENCE_ENDING_ABBREVIATIONS, COUNTRY_ABBREV_PROPER_NOUNS
+from fast_sentence_segment.dmo.abbreviations import SENTENCE_ENDING_ABBREVIATIONS, COUNTRY_ABBREV_PROPER_NOUNS, TITLE_ABBREVIATIONS
 
 
 # Country/organization abbreviations that need special handling
 COUNTRY_ABBREVIATIONS = {"U.S.", "U.K.", "U.N.", "E.U.", "U.S.A."}
+
+# Title abbreviations that should not trigger sentence splits when they follow other abbreviations
+# e.g., "a.m. Mr. Smith" should NOT split between "a.m." and "Mr."
+_TITLE_ABBREV_SET = set(TITLE_ABBREVIATIONS)
 
 
 # Set for O(1) lookup
@@ -87,6 +91,64 @@ class AbbreviationSplitter(BaseObject):
         first_word = first_word_match.group(1)
         return first_word in _PROPER_NOUN_SET
 
+    def _is_followed_by_title_abbrev(self, sentence: str, match: re.Match) -> bool:
+        """Check if the abbreviation is followed by a title abbreviation at sentence start.
+
+        e.g., "At 5 a.m. Mr. Smith went to the bank." - should NOT split
+        but "He left at 6 P.M. Mr. Smith then went." - SHOULD split
+
+        Only prevents split when:
+        1. The next word is a title abbreviation (Mr., Dr., etc.)
+        2. AND the abbreviation appears near the START of the sentence
+           (suggesting the title is the subject of the sentence, not a new sentence)
+
+        Args:
+            sentence: The sentence being processed
+            match: The regex match object
+
+        Returns:
+            True if we should NOT split here
+        """
+        # Get the text following the matched abbreviation
+        rest_of_sentence = sentence[match.end(1):].strip()
+        if not rest_of_sentence:
+            return False
+
+        # Check if the next word (including potential period) is a title abbreviation
+        next_word_match = re.match(r'([A-Z][a-zA-Z]*\.?)', rest_of_sentence)
+        if not next_word_match:
+            return False
+
+        next_word = next_word_match.group(1)
+        if next_word not in _TITLE_ABBREV_SET:
+            return False
+
+        # Only prevent split if the abbreviation is near the start of the sentence
+        # (indicating the title is the subject, not a new sentence)
+        text_before = sentence[:match.start()].strip()
+
+        # If very little text before the abbreviation (< 15 chars or just prepositional phrase),
+        # likely the title is the subject - don't split
+        # Examples where we DON'T split:
+        #   "At 5 a.m. Mr." - text_before = "At 5"
+        #   "The 9 a.m. Mr." - text_before = "The 9"
+        # Examples where we DO split:
+        #   "He left at 6 P.M. Mr." - text_before = "He left at 6"
+        #   "The bank closed at 5 p.m. Dr." - text_before = "The bank closed at 5"
+
+        # Heuristic: if text_before contains a verb (has more than just prep + number),
+        # it's likely a complete thought and we should split
+        if len(text_before) > 15:
+            return False  # Enough text before - likely complete sentence, DO split
+
+        # Check if text_before looks like just a time phrase (preposition + number)
+        # e.g., "At 5", "By 9", "The 3"
+        time_phrase_pattern = re.compile(r'^(?:at|by|the|around|about|until|before|after)\s+\d', re.IGNORECASE)
+        if time_phrase_pattern.match(text_before):
+            return True  # Just a time phrase, don't split
+
+        return False  # Default: allow split
+
     def _split_sentence(self, sentence: str) -> List[str]:
         """Split a single sentence at abbreviation boundaries.
 
@@ -110,6 +172,12 @@ class AbbreviationSplitter(BaseObject):
             # Check if this is a country abbreviation followed by a proper noun
             if self._is_country_abbrev_with_proper_noun(remaining, match):
                 # Don't split here, continue searching after this match
+                search_start = match.end()
+                continue
+
+            # Check if this abbreviation is followed by a title abbreviation
+            # e.g., "a.m. Mr. Smith" should not split between "a.m." and "Mr."
+            if self._is_followed_by_title_abbrev(remaining, match):
                 search_start = match.end()
                 continue
 
