@@ -4,9 +4,11 @@
 Ebook text files often contain artifacts where common word pairs
 are incorrectly joined. This module fixes known patterns.
 
-Related GitHub Issue:
+Related GitHub Issues:
     #9 - Fix common OCR/cleaning artifacts (Iam, witha)
     https://github.com/craigtrim/fast-sentence-segment/issues/9
+    #28 - Fix lowercase iam OCR artifact not being corrected
+    https://github.com/craigtrim/fast-sentence-segment/issues/28
 """
 
 from fast_sentence_segment.core import BaseObject
@@ -15,6 +17,7 @@ from fast_sentence_segment.core import BaseObject
 # All patterns include surrounding spaces to ensure exact word boundaries
 _OCR_ARTIFACTS = [
     (" Iam ", " I am "),
+    (" iam ", " I am "),
     (" Ihave ", " I have "),
     (" ihave ", " I have "),
     (" Ithink ", " I think "),
@@ -45,6 +48,11 @@ class OcrArtifactFixer(BaseObject):
             craigtrim@gmail.com
             *   fix common OCR/cleaning artifacts
                 https://github.com/craigtrim/fast-sentence-segment/issues/9
+        Updated:
+            4-Feb-2026
+            craigtrim@gmail.com
+            *   add lowercase 'iam' variant
+                https://github.com/craigtrim/fast-sentence-segment/issues/28
         """
         BaseObject.__init__(self, __name__)
 
