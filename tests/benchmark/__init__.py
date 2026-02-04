@@ -1,0 +1,1 @@
+# Golden Rules benchmark tests
