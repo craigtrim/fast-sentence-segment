@@ -52,7 +52,7 @@ We ran a [comprehensive benchmark](https://github.com/craigtrim/fast-sentence-se
 
 ### Where This Library Loses
 
-- **Non-English text**: Limited support for CJK (Chinese, Japanese, Korean), Thai, Hindi, and other scripts without clear period-based boundaries. If you need multilingual support, consider wtpsplit-lite.
+- **Non-English text**: Limited support for CJK (Chinese, Japanese, Korean), Thai, Hindi, and other scripts without clear period-based boundaries. If you need multilingual support, consider other libraries.
 
 Full benchmark details: [Issue #15](https://github.com/craigtrim/fast-sentence-segment/issues/15)
 
