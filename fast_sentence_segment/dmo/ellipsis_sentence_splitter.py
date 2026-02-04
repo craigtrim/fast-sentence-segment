@@ -15,9 +15,18 @@ Example:
 
 Note: After denormalization, 'xellipsisthreex' becomes '...'
 
-Related GitHub Issue:
-    #20 - Quote Attribution: edge cases with ?, !, and nested quotes
-    https://github.com/craigtrim/fast-sentence-segment/issues/20
+IMPORTANT: Capital "I" is EXCLUDED from triggering splits because it's
+usually the pronoun, not a new sentence start. Common in dialogue:
+    - "I... I don't know" (hesitation)
+    - "But... I can't" (continuation)
+See Issue #22 for details.
+
+Related GitHub Issues:
+    #19 - Ellipsis Handling
+    https://github.com/craigtrim/fast-sentence-segment/issues/19
+
+    #22 - Capital I pronoun causes false sentence splits after ellipsis
+    https://github.com/craigtrim/fast-sentence-segment/issues/22
 """
 
 import re
@@ -28,7 +37,10 @@ from fast_sentence_segment.core import BaseObject
 
 # Pattern: ellipsis placeholder + space + capital letter
 # This indicates a new sentence after the ellipsis
-SPLIT_PATTERN = re.compile(r'(xellipsisthreex)(\s+)([A-Z])')
+# EXCEPT: Capital "I" ([A-HJ-Z] excludes I) is usually the pronoun, not a
+# new sentence start. Common in dialogue: "I... I can't", "But... I don't know"
+# Reference: https://github.com/craigtrim/fast-sentence-segment/issues/22
+SPLIT_PATTERN = re.compile(r'(xellipsisthreex)(\s+)([A-HJ-Z])')
 
 
 class EllipsisSentenceSplitter(BaseObject):

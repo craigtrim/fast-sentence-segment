@@ -64,6 +64,11 @@ from fast_sentence_segment.dmo import Dehyphenator  # noqa: E402
 from fast_sentence_segment.dmo import OcrArtifactFixer
 from fast_sentence_segment.dmo import ListItemSplitter  # noqa: E402
 from fast_sentence_segment.dmo import ListMarkerNormalizer  # noqa: E402
+from fast_sentence_segment.dmo import ExclamationBrandNormalizer  # noqa: E402
+from fast_sentence_segment.dmo import MiddleInitialNormalizer  # noqa: E402
+from fast_sentence_segment.dmo import UnicodeTokenNormalizer  # noqa: E402
+from fast_sentence_segment.dmo import ParentheticalMerger  # noqa: E402
+from fast_sentence_segment.dmo import LeadingEllipsisMerger  # noqa: E402
 
 
 class PerformSentenceSegmentation(BaseObject):
@@ -112,12 +117,24 @@ class PerformSentenceSegmentation(BaseObject):
         self._strip_trailing_period = StripTrailingPeriodAfterQuote().process
         self._list_item_splitter = ListItemSplitter().process
         self._normalize_list_markers = ListMarkerNormalizer().process
+        # New normalizers for Golden Rules compliance (issues #25, #26, #27)
+        self._normalize_exclamation_brands = ExclamationBrandNormalizer().process
+        self._normalize_middle_initials = MiddleInitialNormalizer().process
+        self._normalize_unicode_tokens = UnicodeTokenNormalizer().process
+        # Parenthetical merger for Golden Rule 21
+        self._parenthetical_merger = ParentheticalMerger().process
+        # Leading ellipsis merger for Golden Rule 48
+        self._leading_ellipsis_merger = LeadingEllipsisMerger().process
 
     def _denormalize(self, text: str) -> str:
         """ Restore normalized placeholders to original form """
         text = self._normalize_numbered_lists(text, denormalize=True)
         text = self._normalize_ellipses(text, denormalize=True)
         text = self._normalize_list_markers(text, denormalize=True)
+        # Restore Golden Rules normalizers (issues #25, #26, #27)
+        text = self._normalize_exclamation_brands(text, denormalize=True)
+        text = self._normalize_middle_initials(text, denormalize=True)
+        text = self._normalize_unicode_tokens(text, denormalize=True)
         return text
 
     @staticmethod
@@ -126,15 +143,60 @@ class PerformSentenceSegmentation(BaseObject):
         return "." in text or "?" in text or "!" in text or "xellipsisthreex" in text
 
     @staticmethod
+    def _has_unicode_bullet_list(text: str) -> bool:
+        """Check if text contains a Unicode bullet list (2+ bullets).
+
+        When text has 2+ Unicode bullets, it should be split directly at
+        bullet positions rather than going through spaCy (which may mangle it).
+
+        Related: https://github.com/craigtrim/fast-sentence-segment/issues/26
+        Golden Rules 37, 38
+
+        Args:
+            text: Input text
+
+        Returns:
+            True if text has 2+ Unicode bullets (indicates inline list)
+        """
+        import re
+        # Unicode bullets that indicate list items
+        # NOTE: This must match UNICODE_BULLET_PATTERN in list_item_splitter.py
+        unicode_bullet_pattern = r'[•⁃◦▪▸▹●○◆◇★☆✓✔✗✘➢➤›»]'
+        bullets = re.findall(unicode_bullet_pattern, text)
+        return len(bullets) >= 2
+
+    @staticmethod
+    def _split_unicode_bullet_list(text: str) -> list:
+        """Split text directly at Unicode bullet positions.
+
+        Used when text has 2+ Unicode bullets to bypass spaCy and split
+        correctly at bullet boundaries.
+
+        Related: https://github.com/craigtrim/fast-sentence-segment/issues/26
+
+        Args:
+            text: Input text with Unicode bullets
+
+        Returns:
+            List of items split at bullet positions
+        """
+        import re
+        unicode_bullet_pattern = r'[•⁃◦▪▸▹●○◆◇★☆✓✔✗✘➢➤›»]'
+        items = re.split(rf'(?={unicode_bullet_pattern})', text)
+        items = [item.strip() for item in items if item.strip()]
+        return items
+
+    @staticmethod
     def _has_list_markers(text: str) -> bool:
         """Check if text contains inline list markers that should be split.
 
         Returns True if there are 2+ list markers, indicating an inline list.
-        Also checks for list marker placeholders (listmarker...end).
+        Also checks for list marker placeholders (xlm...x).
         """
         import re
         # Check for list marker placeholders (from ListMarkerNormalizer)
-        placeholder_count = len(re.findall(r'listmarker[a-z]+end', text))
+        # Format: xlm{encoded}x where encoded can contain letters and digits
+        placeholder_count = len(re.findall(r'xlm[a-z0-9]+x', text))
         if placeholder_count >= 2:
             return True
 
@@ -189,6 +251,15 @@ class PerformSentenceSegmentation(BaseObject):
         # Fix common OCR artifacts (issue #9)
         input_text = self._fix_ocr_artifacts(input_text)
 
+        # Protect Golden Rules patterns BEFORE spaCy (issues #25, #26, #27)
+        # Must happen before spaCy to prevent false splits at:
+        # - Middle initials (Albert I. Jones)
+        # - Brand names with ! (Yahoo!)
+        # - Unicode bullets and N°. abbreviation
+        input_text = self._normalize_exclamation_brands(input_text)
+        input_text = self._normalize_middle_initials(input_text)
+        input_text = self._normalize_unicode_tokens(input_text)
+
         # Protect inline list markers BEFORE other normalizers run (issue #18)
         # Must happen before NumberedListNormalizer which would partially normalize them
         input_text = self._normalize_list_markers(input_text)
@@ -214,6 +285,15 @@ class PerformSentenceSegmentation(BaseObject):
         if not needs_processing:
             return [self._denormalize(input_text)]
 
+        # Early handling of Unicode bullet lists (issue #26, Golden Rules 37, 38)
+        # When text has 2+ Unicode bullets, split directly at bullet positions
+        # instead of going through spaCy (which may mangle the text).
+        # Related: https://github.com/craigtrim/fast-sentence-segment/issues/26
+        if self._has_unicode_bullet_list(input_text):
+            sentences = self._split_unicode_bullet_list(input_text)
+            # Denormalize and return - these are already properly split
+            return [self._denormalize(s) for s in sentences]
+
         sentences = self._spacy_segmenter(input_text)
 
         # Merge sentences incorrectly split at ellipsis + lowercase
@@ -233,6 +313,11 @@ class PerformSentenceSegmentation(BaseObject):
 
         # Merge title + single-word name splits (e.g., "Dr." + "Who?" -> "Dr. Who?")
         sentences = self._title_name_merger(sentences)
+
+        # Merge sentences incorrectly split at parenthetical boundaries (Golden Rule 21)
+        # e.g., ['He teaches (worked as engineer.)', 'at university.'] -> single sentence
+        # Related: https://github.com/craigtrim/fast-sentence-segment/issues/26
+        sentences = self._parenthetical_merger(sentences)
 
         # Split sentences at abbreviation boundaries (issue #3)
         sentences = self._abbreviation_splitter(sentences)
@@ -268,6 +353,25 @@ class PerformSentenceSegmentation(BaseObject):
         ]
         sentences = [
             self._normalize_ellipses(x, denormalize=True)
+            for x in sentences
+        ]
+
+        # Merge standalone ellipsis with following sentence (Golden Rule 48)
+        # Must happen AFTER ellipsis denormalization so we can see actual ". . ."
+        # Related: https://github.com/craigtrim/fast-sentence-segment/issues/26
+        sentences = self._leading_ellipsis_merger(sentences)
+
+        # Restore Golden Rules normalizers (issues #25, #26, #27)
+        sentences = [
+            self._normalize_exclamation_brands(x, denormalize=True)
+            for x in sentences
+        ]
+        sentences = [
+            self._normalize_middle_initials(x, denormalize=True)
+            for x in sentences
+        ]
+        sentences = [
+            self._normalize_unicode_tokens(x, denormalize=True)
             for x in sentences
         ]
 

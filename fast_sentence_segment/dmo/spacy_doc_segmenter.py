@@ -30,13 +30,17 @@ class SpacyDocSegmenter(BaseObject):
         from being appended to sentences like:
             'He said "Hello."'  ->  unchanged (not 'He said "Hello.".')
 
-        Also recognizes the ellipsis placeholder (xellipsisthreex) as
-        terminal punctuation to avoid appending a period after it.
+        Also recognizes ANY ellipsis placeholder (not just at the end) as
+        terminal punctuation to avoid appending a period. This handles cases
+        like 'I was thinking... maybe not' where the ellipsis is mid-sentence.
 
-        Related GitHub Issue:
+        Related GitHub Issues:
             #7 - Spurious trailing period appended after sentence-final
                  closing quote
             https://github.com/craigtrim/fast-sentence-segment/issues/7
+
+            #23 - Trailing period added to sentences containing ellipsis
+            https://github.com/craigtrim/fast-sentence-segment/issues/23
 
         Args:
             a_sentence: A sentence that may or may not have terminal
@@ -50,8 +54,12 @@ class SpacyDocSegmenter(BaseObject):
         stripped = a_sentence.strip().rstrip('"\'')
         if stripped and stripped[-1] in '.?!:':
             return a_sentence
-        # Don't append period if sentence ends with ellipsis placeholder
-        if stripped and stripped.endswith('xellipsisthreex'):
+        # Don't append period if sentence contains any ellipsis placeholder
+        # (xellipsisthreex, xellipsisfourx, xellipsisthreespacedx, etc.)
+        # These indicate the user's original text had ellipsis, which serves as
+        # terminal punctuation or indicates trailing thought (Issue #23)
+        # Reference: https://github.com/craigtrim/fast-sentence-segment/issues/23
+        if 'xellipsis' in a_sentence:
             return a_sentence
         return f"{a_sentence}."
 
