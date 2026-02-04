@@ -30,6 +30,9 @@ class SpacyDocSegmenter(BaseObject):
         from being appended to sentences like:
             'He said "Hello."'  ->  unchanged (not 'He said "Hello.".')
 
+        Also recognizes the ellipsis placeholder (xellipsisthreex) as
+        terminal punctuation to avoid appending a period after it.
+
         Related GitHub Issue:
             #7 - Spurious trailing period appended after sentence-final
                  closing quote
@@ -46,6 +49,9 @@ class SpacyDocSegmenter(BaseObject):
         # Strip trailing quotes to inspect the actual punctuation
         stripped = a_sentence.strip().rstrip('"\'')
         if stripped and stripped[-1] in '.?!:':
+            return a_sentence
+        # Don't append period if sentence ends with ellipsis placeholder
+        if stripped and stripped.endswith('xellipsisthreex'):
             return a_sentence
         return f"{a_sentence}."
 
