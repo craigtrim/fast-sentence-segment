@@ -43,19 +43,20 @@ def _load_spacy_model(model_name: str = "en_core_web_sm"):
 
         return spacy.load(model_name)
 
-from fast_sentence_segment.dmo import AbbreviationMerger
-from fast_sentence_segment.dmo import AbbreviationSplitter
-from fast_sentence_segment.dmo import TitleNameMerger
-from fast_sentence_segment.dmo import EllipsisNormalizer
-from fast_sentence_segment.dmo import NewlinesToPeriods
-from fast_sentence_segment.dmo import BulletPointCleaner
-from fast_sentence_segment.dmo import NumberedListNormalizer
-from fast_sentence_segment.dmo import QuestionExclamationSplitter
-from fast_sentence_segment.dmo import SpacyDocSegmenter
-from fast_sentence_segment.dmo import PostProcessStructure
-from fast_sentence_segment.dmo import StripTrailingPeriodAfterQuote
-from fast_sentence_segment.dmo import Dehyphenator
-from fast_sentence_segment.dmo import OcrArtifactFixer
+# Imports after lazy spacy loading function (intentional)
+from fast_sentence_segment.dmo import AbbreviationMerger  # noqa: E402
+from fast_sentence_segment.dmo import AbbreviationSplitter  # noqa: E402
+from fast_sentence_segment.dmo import TitleNameMerger  # noqa: E402
+from fast_sentence_segment.dmo import EllipsisNormalizer  # noqa: E402
+from fast_sentence_segment.dmo import NewlinesToPeriods  # noqa: E402
+from fast_sentence_segment.dmo import BulletPointCleaner  # noqa: E402
+from fast_sentence_segment.dmo import NumberedListNormalizer  # noqa: E402
+from fast_sentence_segment.dmo import QuestionExclamationSplitter  # noqa: E402
+from fast_sentence_segment.dmo import SpacyDocSegmenter  # noqa: E402
+from fast_sentence_segment.dmo import PostProcessStructure  # noqa: E402
+from fast_sentence_segment.dmo import StripTrailingPeriodAfterQuote  # noqa: E402
+from fast_sentence_segment.dmo import Dehyphenator  # noqa: E402
+from fast_sentence_segment.dmo import OcrArtifactFixer  # noqa: E402
 
 
 class PerformSentenceSegmentation(BaseObject):

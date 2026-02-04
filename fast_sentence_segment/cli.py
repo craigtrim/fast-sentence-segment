@@ -173,7 +173,6 @@ def _process_single_file(
     # Step 3: Write output
     if format:
         # Format mode returns a string
-        sentence_count = result.count("\n") + 1 if result else 0
         print(f"\r  {GREEN}✓{RESET} Segmented text ({elapsed:.2f}s)")
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(result + "\n")
