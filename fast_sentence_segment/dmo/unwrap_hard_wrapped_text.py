@@ -18,46 +18,37 @@ Related GitHub Issues:
 
 import re
 
-# Quote characters to track for dialog detection
-# Includes straight and curly/smart quotes
-DOUBLE_QUOTES = '"""\u201c\u201d'  # " " " " "
-SINGLE_QUOTES = "'''\u2018\u2019"  # ' ' ' ' '
-ALL_QUOTES = DOUBLE_QUOTES + SINGLE_QUOTES
+from fast_sentence_segment.dmo.quote_utils import (
+    KNOWN_ELISION_WORDS,
+    is_elision as _is_elision_impl,
+    count_quotes as _count_quotes_impl,
+)
 
-# Known elision words where an apostrophe replaces omitted letters at word start
-# These should NOT be counted as dialog quotes
-KNOWN_ELISION_WORDS = {
-    # 'it' elisions
-    "tis", "twas", "twere", "twill", "twould", "taint", "tother",
-    # Archaic oaths
-    "sblood", "sdeath", "swounds", "sbodikins", "slid", "strewth", "zounds",
-    # Common elisions with a-/be- prefix dropped
-    "bout", "bove", "cross", "fore", "fraid", "gainst", "live", "loft", "lone",
-    "long", "mid", "midst", "mong", "mongst", "neath", "round", "sleep", "tween",
-    "twixt", "wake", "ware", "way", "cause", "cuz", "coz", "hind", "low", "side",
-    "yond", "cept", "scaped", "specially", "splain", "spect",
-    # Cockney/dialect h-dropping
-    "e", "em", "er", "ere", "im", "is", "ave", "avin", "ead", "ear", "eard",
-    "eart", "eaven", "eavens", "eavy", "eck", "edge", "eel", "eight", "ell",
-    "elp", "en", "ero", "igh", "ill", "imself", "int", "it", "itch", "obby",
-    "old", "ole", "oliday", "oller", "ollow", "oly", "ome", "onest", "oney",
-    "onor", "onour", "ood", "ook", "oop", "ope", "orizon", "orn", "orrible",
-    "orse", "ospital", "ot", "otel", "our", "ouse", "ow", "owever", "uge",
-    "undred", "ungry", "unt", "urry", "urt", "usband", "alf", "all", "am",
-    "and", "andsome", "appen", "appy", "ard", "arm", "at", "ate",
-    # Cockney th-dropping
-    "ese", "ey", "ose", "ough", "rough",
-    # Other prefix elisions
-    "count", "fter", "gain", "gin", "less", "nother", "nough", "nuff", "pears",
-    "pon", "prentice", "scuse", "spite", "spose", "stead", "tarnal", "tend",
-    "thout", "til", "till", "un",
-    # Modern colloquial
-    "kay", "sup", "dya", "ja", "yer", "copter",
-    # Musical
-    "cello",
-    # 'member (remember)
-    "member",
-}
+# Quote characters to track for dialog detection.
+# unwrap_hard_wrapped_text runs BEFORE normalize_quotes() in the pipeline,
+# so it must recognize both ASCII and Unicode quote variants directly.
+#
+# Related GitHub Issue:
+#     #29 - Augment single-quote normalization with missing Unicode characters
+#     https://github.com/craigtrim/fast-sentence-segment/issues/29
+DOUBLE_QUOTES = '"""\u201c\u201d'  # " " " " "
+SINGLE_QUOTES = (
+    "'''"           # ASCII straight quotes
+    "\u2018\u2019"  # LEFT/RIGHT SINGLE QUOTATION MARK
+    "\u201a\u201b"  # SINGLE LOW-9 / HIGH-REVERSED-9
+    "\u2039\u203a"  # SINGLE ANGLE QUOTES
+    "\u2032\u2035"  # PRIME / REVERSED PRIME
+    "\uff07"        # FULLWIDTH APOSTROPHE
+    "\u0060\u00b4"  # GRAVE ACCENT / ACUTE ACCENT
+    "\u02b9\u02bc"  # MODIFIER LETTER PRIME / APOSTROPHE
+    "\u02c8"        # MODIFIER LETTER VERTICAL LINE
+    "\u055a"        # ARMENIAN APOSTROPHE
+    "\u05f3"        # HEBREW GERESH
+    "\u07f4\u07f5"  # NKO APOSTROPHES
+    "\u1fbf\u1fbd"  # GREEK PSILI / KORONIS
+    "\ua78c"        # LATIN SALTILLO
+)
+ALL_QUOTES = DOUBLE_QUOTES + SINGLE_QUOTES
 
 # Pattern to match hyphenated word breaks at end of line:
 # - A single hyphen (not -- em-dash)
@@ -69,8 +60,7 @@ _HYPHEN_LINE_BREAK_PATTERN = re.compile(r'(?<!-)-\n\s*([a-z])')
 def _is_elision(text: str, pos: int) -> bool:
     """Check if apostrophe at position is a word-initial elision.
 
-    Elisions like 'tis, 'twas, 'cello, 'em replace omitted letters at word start.
-    Dialog quotes like 'Hello!' surround quoted speech.
+    Delegates to shared implementation in quote_utils.
 
     Args:
         text: The full text.
@@ -79,68 +69,17 @@ def _is_elision(text: str, pos: int) -> bool:
     Returns:
         True if this appears to be an elision, not a dialog quote.
     """
-    if pos >= len(text) - 1:
-        return False
-
-    next_char = text[pos + 1]
-
-    # If followed by a digit, it's a year abbreviation ('99, '20s)
-    if next_char.isdigit():
-        return True
-
-    # Extract the word after the apostrophe (letters only, up to non-letter)
-    word_start = pos + 1
-    word_end = word_start
-    while word_end < len(text) and text[word_end].isalpha():
-        word_end += 1
-
-    if word_end == word_start:
-        return False  # No letters after apostrophe
-
-    word = text[word_start:word_end].lower()
-
-    # Check if it's a known elision word
-    return word in KNOWN_ELISION_WORDS
+    return _is_elision_impl(text, pos)
 
 
 def _count_quotes(text: str) -> int:
     """Count actual quote characters in text, excluding apostrophes.
 
-    Apostrophes in contractions (don't, can't), possessives (Jack's, Joselito's),
-    and word-initial elisions ('tis, 'twas, 'cello, 'em) are NOT counted as quotes
-    because they don't indicate dialog boundaries.
-
-    A quote character is considered an apostrophe (not a quote) if:
-    - It's preceded by a letter AND followed by a letter (mid-word: don't, Joselito's)
-    - It's a word-initial elision ('tis, 'Twas, 'cello, '99)
-
-    Args:
-        text: The text to count quotes in.
-
-    Returns:
-        Number of actual quote characters (not apostrophes).
+    Delegates to shared implementation in quote_utils.
+    Uses this module's ALL_QUOTES and SINGLE_QUOTES constants
+    (which include Unicode variants for the pre-normalization path).
     """
-    count = 0
-    for i, c in enumerate(text):
-        if c not in ALL_QUOTES:
-            continue
-
-        # Check if this is a mid-word apostrophe (contraction/possessive)
-        prev_is_letter = i > 0 and text[i - 1].isalpha()
-        next_is_letter = i < len(text) - 1 and text[i + 1].isalpha()
-
-        if prev_is_letter and next_is_letter:
-            # Mid-word apostrophe (contraction/possessive) - don't count
-            continue
-
-        # Check if this is a word-initial elision
-        prev_is_word_boundary = i == 0 or not text[i - 1].isalnum()
-        if prev_is_word_boundary and c in SINGLE_QUOTES and _is_elision(text, i):
-            # Word-initial elision - don't count
-            continue
-
-        count += 1
-    return count
+    return _count_quotes_impl(text, ALL_QUOTES, SINGLE_QUOTES)
 
 
 def _is_inside_open_quote(text: str) -> bool:
