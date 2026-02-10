@@ -70,6 +70,7 @@ from fast_sentence_segment.dmo import UnicodeTokenNormalizer  # noqa: E402
 from fast_sentence_segment.dmo import ParentheticalMerger  # noqa: E402
 from fast_sentence_segment.dmo import LeadingEllipsisMerger  # noqa: E402
 from fast_sentence_segment.dmo import CitationNormalizer  # noqa: E402
+from fast_sentence_segment.dmo import UrlNormalizer  # noqa: E402
 
 
 class PerformSentenceSegmentation(BaseObject):
@@ -134,6 +135,8 @@ class PerformSentenceSegmentation(BaseObject):
         self._leading_ellipsis_merger = LeadingEllipsisMerger().process
         # Citation normalizer for Issue #31 (APA/MLA citation handling)
         self._normalize_citations = CitationNormalizer().process
+        # URL normalizer for issue #32
+        self._normalize_urls = UrlNormalizer().process
 
     def _denormalize(self, text: str) -> str:
         """ Restore normalized placeholders to original form """
@@ -146,6 +149,8 @@ class PerformSentenceSegmentation(BaseObject):
         text = self._normalize_unicode_tokens(text, denormalize=True)
         # Restore citations (issue #31)
         text = self._normalize_citations(text, denormalize=True)
+        # Restore URLs (issue #32)
+        text = self._normalize_urls(text, denormalize=True)
         return text
 
     @staticmethod
@@ -261,6 +266,11 @@ class PerformSentenceSegmentation(BaseObject):
 
         # Fix common OCR artifacts (issue #9)
         input_text = self._fix_ocr_artifacts(input_text)
+
+        # Protect URLs BEFORE spaCy (issue #32)
+        # URLs at sentence boundaries were getting periods appended
+        # Replace URLs with placeholders to protect them during segmentation
+        input_text = self._normalize_urls(input_text)
 
         # Protect Golden Rules patterns BEFORE spaCy (issues #25, #26, #27)
         # Must happen before spaCy to prevent false splits at:
@@ -396,6 +406,12 @@ class PerformSentenceSegmentation(BaseObject):
         # Restore citations (issue #31)
         sentences = [
             self._normalize_citations(x, denormalize=True)
+            for x in sentences
+        ]
+
+        # Restore URLs (issue #32)
+        sentences = [
+            self._normalize_urls(x, denormalize=True)
             for x in sentences
         ]
 
