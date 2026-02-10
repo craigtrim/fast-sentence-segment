@@ -27,3 +27,4 @@ from .middle_initial_normalizer import MiddleInitialNormalizer
 from .unicode_token_normalizer import UnicodeTokenNormalizer
 from .parenthetical_merger import ParentheticalMerger
 from .leading_ellipsis_merger import LeadingEllipsisMerger
+from .citation_normalizer import CitationNormalizer
