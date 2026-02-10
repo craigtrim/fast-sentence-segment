@@ -193,6 +193,17 @@ COUNTRY_ABBREV_PROPER_NOUNS: List[str] = [
     "General",
     "Ambassador",
 
+    # U.S. Cabinet Departments
+    "Agriculture",
+    "Commerce",
+    "Labor",
+    "Health",
+    "Housing",
+    "Transportation",
+    "Energy",
+    "Education",
+    "Veterans",
+
     # Other government entities
     "Postal",
     "Census",
@@ -205,6 +216,8 @@ COUNTRY_ABBREV_PROPER_NOUNS: List[str] = [
     "Border",
     "Customs",
     "Immigration",
+    "Representatives",  # House of Representatives
+    "White",  # White House
 
     # U.K. specific
     "Parliament",
