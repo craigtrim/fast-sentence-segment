@@ -68,3 +68,4 @@ release.sh
 requirements.txt
 .claude
 pypi.key
+scripts/
