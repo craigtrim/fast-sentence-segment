@@ -91,6 +91,30 @@ class AbbreviationSplitter(BaseObject):
         first_word = first_word_match.group(1)
         return first_word in _PROPER_NOUN_SET
 
+    def _is_followed_by_another_abbreviation(self, sentence: str, match: re.Match) -> bool:
+        """Check if the capital letter after this abbreviation starts another abbreviation.
+
+        e.g., "U.S. U.S." or "U.S. U.K." - should NOT split between them.
+
+        Args:
+            sentence: The sentence being processed
+            match: The regex match object
+
+        Returns:
+            True if the next word is another country abbreviation (don't split)
+        """
+        # Get text after the matched abbreviation
+        rest_of_sentence = sentence[match.end(1):].strip()
+        if not rest_of_sentence:
+            return False
+
+        # Check if the next word matches any known country abbreviation pattern
+        for abbrev in COUNTRY_ABBREVIATIONS:
+            if rest_of_sentence.startswith(abbrev):
+                return True
+
+        return False
+
     def _is_followed_by_title_abbrev(self, sentence: str, match: re.Match) -> bool:
         """Check if the abbreviation is followed by a title abbreviation at sentence start.
 
@@ -172,6 +196,12 @@ class AbbreviationSplitter(BaseObject):
             # Check if this is a country abbreviation followed by a proper noun
             if self._is_country_abbrev_with_proper_noun(remaining, match):
                 # Don't split here, continue searching after this match
+                search_start = match.end()
+                continue
+
+            # Check if this is followed by another abbreviation
+            # e.g., "U.S. U.S." or "U.S. U.K." should not split between them
+            if self._is_followed_by_another_abbreviation(remaining, match):
                 search_start = match.end()
                 continue
 
