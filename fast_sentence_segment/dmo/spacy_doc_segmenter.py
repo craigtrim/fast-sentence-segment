@@ -34,6 +34,9 @@ class SpacyDocSegmenter(BaseObject):
         terminal punctuation to avoid appending a period. This handles cases
         like 'I was thinking... maybe not' where the ellipsis is mid-sentence.
 
+        Also recognizes URL placeholders to avoid appending a period. URLs at
+        the end of sentences should not have periods appended (Issue #32).
+
         Related GitHub Issues:
             #7 - Spurious trailing period appended after sentence-final
                  closing quote
@@ -41,6 +44,9 @@ class SpacyDocSegmenter(BaseObject):
 
             #23 - Trailing period added to sentences containing ellipsis
             https://github.com/craigtrim/fast-sentence-segment/issues/23
+
+            #32 - URLs incorrectly get periods appended at end
+            https://github.com/craigtrim/fast-sentence-segment/issues/32
 
         Args:
             a_sentence: A sentence that may or may not have terminal
@@ -60,6 +66,13 @@ class SpacyDocSegmenter(BaseObject):
         # terminal punctuation or indicates trailing thought (Issue #23)
         # Reference: https://github.com/craigtrim/fast-sentence-segment/issues/23
         if 'xellipsis' in a_sentence:
+            return a_sentence
+        # Don't append period if sentence ends with URL placeholder
+        # (xurl1x, xurl2x, etc.)
+        # URLs at sentence boundaries should not have periods appended (Issue #32)
+        # Reference: https://github.com/craigtrim/fast-sentence-segment/issues/32
+        import re
+        if re.search(r'xurl\d+x\s*$', stripped):
             return a_sentence
         return f"{a_sentence}."
 
