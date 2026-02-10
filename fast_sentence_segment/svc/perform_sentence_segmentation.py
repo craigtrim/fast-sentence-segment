@@ -93,6 +93,12 @@ class PerformSentenceSegmentation(BaseObject):
             craigtrim@gmail.com
             *   add abbreviation-aware sentence splitting
                 https://github.com/craigtrim/fast-sentence-segment/issues/3
+        Updated:
+            10-Feb-2026
+            craigtrim@gmail.com
+            *   add citation pattern detection for APA/MLA/informal citations
+                prevents false sentence splits at citation boundaries
+                https://github.com/craigtrim/fast-sentence-segment/issues/31
         """
         BaseObject.__init__(self, __name__)
         if not self.__nlp:
