@@ -95,6 +95,15 @@ class ListItemSplitter(BaseObject):
         Returns:
             List of (start_pos, end_pos, marker) tuples
         """
+        # Title keywords that precede numbered sections (Issue #30)
+        # These should NOT be treated as list markers
+        TITLE_KEYWORDS = {
+            "Part", "Module", "Week", "Chapter", "Section",
+            "Step", "Phase", "Unit", "Level", "Stage",
+            # Abbreviated forms
+            "Ch.", "Sec.", "Mod.", "Vol.", "Pt."
+        }
+
         markers = []
         for match in COMBINED_PATTERN.finditer(text):
             # Get the first non-None group (the actual marker)
@@ -104,6 +113,23 @@ class ListItemSplitter(BaseObject):
                     marker = g
                     break
             if marker:
+                # Check if this marker is preceded by a title keyword (Issue #30)
+                # e.g., "Part 2." should not be treated as a list item
+                start_pos = match.start()
+                if start_pos > 0:
+                    # Look back to see if there's a title keyword right before this
+                    text_before = text[:start_pos].strip()
+                    # Check if text_before ends with a title keyword
+                    is_titled_number = False
+                    for keyword in TITLE_KEYWORDS:
+                        if text_before.lower().endswith(keyword.lower()):
+                            is_titled_number = True
+                            break
+
+                    if is_titled_number:
+                        # Skip this marker - it's part of a numbered title
+                        continue
+
                 markers.append((match.start(), match.end(), marker))
         return markers
 
