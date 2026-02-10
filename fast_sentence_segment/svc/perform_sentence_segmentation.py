@@ -69,6 +69,7 @@ from fast_sentence_segment.dmo import MiddleInitialNormalizer  # noqa: E402
 from fast_sentence_segment.dmo import UnicodeTokenNormalizer  # noqa: E402
 from fast_sentence_segment.dmo import ParentheticalMerger  # noqa: E402
 from fast_sentence_segment.dmo import LeadingEllipsisMerger  # noqa: E402
+from fast_sentence_segment.dmo import CitationNormalizer  # noqa: E402
 
 
 class PerformSentenceSegmentation(BaseObject):
@@ -125,6 +126,8 @@ class PerformSentenceSegmentation(BaseObject):
         self._parenthetical_merger = ParentheticalMerger().process
         # Leading ellipsis merger for Golden Rule 48
         self._leading_ellipsis_merger = LeadingEllipsisMerger().process
+        # Citation normalizer for Issue #31 (APA/MLA citation handling)
+        self._normalize_citations = CitationNormalizer().process
 
     def _denormalize(self, text: str) -> str:
         """ Restore normalized placeholders to original form """
@@ -135,6 +138,8 @@ class PerformSentenceSegmentation(BaseObject):
         text = self._normalize_exclamation_brands(text, denormalize=True)
         text = self._normalize_middle_initials(text, denormalize=True)
         text = self._normalize_unicode_tokens(text, denormalize=True)
+        # Restore citations (issue #31)
+        text = self._normalize_citations(text, denormalize=True)
         return text
 
     @staticmethod
@@ -260,6 +265,13 @@ class PerformSentenceSegmentation(BaseObject):
         input_text = self._normalize_middle_initials(input_text)
         input_text = self._normalize_unicode_tokens(input_text)
 
+        # Protect citation patterns BEFORE spaCy (issue #31)
+        # Must happen before spaCy to prevent false splits at:
+        # - APA citations (Author. (Year). Title)
+        # - MLA citations (Author, Name. Title. Publisher, Year.)
+        # - Informal citations (By Author, Date)
+        input_text = self._normalize_citations(input_text)
+
         # Protect inline list markers BEFORE other normalizers run (issue #18)
         # Must happen before NumberedListNormalizer which would partially normalize them
         input_text = self._normalize_list_markers(input_text)
@@ -372,6 +384,12 @@ class PerformSentenceSegmentation(BaseObject):
         ]
         sentences = [
             self._normalize_unicode_tokens(x, denormalize=True)
+            for x in sentences
+        ]
+
+        # Restore citations (issue #31)
+        sentences = [
+            self._normalize_citations(x, denormalize=True)
             for x in sentences
         ]
 
