@@ -91,6 +91,12 @@ class SpacyDocSegmenter(BaseObject):
             numbered_title_pattern = r'\b(Part|Chapter|Module|Section|Week|Step|Phase|Unit|Level|Stage)\s+(\d+|[IVXLCDMivxlcdm]+|[A-Za-z])\.'
             if re.search(numbered_title_pattern, a_sentence, re.IGNORECASE):
                 return a_sentence
+        # Don't append period if sentence starts with metadata delimiter
+        # Examples: "[Video File]", "(May 6, 2008)", "<tag>", "{data}"
+        # These are often metadata fragments that will be merged with numbered titles
+        # Reference: https://github.com/craigtrim/fast-sentence-segment/issues/30
+        if stripped and stripped[0] in '([{<':
+            return a_sentence
         return f"{a_sentence}."
 
     @staticmethod
