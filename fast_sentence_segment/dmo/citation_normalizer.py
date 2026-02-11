@@ -225,13 +225,29 @@ class CitationNormalizer(BaseObject):
         # Each month gets a unique placeholder so we can restore it correctly later
         text = MONTH_PATTERN.sub(lambda m: f'xmonth{m.group(1)}x', text)
 
-        # 0.5. Check for MLA citations using heuristic detector
-        # If high confidence MLA detected, apply aggressive period normalization
-        # This handles MLA's complex multi-period format without enumerating every pattern
-        # Example: "Hemingway, Ernest. The Sun Also Rises. Scribner, 1926."
+        # 0.5. Check for MLA citations using heuristic detector (Issue #36)
+        # MLA citations are fundamentally different from APA and have 3-5+ periods
+        # in various positions. Instead of maintaining 50+ patterns, we use a
+        # heuristic classifier that calculates confidence score based on 8 features.
+        #
+        # If high confidence MLA detected (score ≥ 0.6), apply aggressive normalization:
+        # replace ALL internal periods with placeholders except the final one.
+        #
+        # Why early return? MLA and APA are mutually exclusive. If we detect MLA
+        # with high confidence, skip APA patterns entirely for performance.
+        #
+        # Examples:
+        #   "Hemingway, Ernest. The Sun Also Rises. Scribner, 1926."
+        #   → "Hemingway, Ernestxcitationprdx The Sun Also Risesxcitationprdx Scribner, 1926."
+        #
+        #   'Williams, P. "Article Title." Journal, vol. 15, no. 3, 2020, pp. 123-145.'
+        #   → 'Williams, Pxcitationprdx "Article Titlexcitationprdx" Journal, volxcitationprdx 15...'
+        #
+        # Related: Issue #36 - Heuristic-Based MLA Citation Detector
+        # See: GITHUB_ISSUE_MLA_DETECTOR.md for extensive documentation
         mla_normalized = self._mla_detector.normalize_if_mla(text, PLACEHOLDER_CITATION_PERIOD)
         if mla_normalized != text:
-            # MLA detected and normalized - return early, skip other patterns
+            # MLA detected and normalized - return early, skip APA patterns
             return mla_normalized
 
         # Process most specific patterns first
