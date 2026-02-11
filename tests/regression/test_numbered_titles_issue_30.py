@@ -377,89 +377,95 @@ class TestNumberedTitlesSection:
 
 
 class TestNumberedTitlesWeek:
-    """Test Week + numbers"""
+    """Test Week + numbers
+
+    Design Decision: Week N. patterns are ALWAYS separate sentences.
+    This is an overfitted solution for common academic/course patterns.
+    Related GitHub Issue:
+        https://github.com/craigtrim/fast-sentence-segment/issues/30#issuecomment-3881265186
+    """
 
     @pytest.mark.parametrize("text,expected", [
         ("Week 1. Course introduction and syllabus.",
-         ["Week 1. Course introduction and syllabus."]),
+         ["Week 1.", "Course introduction and syllabus."]),
 
         ("Week 2. Fundamentals of programming.",
-         ["Week 2. Fundamentals of programming."]),
+         ["Week 2.", "Fundamentals of programming."]),
 
         ("Week 3. Variables and data types.",
-         ["Week 3. Variables and data types."]),
+         ["Week 3.", "Variables and data types."]),
 
         ("Week 4. Control flow and loops.",
-         ["Week 4. Control flow and loops."]),
+         ["Week 4.", "Control flow and loops."]),
 
         ("Week 5. Functions and modules.",
-         ["Week 5. Functions and modules."]),
+         ["Week 5.", "Functions and modules."]),
 
         ("Week 6. Object-oriented programming.",
-         ["Week 6. Object-oriented programming."]),
+         ["Week 6.", "Object-oriented programming."]),
 
         ("Week 7. File I/O operations.",
-         ["Week 7. File I/O operations."]),
+         ["Week 7.", "File I/O operations."]),
 
         ("Week 8. Error handling.",
-         ["Week 8. Error handling."]),
+         ["Week 8.", "Error handling."]),
 
         ("Week 9. Midterm review.",
-         ["Week 9. Midterm review."]),
+         ["Week 9.", "Midterm review."]),
 
         ("Week 10. Data structures.",
-         ["Week 10. Data structures."]),
+         ["Week 10.", "Data structures."]),
 
         ("Week 11. Algorithms.",
-         ["Week 11. Algorithms."]),
+         ["Week 11.", "Algorithms."]),
 
         ("Week 12. Recursion.",
-         ["Week 12. Recursion."]),
+         ["Week 12.", "Recursion."]),
 
         ("Week 13. Sorting and searching.",
-         ["Week 13. Sorting and searching."]),
+         ["Week 13.", "Sorting and searching."]),
 
         ("Week 14. Graph algorithms.",
-         ["Week 14. Graph algorithms."]),
+         ["Week 14.", "Graph algorithms."]),
 
         ("Week 15. Dynamic programming.",
-         ["Week 15. Dynamic programming."]),
+         ["Week 15.", "Dynamic programming."]),
 
         ("Week 16. Final project work.",
-         ["Week 16. Final project work."]),
+         ["Week 16.", "Final project work."]),
 
         ("Homework due Week 17. Submit online.",
          ["Homework due Week 17.", "Submit online."]),
 
         ("Week 18. Guest speaker session.",
-         ["Week 18. Guest speaker session."]),
+         ["Week 18.", "Guest speaker session."]),
 
         ("Week 19. Lab practical.",
-         ["Week 19. Lab practical."]),
+         ["Week 19.", "Lab practical."]),
 
         ("Week 20. Review session.",
-         ["Week 20. Review session."]),
+         ["Week 20.", "Review session."]),
 
         ("Week 21. Final exam preparation.",
-         ["Week 21. Final exam preparation."]),
+         ["Week 21.", "Final exam preparation."]),
 
         ("Week 22. Project presentations.",
-         ["Week 22. Project presentations."]),
+         ["Week 22.", "Project presentations."]),
 
         ("Week 23. Course wrap-up.",
-         ["Week 23. Course wrap-up."]),
+         ["Week 23.", "Course wrap-up."]),
 
         ("Week 24. Summer intensive begins.",
-         ["Week 24. Summer intensive begins."]),
+         ["Week 24.", "Summer intensive begins."]),
 
         ("Week 25. Advanced topics.",
-         ["Week 25. Advanced topics."]),
+         ["Week 25.", "Advanced topics."]),
 
         ("Assignment for Week 26. Group project.",
          ["Assignment for Week 26.", "Group project."]),
 
         ("Week 27. Final assessments.",
-         ["Week 27. Final assessments."]),
+         ["Week 27.", "Final assessments."]),
     ])
     def test_week_numbers(self, segment: SegmentationFunc, text: str, expected: list[str]):
         assert segment(text) == expected
@@ -1347,7 +1353,7 @@ class TestNumberedTitlesWithParentheticals:
          ["Section 3. (Experimental) Approach with caution."]),
 
         ("Week 4. (Intensive) Heavy workload expected.",
-         ["Week 4. (Intensive) Heavy workload expected."]),
+         ["Week 4.", "(Intensive) Heavy workload expected."]),
 
         # With notes
         ("Part 1. (See also Part 3) Related content.",
@@ -1496,7 +1502,7 @@ class TestNumberedTitlesRealWorldExamples:
          ["Assignment Module 3.", "Overview"]),
 
         ("Week 5. Introduction to Economics",
-         ["Week 5. Introduction to Economics"]),
+         ["Week 5.", "Introduction to Economics"]),
 
         # Video series
         ("Cooking Basics Part 1. Knife skills.",
