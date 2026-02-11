@@ -44,6 +44,19 @@ from fast_sentence_segment.core import BaseObject
 # Uses lowercase word-like token that spaCy treats as regular text
 PLACEHOLDER_CITATION_PERIOD = "xcitationprdx"
 
+# Pattern to match month names in dates (within citations)
+# Matches full month names that appear in date contexts
+# Examples: "March 15", "December 31", "June 2020"
+# We'll replace each month with a unique placeholder: "March" → "xmonthMarchx"
+# This allows us to restore the exact month name during denormalization
+MONTH_PATTERN = re.compile(
+    r'\b(January|February|March|April|May|June|July|August|September|October|November|December)\b'
+)
+
+# Pattern to match month placeholders during denormalization
+# Matches: xmonthJanuaryx, xmonthMarchx, etc.
+MONTH_PLACEHOLDER_PATTERN = re.compile(r'xmonth([A-Z][a-z]+)x')
+
 
 # CORE PATTERN: Name. (Year). Title - The main issue from #31
 # Matches: Author name ending with period, followed by (Year) with optional period
@@ -56,12 +69,12 @@ PLACEHOLDER_CITATION_PERIOD = "xcitationprdx"
 #   ([A-Z][A-Za-z\s,.&'-]+?)  - Author name (flexible, may include multiple words, commas, etc.)
 #   \.                        - Period after author name (we'll replace with placeholder)
 #   \s*                       - Optional whitespace
-#   (\(\d{4}(?:,\s+\w+(?:\s+\d+)?)?\))  - Year with parentheses
+#   (\(\d{4}[a-z]?(?:,\s+\w+(?:\s+\d+)?)?\))  - Year with parentheses (with optional letter suffix like 2023a)
 #   \.?                       - Optional period after year (we'll replace if present)
 #   \s+                       - Whitespace before title
 #   ([A-Z])                   - Start of title (capital letter)
 CITATION_BASIC_PATTERN = re.compile(
-    r"([A-Z][A-Za-z\s,.&'-]+?)\.\s*(\(\d{4}(?:,\s+\w+(?:\s+\d+)?)?\))\.?\s+([A-Z])"
+    r"([A-Z][A-Za-z\s,.&'-]+?)\.\s*(\(\d{4}[a-z]?(?:,\s+\w+(?:\s+\d+)?)?\))\.?\s+([A-Z])"
 )
 
 # PATTERN: Organizational names with periods followed by year
@@ -134,12 +147,21 @@ class CitationNormalizer(BaseObject):
         Processes text through multiple citation patterns, from most specific
         to most general, to avoid over-matching.
 
+        Also normalizes month names to prevent spaCy from treating capitalized
+        months as sentence boundaries.
+
         Args:
             text: Input text that may contain citations
 
         Returns:
             Text with citation periods replaced by placeholders.
         """
+        # 0. Normalize month names FIRST (before any other processing)
+        # Month names are capitalized and confuse spaCy's sentence boundary detection
+        # "Johnson, A. (2020, March 15). Title" → "Johnson, A. (2020, xmonthMarchx 15). Title"
+        # Each month gets a unique placeholder so we can restore it correctly later
+        text = MONTH_PATTERN.sub(lambda m: f'xmonth{m.group(1)}x', text)
+
         # Process most specific patterns first
 
         # 1. Editor/Translator patterns (very specific)
@@ -189,15 +211,22 @@ class CitationNormalizer(BaseObject):
         return text
 
     def _denormalize(self, text: str) -> str:
-        """Restore placeholders back to periods.
+        """Restore placeholders back to periods and month names.
 
         Args:
             text: Text with placeholders
 
         Returns:
-            Text with periods restored.
+            Text with periods and month names restored.
         """
-        return text.replace(PLACEHOLDER_CITATION_PERIOD, '.')
+        # Restore month names first
+        # "xmonthMarchx" → "March"
+        text = MONTH_PLACEHOLDER_PATTERN.sub(lambda m: m.group(1), text)
+
+        # Restore citation periods
+        text = text.replace(PLACEHOLDER_CITATION_PERIOD, '.')
+
+        return text
 
     def process(self, text: str, denormalize: bool = False) -> str:
         """Normalize or denormalize citation periods.
