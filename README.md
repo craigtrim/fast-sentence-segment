@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/fast-sentence-segment.svg)](https://pypi.org/project/fast-sentence-segment/)
 [![Python versions](https://img.shields.io/pypi/pyversions/fast-sentence-segment.svg)](https://pypi.org/project/fast-sentence-segment/)
-[![Tests](https://img.shields.io/badge/tests-1403-brightgreen)](https://github.com/craigtrim/fast-sentence-segment/tree/master/tests)
+[![Tests](https://img.shields.io/badge/tests-3513-brightgreen)](https://github.com/craigtrim/fast-sentence-segment/tree/master/tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Downloads](https://static.pepy.tech/badge/fast-sentence-segment)](https://pepy.tech/project/fast-sentence-segment)
