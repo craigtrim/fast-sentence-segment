@@ -67,6 +67,19 @@ TWO_INITIALS_PATTERN = re.compile(
     r'([A-Z][a-z]+)\s+([A-Z])\.(\s+)([A-Z])\.(\s+)([A-Z][a-z]+)'
 )
 
+# Pattern for citation-style initials: "LastName, A. B. C. (Year)"
+# Matches initials after comma in academic citations (APA, MLA, etc.)
+# Examples: "Smith, J. R. (2020)", "Jones, A. B. C. (2019)"
+# Breakdown:
+#   ([A-Z][a-z]+)           - LastName: capital + lowercase letters
+#   ,\s+                    - comma + whitespace
+#   ([A-Z]\.)               - First initial: capital + period
+#   (?:\s+[A-Z]\.)*         - Additional initials (zero or more): space + capital + period
+#   \s+\(                   - space + opening paren (start of year)
+CITATION_INITIALS_PATTERN = re.compile(
+    r'([A-Z][a-z]+),\s+([A-Z]\.)(\s+[A-Z]\.)*\s+\('
+)
+
 
 class MiddleInitialNormalizer(BaseObject):
     """Normalize middle initials in names to prevent sentence splits.
@@ -99,6 +112,26 @@ class MiddleInitialNormalizer(BaseObject):
         Returns:
             Text with middle initial periods replaced by placeholders.
         """
+        # Handle citation-style initials first (most specific pattern)
+        # "Williams, P. R. K. (2019)" → "Williams, Pxmidinitialprdx Rxmidinitialprdx K. (2019)"
+        # IMPORTANT: We preserve the last period before the parenthesis because the
+        # CitationNormalizer needs it to detect the citation pattern
+        def replace_citation_initials(match):
+            lastname = match.group(1)
+            # Get all the initials (including the ones captured in group 3)
+            initials_text = match.group(0)[len(lastname)+2:-2]  # Skip "LastName, " and " ("
+            # Replace all periods EXCEPT the last one with placeholders
+            # Split by periods, replace periods in between, keep last one
+            parts = initials_text.split('.')
+            if len(parts) > 1:
+                # Replace periods between initials but not the final one
+                normalized_initials = PLACEHOLDER_PERIOD.join(parts[:-1]) + '.'
+            else:
+                normalized_initials = initials_text
+            return f"{lastname}, {normalized_initials} ("
+
+        text = CITATION_INITIALS_PATTERN.sub(replace_citation_initials, text)
+
         # Handle multiple initials first (most specific pattern)
         # "J. R. R. Tolkien" → "JxmidinitialprdxRxmidinitialprdxR. Tolkien"
         # (We leave the last initial with its period if followed by title like Jr.)
