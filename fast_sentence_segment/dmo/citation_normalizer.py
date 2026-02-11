@@ -114,6 +114,27 @@ MLA_AUTHOR_PATTERN = re.compile(
     r'([A-Z][a-z]+,\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)\.\s+([A-Z][A-Za-z\s]+\.)'
 )
 
+# PATTERN: Citation with retrieval information
+# "Smith, J. (2023). Digital Article. Retrieved from https://..."
+# "Brown, A. (2022). Report. Available from http://..."
+# "Jones, K. (2021). Study. Accessed at https://..."
+# The period after the title (Article, Report, Study) should not cause a split
+# Hardcoded retrieval keywords (overfitted approach per user guidance)
+RETRIEVAL_KEYWORDS = r'(?:Retrieved|Available|Accessed|Downloaded|Obtained|Found|Located)'
+RETRIEVAL_CITATION_PATTERN = re.compile(
+    rf'\.\s+({RETRIEVAL_KEYWORDS}\s+(?:from|at|on))\s+'
+)
+
+# PATTERN: Citation followed directly by URL
+# "Brown, A. (2022). Online Research. https://doi.org/..."
+# "Smith, J. (2023). Web Article. http://example.com"
+# The period before the URL should not cause a split
+# NOTE: URLs are already replaced with placeholders (xurl1x, xurl2x, etc.)
+# by UrlNormalizer which runs BEFORE CitationNormalizer in the pipeline
+URL_CITATION_PATTERN = re.compile(
+    r'\.\s+(?=xurl\d+x)'
+)
+
 
 class CitationNormalizer(BaseObject):
     """Normalize citation patterns to prevent sentence splits.
@@ -205,6 +226,24 @@ class CitationNormalizer(BaseObject):
         # Be conservative here to avoid false matches
         text = MLA_AUTHOR_PATTERN.sub(
             rf'\1{PLACEHOLDER_CITATION_PERIOD} \2',
+            text
+        )
+
+        # 7. Citations with retrieval information
+        # After processing basic citation patterns, handle multi-sentence citations
+        # "Title. Retrieved from URL" → "Titlexcitationprdx Retrieved from URL"
+        # "Title. Available at URL" → "Titlexcitationprdx Available at URL"
+        text = RETRIEVAL_CITATION_PATTERN.sub(
+            rf'{PLACEHOLDER_CITATION_PERIOD} \1 ',
+            text
+        )
+
+        # 8. Citations followed directly by URL
+        # "Title. https://..." → "Titlexcitationprdx https://..."
+        # "Title. doi:..." → "Titlexcitationprdx doi:..."
+        # Using lookahead so we don't consume the URL itself
+        text = URL_CITATION_PATTERN.sub(
+            PLACEHOLDER_CITATION_PERIOD + ' ',
             text
         )
 
