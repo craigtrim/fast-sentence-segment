@@ -11,6 +11,7 @@ from .post_process_sentences import PostProcessStructure
 from .question_exclamation_splitter import QuestionExclamationSplitter
 from .spacy_doc_segmenter import SpacyDocSegmenter
 from .numbered_list_normalizer import NumberedListNormalizer
+from .numbered_title_merger import NumberedTitleMerger
 from .unwrap_hard_wrapped_text import unwrap_hard_wrapped_text
 from .normalize_quotes import normalize_quotes
 from .group_quoted_sentences import group_quoted_sentences, format_grouped_sentences

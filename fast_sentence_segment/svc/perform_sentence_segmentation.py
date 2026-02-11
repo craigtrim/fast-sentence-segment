@@ -52,6 +52,7 @@ from fast_sentence_segment.dmo import UnclosedQuoteMerger  # noqa: E402
 from fast_sentence_segment.dmo import EllipsisSentenceSplitter  # noqa: E402
 from fast_sentence_segment.dmo import EllipsisSentenceMerger  # noqa: E402
 from fast_sentence_segment.dmo import TitleNameMerger  # noqa: E402
+from fast_sentence_segment.dmo import NumberedTitleMerger  # noqa: E402
 from fast_sentence_segment.dmo import EllipsisNormalizer  # noqa: E402
 from fast_sentence_segment.dmo import NewlinesToPeriods  # noqa: E402
 from fast_sentence_segment.dmo import BulletPointCleaner  # noqa: E402
@@ -121,6 +122,7 @@ class PerformSentenceSegmentation(BaseObject):
         self._abbreviation_splitter = AbbreviationSplitter().process
         self._question_exclamation_splitter = QuestionExclamationSplitter().process
         self._title_name_merger = TitleNameMerger().process
+        self._numbered_title_merger = NumberedTitleMerger().process
         self._post_process = PostProcessStructure().process
         self._strip_trailing_period = StripTrailingPeriodAfterQuote().process
         self._list_item_splitter = ListItemSplitter().process
@@ -341,6 +343,10 @@ class PerformSentenceSegmentation(BaseObject):
 
         # Merge title + single-word name splits (e.g., "Dr." + "Who?" -> "Dr. Who?")
         sentences = self._title_name_merger(sentences)
+
+        # Merge numbered titles incorrectly split (e.g., "Part" + "2." -> "Part 2.")
+        # Reference: https://github.com/craigtrim/fast-sentence-segment/issues/30
+        sentences = self._numbered_title_merger(sentences)
 
         # Merge sentences incorrectly split at parenthetical boundaries (Golden Rule 21)
         # e.g., ['He teaches (worked as engineer.)', 'at university.'] -> single sentence
