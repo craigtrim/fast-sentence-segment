@@ -3,6 +3,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/fast-sentence-segment.svg)](https://pypi.org/project/fast-sentence-segment/)
 [![Python versions](https://img.shields.io/pypi/pyversions/fast-sentence-segment.svg)](https://pypi.org/project/fast-sentence-segment/)
 [![Tests](https://img.shields.io/badge/tests-3513-brightgreen)](https://github.com/craigtrim/fast-sentence-segment/tree/master/tests)
+[![Golden Rules](https://img.shields.io/badge/pySBD_Golden_Rules-48/48-gold)](https://github.com/craigtrim/fast-sentence-segment/tree/master/tests/benchmark)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Downloads](https://static.pepy.tech/badge/fast-sentence-segment)](https://pepy.tech/project/fast-sentence-segment)
@@ -55,6 +56,14 @@ We ran a [comprehensive benchmark](https://github.com/craigtrim/fast-sentence-se
 - **Non-English text**: Limited support for CJK (Chinese, Japanese, Korean), Thai, Hindi, and other scripts without clear period-based boundaries. If you need multilingual support, consider other libraries.
 
 Full benchmark details: [Issue #15](https://github.com/craigtrim/fast-sentence-segment/issues/15)
+
+---
+
+## pySBD Golden Rules Benchmark
+
+**48/48 tests passed (100%)** on the [pySBD Golden Rules Set](https://github.com/nipunsadvilkar/pySBD)—the standard benchmark for sentence boundary detection from the EMNLP 2020 paper "PySBD: Pragmatic Sentence Boundary Disambiguation."
+
+This validates the library's accuracy on established edge cases including honorifics, company names, abbreviations, numbers, currency, parentheticals, email addresses, URLs, dialogue, multiple punctuation, lists, middle initials, and ellipses.
 
 ---
 
