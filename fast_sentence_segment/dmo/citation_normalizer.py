@@ -135,6 +135,45 @@ URL_CITATION_PATTERN = re.compile(
     r'\.\s+(?=xurl\d+x)'
 )
 
+# PATTERN: APA journal article - Title followed by journal name with volume/issue
+# "Johnson, A. (2021). Article Title. Journal of Research, 15(3), 123-145."
+# "Smith, J. (2020). Study Results. International Journal, 28(2), 45-67."
+# The period after the article title should not split before the journal name
+# Overfitted pattern: Matches period before journal name (identified by volume/page indicators)
+# Format: ". [Capital Word]+" followed eventually by ", digits"
+# Uses lookahead to detect journal format without consuming the volume/issue/page info
+JOURNAL_ARTICLE_PATTERN = re.compile(
+    r'\.\s+(?=[A-Z][A-Za-z\s&]+,\s+\d+)'
+)
+
+# PATTERN: APA chapter/proceeding with "In"
+# "Smith, J. (2020). Chapter Title. In K. Brown (Ed.), Book Title (pp. 25-50)."
+# "Brown, K. (2020). Paper Title. In Proceedings of the Conference (pp. 100-110)."
+# The period before "In" should not cause a split
+# Common in edited books and conference proceedings
+IN_EDITOR_PATTERN = re.compile(
+    r'\.\s+(In\s+)'
+)
+
+# PATTERN: APA dissertation/thesis/report with parenthetical type indicator
+# "Johnson, P. (2021). Title (Doctoral dissertation). University Name."
+# "Garcia, M. (2020). Title (Master's thesis). University Name."
+# "APA. (2019). Title (Report No. 123). Publisher."
+# The period after the parenthetical type indicator should not cause a split
+# Overfitted to common academic publication types
+PARENTHETICAL_TYPE_PATTERN = re.compile(
+    r'(\((?:Doctoral dissertation|Master\'s thesis|Report No\.\s*\d+)\))\.\s+([A-Z])'
+)
+
+# PATTERN: Retrieved with date (extended retrieval pattern)
+# "Blog Post. Retrieved June 15, 2023, from URL"
+# "Article. Retrieved January 1, 2020, from URL"
+# Extends RETRIEVAL_CITATION_PATTERN to handle dates between Retrieved and from
+# Format: ". Retrieved Month Day, Year, from"
+RETRIEVAL_WITH_DATE_PATTERN = re.compile(
+    rf'\.\s+(Retrieved\s+\w+\s+\d{{1,2}},\s+\d{{4}},\s+from)\s+'
+)
+
 
 class CitationNormalizer(BaseObject):
     """Normalize citation patterns to prevent sentence splits.
@@ -244,6 +283,39 @@ class CitationNormalizer(BaseObject):
         # Using lookahead so we don't consume the URL itself
         text = URL_CITATION_PATTERN.sub(
             PLACEHOLDER_CITATION_PERIOD + ' ',
+            text
+        )
+
+        # 9. APA journal articles - Title followed by journal name
+        # "Article Title. Journal of Research, 15(3), 123-145." → "Article Titlexcitationprdx Journal of Research, 15(3), 123-145."
+        # Overfitted to journal citation format with volume/issue numbers
+        # Using lookahead so we don't consume the journal name
+        text = JOURNAL_ARTICLE_PATTERN.sub(
+            PLACEHOLDER_CITATION_PERIOD + ' ',
+            text
+        )
+
+        # 10. APA chapter/proceeding with "In"
+        # "Chapter Title. In K. Brown (Ed.)" → "Chapter Titlexcitationprdx In K. Brown (Ed.)"
+        # Common in edited books and conference proceedings
+        text = IN_EDITOR_PATTERN.sub(
+            rf'{PLACEHOLDER_CITATION_PERIOD} \1',
+            text
+        )
+
+        # 11. APA dissertation/thesis/report with parenthetical type
+        # "(Doctoral dissertation). University Name" → "(Doctoral dissertation)xcitationprdx University Name"
+        # Keeps dissertation/report metadata together with publisher
+        text = PARENTHETICAL_TYPE_PATTERN.sub(
+            rf'\1{PLACEHOLDER_CITATION_PERIOD} \2',
+            text
+        )
+
+        # 12. Retrieved with date (extended retrieval pattern)
+        # "Blog Post. Retrieved June 15, 2023, from URL" → "Blog Postxcitationprdx Retrieved June 15, 2023, from URL"
+        # Handles date between Retrieved and from
+        text = RETRIEVAL_WITH_DATE_PATTERN.sub(
+            rf'{PLACEHOLDER_CITATION_PERIOD} \1 ',
             text
         )
 
