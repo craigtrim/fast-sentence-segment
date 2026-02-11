@@ -43,7 +43,8 @@ If score ≥ threshold (default 0.6), applies aggressive period normalization.
 
 **Primary Documentation:**
     #36 - Heuristic-Based MLA Citation Detector
-    See: GITHUB_ISSUE_MLA_DETECTOR.md (extensive documentation with examples)
+    https://github.com/craigtrim/fast-sentence-segment/issues/36
+    (Full documentation with examples, feature rationale, results)
 
 **Parent Issue:**
     #34 - Citation middle initials and multi-sentence citations
@@ -96,8 +97,8 @@ class MlaCitationDetector(BaseObject):
         - Weak indicators (et al.): +0.05
         - Negative indicators (has parens): -0.3
 
-        See GITHUB_ISSUE_MLA_DETECTOR.md for feature design rationale.
-        Reference: Issue #36 - Heuristic-Based MLA Citation Detector
+        See Issue #36 for feature design rationale and extensive documentation.
+        Reference: https://github.com/craigtrim/fast-sentence-segment/issues/36
 
         Args:
             text: Text to analyze
@@ -227,8 +228,8 @@ class MlaCitationDetector(BaseObject):
         Since we've detected MLA with high confidence, we can safely replace all
         internal periods knowing they're citation delimiters, not sentence boundaries.
 
-        See GITHUB_ISSUE_MLA_DETECTOR.md Section "Normalization Strategy" for details.
-        Reference: Issue #36 - Heuristic-Based MLA Citation Detector
+        See Issue #36 Section "Normalization Strategy" for complete details.
+        Reference: https://github.com/craigtrim/fast-sentence-segment/issues/36
 
         Args:
             text: Text to potentially normalize
