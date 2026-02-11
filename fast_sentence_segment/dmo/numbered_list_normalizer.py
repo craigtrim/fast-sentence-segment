@@ -16,8 +16,16 @@ class NumberedListNormalizer(BaseObject):
     __denormalize_line_start = re.compile(r'(^|\n\s*)(\d{1,2})_ ')
 
     # Pattern 2: inline numbered list ". N. " (period + space + number + period + space)
-    __normalize_inline = re.compile(r'(\. )(\d{1,2})\. ')
-    __denormalize_inline = re.compile(r'(\. )(\d{1,2})_ ')
+    # But NOT after abbreviations like "ext. 5. ", "Vol. 2. ", "Fig. 3. "
+    # Use negative lookbehind to exclude common abbreviations (case-insensitive)
+    __normalize_inline = re.compile(
+        r'(?<!ext)(?<!vol)(?<!fig)(?<!no)(?<!sec)(?<!ref)(?<!vs)(\. )(\d{1,2})\. ',
+        re.IGNORECASE
+    )
+    __denormalize_inline = re.compile(
+        r'(?<!ext)(?<!vol)(?<!fig)(?<!no)(?<!sec)(?<!ref)(?<!vs)(\. )(\d{1,2})_ ',
+        re.IGNORECASE
+    )
 
     def __init__(self):
         """
