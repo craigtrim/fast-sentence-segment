@@ -134,6 +134,71 @@ class NumberedTitleMerger(BaseObject):
 
         return None
 
+    def _is_standalone_title(self, text: str) -> bool:
+        """Check if text is a standalone numbered title.
+
+        A standalone title is a short sentence matching the pattern:
+        [Keyword] [Number].
+
+        Must NOT have text before the keyword (e.g., "Assignment Module 3." is NOT standalone)
+
+        Examples: "Part 8.", "Chapter 17.", "Module III."
+
+        Args:
+            text: Text to check
+
+        Returns:
+            True if text is a standalone numbered title
+        """
+        text = text.strip()
+
+        # Check each keyword
+        for keyword in TITLE_KEYWORDS:
+            # Pattern: keyword + whitespace + number + period (case-insensitive)
+            # MUST start at the beginning (no text before keyword)
+            pattern = rf"^\s*{re.escape(keyword)}\s+(\d+|[IVXLCDMivxlcdm]+|[A-Za-z])\.?\s*$"
+            if re.match(pattern, text, re.IGNORECASE):
+                return True
+
+        return False
+
+    def _looks_like_title(self, text: str) -> bool:
+        """Check if text looks like a standalone title (not a descriptive sentence).
+
+        Heuristic: Short (1-4 words), title case. May or may not end with period.
+        Examples: "The Beginning.", "Introduction", "Overview", "Introduction to Economics"
+
+        Args:
+            text: Text to check
+
+        Returns:
+            True if text looks like a title
+        """
+        text = text.strip()
+
+        # Remove trailing period if present for word counting
+        text_for_analysis = text[:-1] if text.endswith('.') else text
+
+        # Count words (split on whitespace)
+        words = text_for_analysis.split()
+        if len(words) > 4:
+            return False
+
+        # Check if title case (first letter of each word is uppercase)
+        # Allow for common lowercase words like "a", "the", "of", "to"
+        lowercase_allowed = {'a', 'an', 'the', 'of', 'in', 'on', 'at', 'to', 'for'}
+        for i, word in enumerate(words):
+            if not word:
+                continue
+            # First word must be capitalized
+            if i == 0 and not word[0].isupper():
+                return False
+            # Other words: either capitalized or in allowed lowercase set
+            if i > 0 and not (word[0].isupper() or word.lower() in lowercase_allowed):
+                return False
+
+        return True
+
     def _try_merge(self, current: str, next_sent: str) -> Optional[Tuple[str, str]]:
         """Try to merge two sentences if they match the numbered title pattern.
 
@@ -147,7 +212,25 @@ class NumberedTitleMerger(BaseObject):
         current = current.strip()
         next_sent = next_sent.strip()
 
-        # Current sentence must end with a title keyword
+        # Case 1: Current is a standalone numbered title (e.g., "Part 8.")
+        # Merge with next sentence UNLESS next sentence is also a title
+        if self._is_standalone_title(current):
+            # Special case: "Week N." patterns are ALWAYS separate sentences
+            # This is an overfitted solution for common academic/course patterns
+            # Related GitHub Issue:
+            #     https://github.com/craigtrim/fast-sentence-segment/issues/30
+            if re.match(r'^Week\s+\d{1,2}\.?$', current, re.IGNORECASE):
+                return None
+
+            # Don't merge if next is also a title (e.g., "The Beginning.")
+            if self._looks_like_title(next_sent):
+                return None
+
+            merged = current + " " + next_sent
+            return (merged, "")
+
+        # Case 2: Current sentence ends with title keyword, next starts with number
+        # e.g., ["Part", "2. (May 6, 2008)"]
         keyword_match = self._ending_with_keyword.search(current)
         if not keyword_match:
             return None
@@ -173,12 +256,6 @@ class NumberedTitleMerger(BaseObject):
         Returns:
             List of sentences with numbered title splits merged
         """
-        # DEBUG: Log input
-        import sys
-        print(f"\n[NumberedTitleMerger] Input ({len(sentences)} sentences):", file=sys.stderr)
-        for idx, sent in enumerate(sentences):
-            print(f"  [{idx}]: {repr(sent)}", file=sys.stderr)
-
         if not sentences or len(sentences) < 2:
             return sentences
 
@@ -195,7 +272,6 @@ class NumberedTitleMerger(BaseObject):
 
                 if merge_result:
                     merged, remainder = merge_result
-                    print(f"[NumberedTitleMerger] MERGED: {repr(current)} + {repr(next_sent)} -> {repr(merged)}", file=sys.stderr)
                     result.append(merged)
 
                     # If there's a remainder, it becomes a new sentence to process
@@ -209,9 +285,5 @@ class NumberedTitleMerger(BaseObject):
 
             result.append(current)
             i += 1
-
-        print(f"[NumberedTitleMerger] Output ({len(result)} sentences):", file=sys.stderr)
-        for idx, sent in enumerate(result):
-            print(f"  [{idx}]: {repr(sent)}", file=sys.stderr)
 
         return result

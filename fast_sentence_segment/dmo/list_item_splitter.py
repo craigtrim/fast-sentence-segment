@@ -366,21 +366,25 @@ class ListItemSplitter(BaseObject):
         if re.search(r'\s[Ii]\.\.?$', text):
             return False
 
-        # Common reference patterns that should NOT be treated as list markers
-        # e.g., "Table 1", "Figure 2", "Section 3", "Appendix A"
-        reference_words = r'(?:Table|Figure|Fig|Section|Appendix|Chapter|Part|Item|Step|Page|Ref|No|Number|#)'
-        # Check if text ends with a reference pattern
+        # Common reference patterns and words that should NOT be treated as list markers
+        # e.g., "Table 1", "Figure 2", "Section 3", "Appendix A", "Cost 5", "Count to 10"
+        # Issue #30: Also include words commonly followed by numbers in sentences
+        reference_words = r'(?:Table|Figure|Fig|Section|Appendix|Chapter|Part|Item|Step|Page|Ref|No|Number|#|Cost|Count|ext|answer|bought|were|is)'
+        # Check if text ends with a reference pattern or common word + number
         if re.search(rf'{reference_words}\s+\d+\)?\.?$', text, re.IGNORECASE):
             return False
 
         # Look for patterns at the end of the text
         # Handle possible extra period from spaCy
+        # IMPORTANT: Only match colon before marker (list intro), not space
+        # This prevents "Count to 10." from being treated as ending with lone marker
+        # Issue #30: Avoid merging sentences that just happen to end with a number
         patterns = [
-            r'[\s:]\d{1,3}\.\)\.?$',   # ends with " 1.)." or ": 1.)"
-            r'[\s:]\d{1,3}\)\.?$',     # ends with " 1)." or ": 1)"
-            r'[\s:]\d{1,3}\.\.?$',     # ends with " 1.." or ": 1."
-            r'[\s:][a-zA-Z]\.\.?$',    # ends with " a.." or ": A."
-            r'[\s:][a-zA-Z]\)\.?$',    # ends with " a)." or ": a)"
+            r':\s*\d{1,3}\.\)\.?$',   # ends with ": 1.)." or ": 1.)"
+            r':\s*\d{1,3}\)\.?$',     # ends with ": 1)." or ": 1)"
+            r':\s*\d{1,3}\.\.?$',     # ends with ": 1.." or ": 1."
+            r':\s*[a-zA-Z]\.\.?$',    # ends with ": a.." or ": A."
+            r':\s*[a-zA-Z]\)\.?$',    # ends with ": a)." or ": a)"
         ]
         for pat in patterns:
             if re.search(pat, text):
@@ -393,13 +397,14 @@ class ListItemSplitter(BaseObject):
         Returns (prefix_text, marker) if found, otherwise (text, "")
         """
         text = text.strip()
-        # Look for trailing marker patterns
+        # Look for trailing marker patterns (after colon only)
+        # Issue #30: Only extract markers after colons (list intros), not after spaces
         patterns = [
-            r'^(.*[\s:])((\d{1,3}\.\))\.?)$',   # "prefix: 1.)." or "prefix 1.)"
-            r'^(.*[\s:])((\d{1,3}\))\.?)$',     # "prefix: 1)." or "prefix 1)"
-            r'^(.*[\s:])((\d{1,3}\.)\.?)$',     # "prefix: 1.." or "prefix 1."
-            r'^(.*[\s:])(([a-zA-Z]\.)\.?)$',    # "prefix: a.." or "prefix a."
-            r'^(.*[\s:])(([a-zA-Z]\))\.?)$',    # "prefix: a)." or "prefix a)"
+            r'^(.*:)\s*((\d{1,3}\.\))\.?)$',   # "prefix: 1.)." or "prefix: 1.)"
+            r'^(.*:)\s*((\d{1,3}\))\.?)$',     # "prefix: 1)." or "prefix: 1)"
+            r'^(.*:)\s*((\d{1,3}\.)\.?)$',     # "prefix: 1.." or "prefix: 1."
+            r'^(.*:)\s*(([a-zA-Z]\.)\.?)$',    # "prefix: a.." or "prefix: a."
+            r'^(.*:)\s*(([a-zA-Z]\))\.?)$',    # "prefix: a)." or "prefix: a)"
         ]
         for pat in patterns:
             match = re.match(pat, text)
