@@ -232,20 +232,31 @@ class NumberedTitleMerger(BaseObject):
         # Case 2: Current sentence ends with title keyword, next starts with number
         # e.g., ["Part", "2. (May 6, 2008)"]
         keyword_match = self._ending_with_keyword.search(current)
-        if not keyword_match:
-            return None
+        if keyword_match:
+            # Next sentence must start with a number
+            number_result = self._extract_number(next_sent)
+            if number_result:
+                number_part, remainder = number_result
 
-        # Next sentence must start with a number
-        number_result = self._extract_number(next_sent)
-        if not number_result:
-            return None
+                # Build merged sentence: "Keyword Number."
+                merged = current + " " + number_part
 
-        number_part, remainder = number_result
+                return (merged, remainder.strip())
 
-        # Build merged sentence: "Keyword Number."
-        merged = current + " " + number_part
+        # Case 3: Current contains a numbered title pattern and next starts with metadata delimiter
+        # e.g., ["Part 2. (May 6, 2008)", "[Video File]"]
+        # This handles cases where spaCy splits metadata in brackets from the numbered title
+        # Pattern to match numbered title in current sentence
+        numbered_title_in_current = r'\b(Part|Chapter|Module|Section|Week|Step|Phase|Unit|Level|Stage)\s+(\d+|[IVXLCDMivxlcdm]+|[A-Za-z])\.'
+        if re.search(numbered_title_in_current, current, re.IGNORECASE):
+            # Check if next sentence starts with metadata delimiters
+            # Common patterns: [Video File], (Additional info), <tag>, etc.
+            if next_sent and next_sent[0] in '([{<':
+                # Merge them together
+                merged = current + " " + next_sent
+                return (merged, "")
 
-        return (merged, remainder.strip())
+        return None
 
     def process(self, sentences: List[str]) -> List[str]:
         """Process a list of sentences, merging numbered title splits.
