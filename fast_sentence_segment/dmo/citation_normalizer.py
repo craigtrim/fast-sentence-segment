@@ -172,7 +172,7 @@ PARENTHETICAL_TYPE_PATTERN = re.compile(
 # Extends RETRIEVAL_CITATION_PATTERN to handle dates between Retrieved and from
 # Format: ". Retrieved Month Day, Year, from"
 RETRIEVAL_WITH_DATE_PATTERN = re.compile(
-    rf'\.\s+(Retrieved\s+\w+\s+\d{{1,2}},\s+\d{{4}},\s+from)\s+'
+    r'\.\s+(Retrieved\s+\w+\s+\d{{1,2}},\s+\d{{4}},\s+from)\s+'
 )
 
 
