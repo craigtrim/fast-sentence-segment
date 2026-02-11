@@ -37,6 +37,10 @@ class SpacyDocSegmenter(BaseObject):
         Also recognizes URL placeholders to avoid appending a period. URLs at
         the end of sentences should not have periods appended (Issue #32).
 
+        Also recognizes numbered title patterns (Part 2., Chapter 5., etc.) that
+        end with closing delimiters like ) or ] - these are complete sentences
+        and should not have periods appended (Issue #30).
+
         Related GitHub Issues:
             #7 - Spurious trailing period appended after sentence-final
                  closing quote
@@ -44,6 +48,9 @@ class SpacyDocSegmenter(BaseObject):
 
             #23 - Trailing period added to sentences containing ellipsis
             https://github.com/craigtrim/fast-sentence-segment/issues/23
+
+            #30 - Incorrect sentence break on numbered titles
+            https://github.com/craigtrim/fast-sentence-segment/issues/30
 
             #32 - URLs incorrectly get periods appended at end
             https://github.com/craigtrim/fast-sentence-segment/issues/32
@@ -74,6 +81,16 @@ class SpacyDocSegmenter(BaseObject):
         import re
         if re.search(r'xurl\d+x\s*$', stripped):
             return a_sentence
+        # Don't append period if sentence contains numbered title pattern and ends with ) or ]
+        # Examples: "Part 2. (May 6, 2008)", "Chapter 5. [Video File]"
+        # These are complete sentences that just happen to end with metadata (Issue #30)
+        # Reference: https://github.com/craigtrim/fast-sentence-segment/issues/30
+        if stripped and stripped[-1] in ')]}>':
+            # Check if sentence contains a numbered title pattern
+            # Pattern: (Part|Chapter|Module|Section|Week|Step|Phase|Unit|Level|Stage) N.
+            numbered_title_pattern = r'\b(Part|Chapter|Module|Section|Week|Step|Phase|Unit|Level|Stage)\s+(\d+|[IVXLCDMivxlcdm]+|[A-Za-z])\.'
+            if re.search(numbered_title_pattern, a_sentence, re.IGNORECASE):
+                return a_sentence
         return f"{a_sentence}."
 
     @staticmethod

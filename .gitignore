@@ -69,3 +69,4 @@ requirements.txt
 .claude
 pypi.key
 scripts/
+resources/debug/
