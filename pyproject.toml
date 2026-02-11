@@ -1,26 +1,20 @@
-[tool.poetry]
-authors = [
-  "Craig Trim <craigtrim@gmail.com>",
-]
-
-maintainers = [
-  "Craig Trim <craigtrim@gmail.com>",
-]
-
-description = "Fast and Efficient Sentence Segmentation"
-license = "MIT"
+[project]
 name = "fast-sentence-segment"
+version = "1.7.3"
+description = "Fast and Efficient Sentence Segmentation"
 readme = "README.md"
-version = "1.7.2"
-
+license = "MIT"
+authors = [
+  {name = "Craig Trim", email = "craigtrim@gmail.com"},
+]
+maintainers = [
+  {name = "Craig Trim", email = "craigtrim@gmail.com"},
+]
 keywords = ["nlp", "text", "preprocess", "segment"]
-repository = "https://github.com/craigtrim/fast-sentence-segment"
-
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
   "Intended Audience :: Science/Research",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
@@ -32,23 +26,26 @@ classifiers = [
   "Operating System :: OS Independent",
   "Typing :: Typed",
 ]
+requires-python = ">=3.9,<3.13"
+dynamic = ["dependencies"]
 
-[tool.poetry.urls]
+[project.urls]
+Repository = "https://github.com/craigtrim/fast-sentence-segment"
 "Bug Tracker" = "https://github.com/craigtrim/fast-sentence-segment/issues"
+
+[project.scripts]
+segment = "fast_sentence_segment.cli:main"
+segment-file = "fast_sentence_segment.cli:file_main"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
 spacy = "^3.8.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 en-core-web-sm = {path = "resources/lib/en_core_web_sm-3.8.0.tar.gz"}
 pre-commit = "^2.20.0"
 pytest = "*"
 ruff = "*"
-
-[tool.poetry.scripts]
-segment = "fast_sentence_segment.cli:main"
-segment-file = "fast_sentence_segment.cli:file_main"
 
 [tool.poetry.build]
 generate-setup-file = true
