@@ -38,6 +38,7 @@ import re
 from typing import List, Tuple
 
 from fast_sentence_segment.core import BaseObject
+from fast_sentence_segment.dmo.mla_citation_detector import MlaCitationDetector
 
 
 # Placeholder for period after author name in citations
@@ -200,6 +201,8 @@ class CitationNormalizer(BaseObject):
             https://github.com/craigtrim/fast-sentence-segment/issues/31
         """
         BaseObject.__init__(self, __name__)
+        # MLA citation detector for heuristic-based detection
+        self._mla_detector = MlaCitationDetector(threshold=0.6)
 
     def _normalize(self, text: str) -> str:
         """Replace periods in citation patterns with placeholders.
@@ -221,6 +224,15 @@ class CitationNormalizer(BaseObject):
         # "Johnson, A. (2020, March 15). Title" → "Johnson, A. (2020, xmonthMarchx 15). Title"
         # Each month gets a unique placeholder so we can restore it correctly later
         text = MONTH_PATTERN.sub(lambda m: f'xmonth{m.group(1)}x', text)
+
+        # 0.5. Check for MLA citations using heuristic detector
+        # If high confidence MLA detected, apply aggressive period normalization
+        # This handles MLA's complex multi-period format without enumerating every pattern
+        # Example: "Hemingway, Ernest. The Sun Also Rises. Scribner, 1926."
+        mla_normalized = self._mla_detector.normalize_if_mla(text, PLACEHOLDER_CITATION_PERIOD)
+        if mla_normalized != text:
+            # MLA detected and normalized - return early, skip other patterns
+            return mla_normalized
 
         # Process most specific patterns first
 
