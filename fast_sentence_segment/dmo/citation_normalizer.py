@@ -244,7 +244,7 @@ class CitationNormalizer(BaseObject):
         #   → 'Williams, Pxcitationprdx "Article Titlexcitationprdx" Journal, volxcitationprdx 15...'
         #
         # Related: Issue #36 - Heuristic-Based MLA Citation Detector
-        # See: GITHUB_ISSUE_MLA_DETECTOR.md for extensive documentation
+        # See: https://github.com/craigtrim/fast-sentence-segment/issues/36
         mla_normalized = self._mla_detector.normalize_if_mla(text, PLACEHOLDER_CITATION_PERIOD)
         if mla_normalized != text:
             # MLA detected and normalized - return early, skip APA patterns
