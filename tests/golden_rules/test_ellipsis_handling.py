@@ -151,7 +151,7 @@ class TestEllipsisInQuotes:
         """Rule 43: Ellipsis at end of quote."""
         text = 'Thoreau argues that "the laws will appear less complex. . . ."'
         expected = ['Thoreau argues that "the laws will appear less complex. . . ."']
-        assert segment_text(text, flatten=True) == expected
+        assert segment_text(text, flatten=True, split_dialog=False) == expected
 
     def test_ellipsis_start_of_quote(self):
         text = 'She read, "...and they lived happily ever after."'
