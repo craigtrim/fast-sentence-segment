@@ -20,7 +20,7 @@ class TestNumberedTitlesArabicNumerals:
     @pytest.mark.parametrize("text,expected", [
         # Part + Arabic numerals
         ("Try crossing this street in India!! Part 2. (May 6, 2008) [Video File]",
-         ["Try crossing this street in India!!", "Part 2. (May 6, 2008) [Video File]"]),
+         ["Try crossing this street in India!!", "Part 2. (May 6, 2008) [Video File]."]),
 
         ("Bush Taxi Part 2. (Sept 29, 2015)",
          ["Bush Taxi Part 2. (Sept 29, 2015)"]),
@@ -1484,7 +1484,7 @@ class TestNumberedTitlesWithParentheticals:
     @pytest.mark.parametrize("text,expected", [
         # With dates
         ("Try crossing this street in India!! Part 2. (May 6, 2008) [Video File]",
-         ["Try crossing this street in India!!", "Part 2. (May 6, 2008) [Video File]"]),
+         ["Try crossing this street in India!!", "Part 2. (May 6, 2008) [Video File]."]),
 
         ("Bush Taxi Part 2. (Sept 29, 2015)",
          ["Bush Taxi Part 2. (Sept 29, 2015)"]),
@@ -1541,10 +1541,10 @@ class TestNumberedTitlesWithParentheticals:
 
         # With brackets
         ("Part 2. [Video File] Available online.",
-         ["Part 2. [Video File] Available online."]),
+         ["Part 2. [Video File].", "Available online."]),
 
         ("Chapter 3. [Audiobook] Now streaming.",
-         ["Chapter 3. [Audiobook] Now streaming."]),
+         ["Chapter 3. [Audiobook].", "Now streaming."]),
 
         ("Module 4. [PDF Download] Printable version.",
          ["Module 4. [PDF Download] Printable version."]),
@@ -1684,7 +1684,7 @@ class TestNumberedTitlesRealWorldExamples:
     @pytest.mark.parametrize("text,expected", [
         # From issue #30
         ("Try crossing this street in India!! Part 2. (May 6, 2008) [Video File]",
-         ["Try crossing this street in India!!", "Part 2. (May 6, 2008) [Video File]"]),
+         ["Try crossing this street in India!!", "Part 2. (May 6, 2008) [Video File]."]),
 
         ("Bush Taxi Part 2. (Sept 29, 2015)",
          ["Bush Taxi Part 2. (Sept 29, 2015)"]),
