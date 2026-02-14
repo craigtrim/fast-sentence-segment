@@ -25,23 +25,14 @@ class TestThirtyNineSteps:
 
     def test_father_died_business(self):
         text = '"My father died a year ago and left me the business. I live there with my grandmother. It\'s a slow job for a young man, and it wasn\'t my choice of profession."'
-        expected = [
-            '"My father died a year ago and left me the business.',
-            'I live there with my grandmother.',
-            'It\'s a slow job for a young man, and it wasn\'t my choice of profession."'
-        ]
+        expected = ['"My father died a year ago and left me the business. I live there with my grandmother. It\'s a slow job for a young man, and it wasn\'t my choice of profession."']
         assert segment_text(text, flatten=True) == expected
 
     def test_not_now_eagerly(self):
         text = '"Not now," he said eagerly. "Maybe in the old days when you had pilgrims and ballad-makers and highwaymen and mail-coaches on the road. But not now. Nothing comes here but motor-cars full of fat women, who stop for lunch, and a fisherman or two in the spring, and the shooting tenants in August. There is not much material to be got out of that. I want to see life, to travel the world, and write things like Kipling and Conrad. But the most I\'ve done yet is to get some verses printed in Chambers\'s Journal."'
         expected = [
             '"Not now," he said eagerly.',
-            '"Maybe in the old days when you had pilgrims and ballad-makers and highwaymen and mail-coaches on the road.',
-            'But not now.',
-            'Nothing comes here but motor-cars full of fat women, who stop for lunch, and a fisherman or two in the spring, and the shooting tenants in August.',
-            'There is not much material to be got out of that.',
-            'I want to see life, to travel the world, and write things like Kipling and Conrad.',
-            'But the most I\'ve done yet is to get some verses printed in Chambers\'s Journal."'
+            '"Maybe in the old days when you had pilgrims and ballad-makers and highwaymen and mail-coaches on the road. But not now. Nothing comes here but motor-cars full of fat women, who stop for lunch, and a fisherman or two in the spring, and the shooting tenants in August. There is not much material to be got out of that. I want to see life, to travel the world, and write things like Kipling and Conrad. But the most I\'ve done yet is to get some verses printed in Chambers\'s Journal."'
         ]
         assert segment_text(text, flatten=True) == expected
 
@@ -57,21 +48,13 @@ class TestThirtyNineSteps:
             'The five letters of "Julia" gave me the position of the vowels.',
             'A was J, the tenth letter of the alphabet, and so represented by X in the cypher.',
             'E was U=XXI, and so on.',
-            '"Czechenyi\' gave me the numerals for the principal consonants.',
-            'I scribbled that scheme on a bit of paper and sat down to read Scudder\'s pages.'
+            '"Czechenyi\' gave me the numerals for the principal consonants. I scribbled that scheme on a bit of paper and sat down to read Scudder\'s pages.'
         ]
         assert segment_text(text, flatten=True) == expected
 
     def test_black_stone_letter(self):
         text = 'I took a bit of paper and wrote these words in German as if they were part of a letter— ... "Black Stone. Scudder had got on to this, but he could not act for a fortnight. I doubt if I can do any good now, especially as Karolides is uncertain about his plans. But if Mr T. advises I will do the best I...." I manufactured it rather neatly, so that it looked like a loose page of a private letter.'
-        expected = [
-            'I took a bit of paper and wrote these words in German as if they were part of a letter—',
-            '... "Black Stone.',
-            'Scudder had got on to this, but he could not act for a fortnight.',
-            'I doubt if I can do any good now, especially as Karolides is uncertain about his plans.',
-            'But if Mr T. advises I will do the best I...."',
-            'I manufactured it rather neatly, so that it looked like a loose page of a private letter.'
-        ]
+        expected = ['I took a bit of paper and wrote these words in German as if they were part of a letter— ... "Black Stone. Scudder had got on to this, but he could not act for a fortnight. I doubt if I can do any good now, especially as Karolides is uncertain about his plans. But if Mr T. advises I will do the best I...." I manufactured it rather neatly, so that it looked like a loose page of a private letter.']
         assert segment_text(text, flatten=True) == expected
 
     def test_innkeeper_excitement(self):
@@ -79,15 +62,9 @@ class TestThirtyNineSteps:
         expected = [
             'The innkeeper appeared in great excitement.',
             '"Your paper woke them up," he said gleefully.',
-            '"The dark fellow went as white as death and cursed like blazes, and the fat one whistled and looked ugly.',
-            'They paid for their drinks with half-a-sovereign and wouldn\'t wait for change."',
+            '"The dark fellow went as white as death and cursed like blazes, and the fat one whistled and looked ugly. They paid for their drinks with half-a-sovereign and wouldn\'t wait for change."',
             '"Now I\'ll tell you what I want you to do," I said.',
-            '"Get on your bicycle and go off to Newton-Stewart to the Chief Constable.',
-            'Describe the two men, and say you suspect them of having had something to do with the London murder.',
-            'You can invent reasons.',
-            'The two will come back, never fear.',
-            'Not tonight, for they\'ll follow me forty miles along the road, but first thing tomorrow morning.',
-            'Tell the police to be here bright and early."'
+            '"Get on your bicycle and go off to Newton-Stewart to the Chief Constable. Describe the two men, and say you suspect them of having had something to do with the London murder. You can invent reasons. The two will come back, never fear. Not tonight, for they\'ll follow me forty miles along the road, but first thing tomorrow morning. Tell the police to be here bright and early."'
         ]
         assert segment_text(text, flatten=True) == expected
 
