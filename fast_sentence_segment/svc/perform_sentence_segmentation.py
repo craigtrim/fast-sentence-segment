@@ -72,6 +72,7 @@ from fast_sentence_segment.dmo import ParentheticalMerger  # noqa: E402
 from fast_sentence_segment.dmo import LeadingEllipsisMerger  # noqa: E402
 from fast_sentence_segment.dmo import CitationNormalizer  # noqa: E402
 from fast_sentence_segment.dmo import UrlNormalizer  # noqa: E402
+from fast_sentence_segment.dmo import BracketContentNormalizer  # noqa: E402
 
 
 class PerformSentenceSegmentation(BaseObject):
@@ -139,6 +140,8 @@ class PerformSentenceSegmentation(BaseObject):
         self._normalize_citations = CitationNormalizer().process
         # URL normalizer for issue #32
         self._normalize_urls = UrlNormalizer().process
+        # Bracket content normalizer for Issue #37 (never split inside [...])
+        self._normalize_brackets = BracketContentNormalizer().process
 
     def _denormalize(self, text: str) -> str:
         """ Restore normalized placeholders to original form """
@@ -153,6 +156,8 @@ class PerformSentenceSegmentation(BaseObject):
         text = self._normalize_citations(text, denormalize=True)
         # Restore URLs (issue #32)
         text = self._normalize_urls(text, denormalize=True)
+        # Restore brackets (issue #37)
+        text = self._normalize_brackets(text, denormalize=True)
         return text
 
     @staticmethod
@@ -273,6 +278,11 @@ class PerformSentenceSegmentation(BaseObject):
         # URLs at sentence boundaries were getting periods appended
         # Replace URLs with placeholders to protect them during segmentation
         input_text = self._normalize_urls(input_text)
+
+        # Protect bracketed content BEFORE spaCy (issue #37)
+        # Brackets [...] are for references/citations and should never be split
+        # regardless of internal punctuation like [Fig. 1.] or [p. 42.]
+        input_text = self._normalize_brackets(input_text)
 
         # Protect Golden Rules patterns BEFORE spaCy (issues #25, #26, #27)
         # Must happen before spaCy to prevent false splits at:
@@ -418,6 +428,12 @@ class PerformSentenceSegmentation(BaseObject):
         # Restore URLs (issue #32)
         sentences = [
             self._normalize_urls(x, denormalize=True)
+            for x in sentences
+        ]
+
+        # Restore brackets (issue #37)
+        sentences = [
+            self._normalize_brackets(x, denormalize=True)
             for x in sentences
         ]
 
