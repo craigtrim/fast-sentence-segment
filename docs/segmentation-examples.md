@@ -183,6 +183,60 @@ result = format_dialog(sentences)
 
 **Output:** All three sentences grouped as one paragraph (the quote is not closed until the end).
 
+### Individual Dialog Sentence Segmentation
+
+For stylometry, prosody analysis, or per-sentence classification tasks, use `split_dialog=True` to segment dialog sentences individually:
+
+```python
+# Default behavior: keep multi-sentence quotes together
+text = '"Hello. How are you?" she asked.'
+result = segment_text(text, flatten=True)
+```
+
+**Output:**
+```python
+['"Hello. How are you?" she asked.']
+```
+
+With `split_dialog=True`:
+
+```python
+text = '"Hello. How are you?" she asked.'
+result = segment_text(text, flatten=True, split_dialog=True)
+```
+
+**Output:**
+```python
+['"Hello.', 'How are you?" she asked.']
+```
+
+This is particularly useful for:
+- **Sentence-level prosody analysis**: Each sentence can be analyzed independently for rhythm and intonation
+- **Stylometric fingerprinting**: Per-sentence features for authorship attribution
+- **Sentiment analysis**: Individual sentence sentiment scores within dialog
+- **Machine learning**: Training data where each sentence needs separate classification
+
+Example with longer dialog:
+
+```python
+text = '"First thing. Second thing. Third thing." He smiled.'
+result = segment_text(text, flatten=True, split_dialog=True)
+```
+
+**Output:**
+```python
+['"First thing.', 'Second thing.', 'Third thing."', 'He smiled.']
+```
+
+CLI usage:
+
+```bash
+echo '"Hello. How are you?" she asked.' | segment --split-dialog
+# Output:
+# "Hello.
+# How are you?" she asked.
+```
+
 ---
 
 ## Question and Exclamation Splitting

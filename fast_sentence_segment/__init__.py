@@ -18,6 +18,7 @@ def segment_text(
     unwrap: bool = False,
     normalize: bool = True,
     format: Optional[str] = None,
+    split_dialog: bool = True,
 ) -> Union[List, str]:
     """Segment text into sentences.
 
@@ -35,6 +36,10 @@ def segment_text(
             - "dialog": Return formatted string with dialog-aware
               paragraph grouping (keeps multi-sentence quotes together,
               adds paragraph breaks between speakers)
+        split_dialog: If True (default), segment dialog sentences individually.
+            Set to False to keep multi-sentence quotes together for narrative
+            flow. Default is True, which is useful for stylometry and prosody
+            analysis that requires examining each sentence separately.
 
     Returns:
         If format is None: List of sentences (if flatten=True) or list
@@ -47,6 +52,9 @@ def segment_text(
 
         #10 - feat: Add --format flag for dialog-aware paragraph formatting
         https://github.com/craigtrim/fast-sentence-segment/issues/10
+
+        #38 - feat: Add optional parameter to segment dialog sentences individually
+        https://github.com/craigtrim/fast-sentence-segment/issues/38
     """
     if unwrap:
         input_text = unwrap_hard_wrapped_text(input_text)
@@ -54,7 +62,7 @@ def segment_text(
     if normalize:
         input_text = normalize_quotes(input_text)
 
-    results = segment(input_text)
+    results = segment(input_text, split_dialog=split_dialog)
 
     # Flatten to list of sentences
     flat = []
