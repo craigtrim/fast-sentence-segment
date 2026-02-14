@@ -263,7 +263,8 @@ class PerformSentenceSegmentation(BaseObject):
         return a_sentence
 
     def _process(self,
-                 input_text: str) -> list:
+                 input_text: str,
+                 split_dialog: bool = True) -> list:
 
         # Normalize tabs to spaces
         input_text = input_text.replace('\t', ' ')
@@ -343,7 +344,9 @@ class PerformSentenceSegmentation(BaseObject):
 
         # Merge sentences incorrectly split inside quotes (issue #20)
         # e.g., ['"First thing.', 'Second thing," she said.'] -> ['"First thing. Second thing," she said.']
-        sentences = self._unclosed_quote_merger(sentences)
+        # Skip this merge if split_dialog=True for stylometry/prosody analysis (issue #38)
+        if not split_dialog:
+            sentences = self._unclosed_quote_merger(sentences)
 
         # Merge sentences incorrectly split at abbreviations (issue #3)
         sentences = self._abbreviation_merger(sentences)
@@ -442,11 +445,14 @@ class PerformSentenceSegmentation(BaseObject):
         return sentences
 
     def process(self,
-                input_text: str) -> list:
+                input_text: str,
+                split_dialog: bool = True) -> list:
         """Perform Sentence Segmentation
 
         Args:
             input_text (str): An input string of any length or type
+            split_dialog (bool): If True (default), segment dialog sentences individually.
+                Set to False to keep multi-sentence quotes together.
 
         Raises:
             ValueError: input must be a string
@@ -454,6 +460,10 @@ class PerformSentenceSegmentation(BaseObject):
         Returns:
             list:   a list of sentences
                     each list item is an input string of any length, but is a semantic sentence
+
+        Related GitHub Issue:
+            #38 - feat: Add optional parameter to segment dialog sentences individually
+            https://github.com/craigtrim/fast-sentence-segment/issues/38
         """
 
         if input_text is None or not len(input_text):
@@ -463,4 +473,4 @@ class PerformSentenceSegmentation(BaseObject):
             self.logger.warning(f"Invalid Input Text: {input_text}")
             return []
 
-        return self._process(input_text)
+        return self._process(input_text, split_dialog=split_dialog)

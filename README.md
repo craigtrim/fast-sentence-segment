@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/fast-sentence-segment.svg)](https://pypi.org/project/fast-sentence-segment/)
 [![Python versions](https://img.shields.io/pypi/pyversions/fast-sentence-segment.svg)](https://pypi.org/project/fast-sentence-segment/)
-[![Tests](https://img.shields.io/badge/tests-3513-brightgreen)](https://github.com/craigtrim/fast-sentence-segment/tree/master/tests)
+[![Tests](https://img.shields.io/badge/tests-3452-brightgreen)](https://github.com/craigtrim/fast-sentence-segment/tree/master/tests)
 [![Golden Rules](https://img.shields.io/badge/pySBD_Golden_Rules-48/48-gold)](https://github.com/craigtrim/fast-sentence-segment/tree/master/tests/benchmark)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
@@ -80,6 +80,7 @@ This validates the library's accuracy on established edge cases including honori
 - **Company name handling**: "Yahoo! Inc." recognized as a single entity
 - **Ellipsis preservation**: Keeps `...` intact while detecting sentence boundaries
 - **Question/exclamation splitting**: Properly splits on `?` and `!` followed by capital letters
+- **Dialog sentence control**: Optional parameter to segment dialog sentences individually for stylometry/prosody analysis
 - **Cached processing**: LRU cache for repeated text processing
 - **Flexible output**: Nested lists (by paragraph) or flattened list of sentences
 - **Bullet point & numbered list normalization**: Cleans common list formats
@@ -164,6 +165,27 @@ results = segment_text(text, flatten=True)
 ]
 ```
 
+### Dialog Sentence Segmentation
+
+By default, multi-sentence quotes are kept together for narrative flow. For stylometry and prosody analysis that requires examining each sentence individually, use `split_dialog=True`:
+
+```python
+# Default behavior: dialog kept together
+text = '"Hello. How are you?" she asked.'
+results = segment_text(text, flatten=True)
+# Returns: ['"Hello. How are you?" she asked.']
+
+# For stylometry/prosody: split dialog sentences individually
+results = segment_text(text, flatten=True, split_dialog=True)
+# Returns: ['"Hello.', 'How are you?" she asked.']
+```
+
+This is particularly useful for:
+- Sentence-level prosody analysis
+- Stylometric fingerprinting
+- Per-sentence sentiment analysis
+- Individual sentence classification tasks
+
 ### Direct Segmenter Access
 
 For more control, use the `Segmenter` class directly:
@@ -195,21 +217,24 @@ segment-file --input-file book.txt --output-file sentences.txt --unwrap
 
 # Dialog-aware formatting (implies --unwrap)
 segment -f book.txt --format
+
+# Split dialog sentences individually (for stylometry/prosody analysis)
+segment "\"Hello. How are you?\" she asked." --split-dialog
 ```
 
 ## API Reference
 
 | Function | Parameters | Returns | Description |
 |----------|------------|---------|-------------|
-| `segment_text()` | `input_text: str`, `flatten: bool = False`, `unwrap: bool = False`, `format: str = None` | `list` or `str` | Main entry point for segmentation. Use `format="dialog"` for dialog-aware output. |
-| `Segmenter.input_text()` | `input_text: str` | `list[list[str]]` | Cached paragraph-aware segmentation |
+| `segment_text()` | `input_text: str`, `flatten: bool = False`, `unwrap: bool = False`, `normalize: bool = True`, `format: str = None`, `split_dialog: bool = False` | `list` or `str` | Main entry point for segmentation. Use `format="dialog"` for dialog-aware output. Use `split_dialog=True` to segment dialog sentences individually. |
+| `Segmenter.input_text()` | `input_text: str`, `split_dialog: bool = False` | `list[list[str]]` | Cached paragraph-aware segmentation |
 
 ### CLI Commands
 
 | Command | Description |
 |---------|-------------|
-| `segment [text]` | Segment text from argument, `-f FILE`, or stdin. Use `-n` for numbered output, `--format` for dialog-aware paragraph grouping. |
-| `segment-file --input-file IN --output-file OUT [--unwrap] [--format]` | Segment a file and write one sentence per line. Use `--unwrap` for hard-wrapped e-texts, `--format` for dialog-aware formatting. |
+| `segment [text]` | Segment text from argument, `-f FILE`, or stdin. Use `-n` for numbered output, `--format` for dialog-aware paragraph grouping, `--split-dialog` to segment dialog sentences individually. |
+| `segment-file --input-file IN --output-file OUT [--unwrap] [--format] [--split-dialog]` | Segment a file and write one sentence per line. Use `--unwrap` for hard-wrapped e-texts, `--format` for dialog-aware formatting, `--split-dialog` for individual dialog sentence segmentation. |
 
 ## Why Nested Lists?
 

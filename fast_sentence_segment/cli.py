@@ -102,6 +102,11 @@ def main():
         action="store_true",
         help="Format output with dialog-aware paragraph grouping (implies --unwrap)",
     )
+    parser.add_argument(
+        "--split-dialog",
+        action="store_true",
+        help="Segment dialog sentences individually (for stylometry/prosody analysis)",
+    )
     args = parser.parse_args()
 
     # --format implies --unwrap
@@ -122,7 +127,8 @@ def main():
     # Segment and output
     result = segment_text(
         text.strip(), flatten=True, unwrap=unwrap,
-        format="dialog" if args.format else None
+        format="dialog" if args.format else None,
+        split_dialog=args.split_dialog,
     )
 
     # If format is used, result is a string
@@ -144,7 +150,8 @@ def _generate_output_path(input_path: str) -> str:
 
 
 def _process_single_file(
-    input_file: str, output_file: str, unwrap: bool, normalize: bool, format: str = None
+    input_file: str, output_file: str, unwrap: bool, normalize: bool, format: str = None,
+    split_dialog: bool = False
 ):
     """Process a single file and write output."""
     # Show configuration
@@ -154,6 +161,7 @@ def _process_single_file(
     _param("Unwrap", "enabled" if unwrap else "disabled")
     _param("Normalize quotes", "disabled" if not normalize else "enabled")
     _param("Format", format if format else "default (one sentence per line)")
+    _param("Split dialog", "enabled" if split_dialog else "disabled")
     print()
 
     # Step 1: Read file
@@ -167,6 +175,7 @@ def _process_single_file(
     start = time.perf_counter()
     result = segment_text(
         text.strip(), flatten=True, unwrap=unwrap, normalize=normalize, format=format,
+        split_dialog=split_dialog,
     )
     elapsed = time.perf_counter() - start
 
@@ -225,6 +234,11 @@ def file_main():
         action="store_true",
         help="Format output with dialog-aware paragraph grouping (implies --unwrap)",
     )
+    parser.add_argument(
+        "--split-dialog",
+        action="store_true",
+        help="Segment dialog sentences individually (for stylometry/prosody analysis)",
+    )
     args = parser.parse_args()
 
     # --format implies --unwrap
@@ -268,6 +282,7 @@ def file_main():
         _param("Unwrap", "enabled" if unwrap else "disabled")
         _param("Normalize quotes", "disabled" if not normalize else "enabled")
         _param("Format", "dialog" if args.format else "default (one sentence per line)")
+        _param("Split dialog", "enabled" if args.split_dialog else "disabled")
         print()
 
         format_value = "dialog" if args.format else None
@@ -275,7 +290,7 @@ def file_main():
             input_path = os.path.join(input_dir, filename)
             output_path = _generate_output_path(input_path)
             print(f"  {BOLD}[{i}/{len(txt_files)}]{RESET} {filename}")
-            _process_single_file(input_path, output_path, unwrap, normalize, format_value)
+            _process_single_file(input_path, output_path, unwrap, normalize, format_value, args.split_dialog)
             print()
 
         print(f"  {GREEN}Done! Processed {len(txt_files)} files.{RESET}")
@@ -296,7 +311,7 @@ def file_main():
     print()
 
     format_value = "dialog" if args.format else None
-    _process_single_file(input_file, output_file, unwrap, normalize, format_value)
+    _process_single_file(input_file, output_file, unwrap, normalize, format_value, args.split_dialog)
 
     print(f"\n  {GREEN}Done!{RESET}")
     print()
