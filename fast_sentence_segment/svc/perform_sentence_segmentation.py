@@ -152,12 +152,13 @@ class PerformSentenceSegmentation(BaseObject):
         text = self._normalize_exclamation_brands(text, denormalize=True)
         text = self._normalize_middle_initials(text, denormalize=True)
         text = self._normalize_unicode_tokens(text, denormalize=True)
+        # Restore brackets first (issue #37) - must happen before URLs/citations
+        # because they may contain URL or citation placeholders
+        text = self._normalize_brackets(text, denormalize=True)
         # Restore citations (issue #31)
         text = self._normalize_citations(text, denormalize=True)
         # Restore URLs (issue #32)
         text = self._normalize_urls(text, denormalize=True)
-        # Restore brackets (issue #37)
-        text = self._normalize_brackets(text, denormalize=True)
         return text
 
     @staticmethod
@@ -419,6 +420,13 @@ class PerformSentenceSegmentation(BaseObject):
             for x in sentences
         ]
 
+        # Restore brackets first (issue #37) - must happen before URLs/citations
+        # because they may contain URL or citation placeholders
+        sentences = [
+            self._normalize_brackets(x, denormalize=True)
+            for x in sentences
+        ]
+
         # Restore citations (issue #31)
         sentences = [
             self._normalize_citations(x, denormalize=True)
@@ -428,12 +436,6 @@ class PerformSentenceSegmentation(BaseObject):
         # Restore URLs (issue #32)
         sentences = [
             self._normalize_urls(x, denormalize=True)
-            for x in sentences
-        ]
-
-        # Restore brackets (issue #37)
-        sentences = [
-            self._normalize_brackets(x, denormalize=True)
             for x in sentences
         ]
 

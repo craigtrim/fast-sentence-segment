@@ -25,7 +25,9 @@ class TestThirtyNineSteps:
 
     def test_father_died_business(self):
         text = '"My father died a year ago and left me the business. I live there with my grandmother. It\'s a slow job for a young man, and it wasn\'t my choice of profession."'
-        expected = ['"My father died a year ago and left me the business. I live there with my grandmother. It\'s a slow job for a young man, and it wasn\'t my choice of profession."']
+        expected = [
+            '"My father died a year ago and left me the business. I live there with my grandmother. It\'s a slow job for a young man, and it wasn\'t my choice of profession."'
+        ]
         assert segment_text(text, flatten=True) == expected
 
     def test_not_now_eagerly(self):

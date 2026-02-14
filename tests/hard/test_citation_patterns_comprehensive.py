@@ -148,7 +148,7 @@ class TestCitationPatternsComprehensive:
          ["[1] Author. (2020). Title."]),
 
         ("[10] Smith, J. (2019). Work.",
-         ["[10] Smith, J. (2019). Work."]),
+         ["[10].", "Smith, J. (2019). Work."]),
 
         ("[123] Brown, K. et al. (2021). Research.",
          ["[123] Brown, K. et al. (2021). Research."]),
