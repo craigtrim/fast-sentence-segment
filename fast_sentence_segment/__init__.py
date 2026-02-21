@@ -12,6 +12,22 @@ from .dmo.dialog_formatter import format_dialog
 segment = Segmenter().input_text
 
 
+def segment_paragraphs(sentences: List[List[str]]) -> List[str]:
+    """Join nested sentence lists into per-paragraph strings.
+
+    Args:
+        sentences: Nested list as returned by segment_text(flatten=False).
+
+    Returns:
+        List of paragraph strings, one per inner list.
+
+    Related GitHub Issues:
+        #72 - Add segment_paragraphs helper for paragraph-level output
+        https://github.com/craigtrim/fast-sentence-segment/issues/72
+    """
+    return [' '.join(para) for para in sentences]
+
+
 def segment_text(
     input_text: str,
     flatten: bool = False,
