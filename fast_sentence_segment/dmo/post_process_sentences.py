@@ -24,6 +24,14 @@ class PostProcessStructure(BaseObject):
 
         ':.': ': ',
         ': .': ': ',
+
+        # Strip phantom periods inserted by NewlinesToPeriods for semicolons.
+        # When `;\n` is converted to `; . ` so spaCy detects the sentence
+        # boundary, the first split sentence ends with `; .` which must be
+        # cleaned back to `; ` (then stripped to `;`).
+        # Related: https://github.com/craigtrim/fast-sentence-segment/issues/39
+        ';.': '; ',
+        '; .': '; ',
     }
 
     def __init__(self):
