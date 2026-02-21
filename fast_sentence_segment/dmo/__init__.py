@@ -30,3 +30,5 @@ from .parenthetical_merger import ParentheticalMerger
 from .leading_ellipsis_merger import LeadingEllipsisMerger
 from .citation_normalizer import CitationNormalizer
 from .url_normalizer import UrlNormalizer
+from .mla_citation_detector import MlaCitationDetector
+from .bracket_content_normalizer import BracketContentNormalizer

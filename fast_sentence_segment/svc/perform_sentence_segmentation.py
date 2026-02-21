@@ -72,6 +72,7 @@ from fast_sentence_segment.dmo import ParentheticalMerger  # noqa: E402
 from fast_sentence_segment.dmo import LeadingEllipsisMerger  # noqa: E402
 from fast_sentence_segment.dmo import CitationNormalizer  # noqa: E402
 from fast_sentence_segment.dmo import UrlNormalizer  # noqa: E402
+from fast_sentence_segment.dmo import BracketContentNormalizer  # noqa: E402
 
 
 class PerformSentenceSegmentation(BaseObject):
@@ -139,6 +140,8 @@ class PerformSentenceSegmentation(BaseObject):
         self._normalize_citations = CitationNormalizer().process
         # URL normalizer for issue #32
         self._normalize_urls = UrlNormalizer().process
+        # Bracket content normalizer for Issue #37 (never split inside [...])
+        self._normalize_brackets = BracketContentNormalizer().process
 
     def _denormalize(self, text: str) -> str:
         """ Restore normalized placeholders to original form """
@@ -149,6 +152,9 @@ class PerformSentenceSegmentation(BaseObject):
         text = self._normalize_exclamation_brands(text, denormalize=True)
         text = self._normalize_middle_initials(text, denormalize=True)
         text = self._normalize_unicode_tokens(text, denormalize=True)
+        # Restore brackets first (issue #37) - must happen before URLs/citations
+        # because they may contain URL or citation placeholders
+        text = self._normalize_brackets(text, denormalize=True)
         # Restore citations (issue #31)
         text = self._normalize_citations(text, denormalize=True)
         # Restore URLs (issue #32)
@@ -257,7 +263,8 @@ class PerformSentenceSegmentation(BaseObject):
         return a_sentence
 
     def _process(self,
-                 input_text: str) -> list:
+                 input_text: str,
+                 split_dialog: bool = True) -> list:
 
         # Normalize tabs to spaces
         input_text = input_text.replace('\t', ' ')
@@ -273,6 +280,11 @@ class PerformSentenceSegmentation(BaseObject):
         # URLs at sentence boundaries were getting periods appended
         # Replace URLs with placeholders to protect them during segmentation
         input_text = self._normalize_urls(input_text)
+
+        # Protect bracketed content BEFORE spaCy (issue #37)
+        # Brackets [...] are for references/citations and should never be split
+        # regardless of internal punctuation like [Fig. 1.] or [p. 42.]
+        input_text = self._normalize_brackets(input_text)
 
         # Protect Golden Rules patterns BEFORE spaCy (issues #25, #26, #27)
         # Must happen before spaCy to prevent false splits at:
@@ -332,7 +344,9 @@ class PerformSentenceSegmentation(BaseObject):
 
         # Merge sentences incorrectly split inside quotes (issue #20)
         # e.g., ['"First thing.', 'Second thing," she said.'] -> ['"First thing. Second thing," she said.']
-        sentences = self._unclosed_quote_merger(sentences)
+        # Skip this merge if split_dialog=True for stylometry/prosody analysis (issue #38)
+        if not split_dialog:
+            sentences = self._unclosed_quote_merger(sentences)
 
         # Merge sentences incorrectly split at abbreviations (issue #3)
         sentences = self._abbreviation_merger(sentences)
@@ -409,6 +423,13 @@ class PerformSentenceSegmentation(BaseObject):
             for x in sentences
         ]
 
+        # Restore brackets first (issue #37) - must happen before URLs/citations
+        # because they may contain URL or citation placeholders
+        sentences = [
+            self._normalize_brackets(x, denormalize=True)
+            for x in sentences
+        ]
+
         # Restore citations (issue #31)
         sentences = [
             self._normalize_citations(x, denormalize=True)
@@ -424,11 +445,14 @@ class PerformSentenceSegmentation(BaseObject):
         return sentences
 
     def process(self,
-                input_text: str) -> list:
+                input_text: str,
+                split_dialog: bool = True) -> list:
         """Perform Sentence Segmentation
 
         Args:
             input_text (str): An input string of any length or type
+            split_dialog (bool): If True (default), segment dialog sentences individually.
+                Set to False to keep multi-sentence quotes together.
 
         Raises:
             ValueError: input must be a string
@@ -436,6 +460,10 @@ class PerformSentenceSegmentation(BaseObject):
         Returns:
             list:   a list of sentences
                     each list item is an input string of any length, but is a semantic sentence
+
+        Related GitHub Issue:
+            #38 - feat: Add optional parameter to segment dialog sentences individually
+            https://github.com/craigtrim/fast-sentence-segment/issues/38
         """
 
         if input_text is None or not len(input_text):
@@ -445,4 +473,4 @@ class PerformSentenceSegmentation(BaseObject):
             self.logger.warning(f"Invalid Input Text: {input_text}")
             return []
 
-        return self._process(input_text)
+        return self._process(input_text, split_dialog=split_dialog)

@@ -340,7 +340,7 @@ class TestEdgeCases:
     def test_multiple_sentences_in_quote(self):
         text = '"First thing. Second thing," she said.'
         expected = ['"First thing. Second thing," she said.']
-        assert segment_text(text, flatten=True) == expected
+        assert segment_text(text, flatten=True, split_dialog=False) == expected
 
     def test_name_lowercase_after(self):
         """Names are capitalized but still attribution."""

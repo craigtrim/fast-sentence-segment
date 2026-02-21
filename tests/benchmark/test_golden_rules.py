@@ -218,8 +218,12 @@ class TestGoldenRules:
 
     @pytest.mark.parametrize("rule_num,text,expected", GOLDEN_RULES)
     def test_golden_rule(self, rule_num, text, expected):
-        """Test individual golden rule."""
-        result = segment_text(text, flatten=True)
+        """Test individual golden rule.
+
+        Note: Golden rules use split_dialog=False to match original pySBD
+        expectations which keep multi-sentence quotes together.
+        """
+        result = segment_text(text, flatten=True, split_dialog=False)
         assert result == expected, f"Rule {rule_num} failed"
 
 
