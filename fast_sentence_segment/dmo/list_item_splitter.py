@@ -47,10 +47,19 @@ LIST_PATTERNS = [
     r'(?:^|(?<=\s))(\d{1,3}\.\d{1,3}\.)(?:\s+|\.?$)',
 
     # a. b. c. style - lowercase letter + period
-    r'(?:^|(?<=\s))([a-z]\.)(?:\s+|\.?$)',
+    # Allow followed by space + non-digit content, OR at end of sentence (\.?$).
+    # The end-of-sentence case is needed for post-spaCy fragments like
+    # "a. The first item b." where "b." is at the end and gets detected as a
+    # list marker enabling the iterative merge+split algorithm to reconstruct
+    # the full "a. First  b. Second  c. Third" structure.
+    # The (?!\d) guard after \s+ prevents citation abbreviations like "p. 5"
+    # (page 5) or "n. 3" (note 3) from being treated as list markers.
+    # Related: issue #47 – p. in citations was decoded as ")." due to the
+    # 'p' → ')' substitution in the ListMarkerNormalizer codec.
+    r'(?:^|(?<=\s))([a-z]\.)(?:\s+(?!\d)|\.?$)',
 
-    # A. B. C. style - uppercase letter + period
-    r'(?:^|(?<=\s))([A-Z]\.)(?:\s+|\.?$)',
+    # A. B. C. style - uppercase letter + period (same digit-exclusion logic)
+    r'(?:^|(?<=\s))([A-Z]\.)(?:\s+(?!\d)|\.?$)',
 
     # a) b) c) style - letter + paren
     r'(?:^|(?<=\s))([a-zA-Z]\))(?:\s+|\.?$)',

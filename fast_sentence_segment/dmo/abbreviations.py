@@ -47,12 +47,6 @@ SENTENCE_ENDING_ABBREVIATIONS: List[str] = [
     "LLC.",
     "LLP.",
 
-    # Academic/legal citations (can end sentences)
-    "ibid.",
-    "Ibid.",
-    "cf.",
-    "Cf.",
-
     # Countries/Regions (when at end of sentence)
     "U.S.",
     "U.S.A.",
@@ -146,6 +140,79 @@ TITLE_ABBREVIATIONS: List[str] = [
     # Legal / adversarial
     "vs.",
     "Vs.",
+
+    # Scholarly / Latin abbreviations (always introduce content — never end sentences)
+    # Removing cf./ibid. from SENTENCE_ENDING and placing here prevents
+    # AbbreviationSplitter from incorrectly splitting at these boundaries.
+    # Related GitHub Issue:
+    #     #47 - Abbreviations with trailing periods cause false sentence splits
+    #     https://github.com/craigtrim/fast-sentence-segment/issues/47
+    "et al.", "et al.,",
+    "cf.", "Cf.",
+    "ibid.", "Ibid.",
+    "N.B.", "n.b.",
+    "q.v.",
+    "s.v.",
+    "id.", "Id.",
+
+    # Extended reference / academic numbering prefixes
+    "Tab.", "tab.",
+    "App.", "app.",
+    "Eq.", "eq.",
+    "Thm.", "thm.",
+    "Prop.", "prop.",
+    "Def.", "def.",
+    "Lem.", "lem.",
+    "Cor.", "cor.",
+    "Rem.", "rem.",
+    "Ex.",
+    "Obs.", "obs.",
+    "Pf.", "pf.",
+    "para.", "Para.",
+
+    # Extended geographic / address prefixes
+    "Ln.", "Ct.", "Pl.", "Pkwy.", "Hwy.", "Ste.", "Bldg.", "Rm.", "Apt.",
+
+    # Extended military ranks
+    "Ens.", "Brig.", "Spec.", "Pfc.",
+
+    # Professional / organizational titles
+    "Asst.", "Assoc.", "Dir.", "Supt.", "Insp.",
+
+    # Academic / publishing abbreviations
+    "ed.", "Ed.", "eds.", "Eds.",
+    "trans.", "Trans.",
+    "comp.", "Comp.", "comps.", "Comps.",
+    "repr.", "Repr.",
+
+    # Chronological / biographical abbreviations
+    "ca.", "c.",          # circa (approximately)
+    "fl.",                # floruit (flourished)
+
+    # Book / series reference prefixes
+    "bk.", "Bk.",
+    "ser.", "Ser.",
+    "illus.", "Illus.",
+
+    # Rhetorical / editorial markers
+    "sic.",               # thus (in quotations)
+    "sc.",                # scilicet (namely)
+    "a.k.a.",             # also known as
+
+    # Postscript / proof markers
+    "P.S.", "p.s.",
+    "q.e.d.", "Q.E.D.",   # quod erat demonstrandum
+
+    # Multi-word abbreviations (space-containing) — these entries help
+    # the _TITLE_ABBREV_SET lookup in AbbreviationSplitter for the
+    # individual words, even though multi-word lookups are not currently
+    # supported there.  Merge handling for these is done via MERGE_PATTERNS.
+    "op.",                # op. (opus) — first word of op. cit.
+    "loc.",               # loc. — first word of loc. cit.
+    "ad",                 # ad — first word of ad loc.
+    "et",                 # et — first word of et al. / et seq.
+    "seq.",               # seq. — second word of et seq.
+    "cit.",               # cit. — second word of op. cit. / loc. cit.
 ]
 
 

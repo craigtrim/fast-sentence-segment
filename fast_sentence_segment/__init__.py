@@ -12,6 +12,25 @@ from .dmo.dialog_formatter import format_dialog
 segment = Segmenter().input_text
 
 
+def segment_paragraphs(sentences: List[List[str]]) -> List[str]:
+    """Join sentences within each paragraph into a single string.
+
+    Takes the nested list output of segment_text(flatten=False) and collapses
+    each paragraph's sentence list into one space-joined string.
+
+    Args:
+        sentences: A list of paragraphs, each paragraph being a list of sentences.
+
+    Returns:
+        A flat list of paragraph strings, one string per paragraph.
+
+    Related GitHub Issue:
+        #72 - segment_paragraphs not exported from package
+        https://github.com/craigtrim/fast-sentence-segment/issues/72
+    """
+    return [" ".join(paragraph) for paragraph in sentences]
+
+
 def segment_text(
     input_text: str,
     flatten: bool = False,

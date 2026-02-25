@@ -139,10 +139,16 @@ class ListMarkerNormalizer(BaseObject):
             r'(?:^|(?<=\s))(\d{1,3}\.)(?=\s)',
 
             # a. style: lowercase letter + period
-            r'(?:^|(?<=\s))([a-z]\.)(?=\s)',
+            # Lookahead requires space + letter/bracket, NOT digit.
+            # This excludes citation abbreviations like "p. 5" (page 5) or
+            # "n. 3" (note 3) which look identical to list markers but are
+            # followed by numbers. Real list items start with text, e.g. "a. First".
+            # Related: issue #47 – p. in citations was decoded as ")." due to
+            # the 'p' → ')' substitution in the ListMarkerNormalizer codec.
+            r'(?:^|(?<=\s))([a-z]\.)(?=\s[a-zA-Z\(\[\{])',
 
-            # A. style: uppercase letter + period
-            r'(?:^|(?<=\s))([A-Z]\.)(?=\s)',
+            # A. style: uppercase letter + period (same digit-exclusion logic)
+            r'(?:^|(?<=\s))([A-Z]\.)(?=\s[a-zA-Z\(\[\{])',
 
             # a) style: letter + paren
             r'(?:^|(?<=\s))([a-zA-Z]\))(?=\s)',

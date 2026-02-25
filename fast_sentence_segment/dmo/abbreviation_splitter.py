@@ -28,6 +28,21 @@ _TITLE_ABBREV_SET = set(TITLE_ABBREVIATIONS)
 # Set for O(1) lookup
 _PROPER_NOUN_SET = set(COUNTRY_ABBREV_PROPER_NOUNS)
 
+# Pattern to detect proof-ending abbreviations (q.e.d., Q.E.D.) that appear at
+# the END of a sentence preceded by terminal punctuation (a period from a prior
+# clause, e.g. "...implies R. q.e.d.").  These always form their own sentence.
+#
+# The pattern matches: <terminal-period> <whitespace> <proof-ender> <end-of-string>
+# Capture group 1 = the proof-ender itself (e.g. "q.e.d.").
+#
+# Related GitHub Issue:
+#     #47 - Abbreviations with trailing periods cause false sentence splits
+#     https://github.com/craigtrim/fast-sentence-segment/issues/47
+_PROOF_ENDER_PATTERN = re.compile(
+    r'\.\s+(q\.e\.d\.|Q\.E\.D\.)\s*$',
+    re.IGNORECASE,
+)
+
 
 class AbbreviationSplitter(BaseObject):
     """Split sentences at abbreviation boundaries."""
@@ -182,6 +197,21 @@ class AbbreviationSplitter(BaseObject):
         Returns:
             List of one or more sentences
         """
+        # Special case: proof-ending abbreviations (q.e.d., Q.E.D.) that appear
+        # at the very end of a sentence, preceded by a sentence-terminal period.
+        # e.g. "...implies R. q.e.d." → ["...implies R.", "q.e.d."]
+        # spaCy does not split here because q.e.d. starts with a lowercase letter,
+        # so we handle it explicitly before the main pattern loop.
+        proof_match = _PROOF_ENDER_PATTERN.search(sentence)
+        if proof_match:
+            before = sentence[:proof_match.start() + 1].strip()  # up to and including the period
+            after = sentence[proof_match.start(1):].strip()        # the proof-ender itself
+            if before and after:
+                # Recursively split the "before" part in case it contains other abbreviation splits
+                parts = self._split_sentence(before)
+                parts.append(after)
+                return parts
+
         results = []
         remaining = sentence
         search_start = 0

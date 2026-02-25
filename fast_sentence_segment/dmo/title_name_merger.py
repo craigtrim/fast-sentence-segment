@@ -47,6 +47,20 @@ PERSONAL_TITLES: List[str] = [
     "Gov.",
     "Pres.",
     "Hon.",
+    # Extended military ranks — present in TITLE_ABBREVIATIONS but previously
+    # missing here, causing title+name merges to fail for these ranks.
+    # Related GitHub Issue:
+    #     #47 - Abbreviations with trailing periods cause false sentence splits
+    #     https://github.com/craigtrim/fast-sentence-segment/issues/47
+    "Adm.",
+    "Cmdr.",
+    "Maj.",
+    "Cpl.",
+    "Pvt.",
+    "Ens.",
+    "Brig.",
+    "Spec.",
+    "Pfc.",
 ]
 
 
