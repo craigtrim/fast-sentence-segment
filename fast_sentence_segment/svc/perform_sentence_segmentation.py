@@ -246,20 +246,14 @@ class PerformSentenceSegmentation(BaseObject):
         """ Purpose:
             Clean punctuation oddities; this is likely highly overfitted (for now)
         """
-        if ", Inc" in input_text:
-            input_text = input_text.replace(", Inc", " Inc")
-
         return input_text
 
     @staticmethod
     def _clean_spacing(a_sentence: str) -> str:
-
         # eliminate triple-space
         a_sentence = a_sentence.replace('   ', '  ')
-
         # treat double-space as delimiter
         a_sentence = a_sentence.replace('  ', '. ')
-
         return a_sentence
 
     def _process(self,

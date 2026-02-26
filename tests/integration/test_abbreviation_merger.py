@@ -43,12 +43,12 @@ class TestMergeNumber:
     def test_no_lowercase(self, merger):
         sentences = ["Item no.", "5 is here."]
         result = merger.process(sentences)
-        assert result == ["Item no. 5", "is here."]
+        assert result == ["Item no. 5 is here."]
 
     def test_no_uppercase(self, merger):
         sentences = ["No.", "42 was selected."]
         result = merger.process(sentences)
-        assert result == ["No. 42", "was selected."]
+        assert result == ["No. 42 was selected."]
 
 
 class TestMergeVolume:
@@ -57,7 +57,7 @@ class TestMergeVolume:
     def test_vol(self, merger):
         sentences = ["See vol.", "3 for details."]
         result = merger.process(sentences)
-        assert result == ["See vol. 3", "for details."]
+        assert result == ["See vol. 3 for details."]
 
 
 class TestMergePart:
@@ -66,7 +66,7 @@ class TestMergePart:
     def test_pt(self, merger):
         sentences = ["Read pt.", "2 first."]
         result = merger.process(sentences)
-        assert result == ["Read pt. 2", "first."]
+        assert result == ["Read pt. 2 first."]
 
 
 class TestMergeChapter:
@@ -75,7 +75,7 @@ class TestMergeChapter:
     def test_ch(self, merger):
         sentences = ["See ch.", "10 for context."]
         result = merger.process(sentences)
-        assert result == ["See ch. 10", "for context."]
+        assert result == ["See ch. 10 for context."]
 
 
 class TestMergeSection:
@@ -84,12 +84,12 @@ class TestMergeSection:
     def test_sec_simple(self, merger):
         sentences = ["Refer to sec.", "3 above."]
         result = merger.process(sentences)
-        assert result == ["Refer to sec. 3", "above."]
+        assert result == ["Refer to sec. 3 above."]
 
     def test_sec_dotted(self, merger):
         sentences = ["See sec.", "3.2 for details."]
         result = merger.process(sentences)
-        assert result == ["See sec. 3.2", "for details."]
+        assert result == ["See sec. 3.2 for details."]
 
 
 class TestMergeFigure:
@@ -98,12 +98,12 @@ class TestMergeFigure:
     def test_fig_simple(self, merger):
         sentences = ["See fig.", "1 below."]
         result = merger.process(sentences)
-        assert result == ["See fig. 1", "below."]
+        assert result == ["See fig. 1 below."]
 
     def test_fig_dotted(self, merger):
         sentences = ["As shown in Fig.", "3.2 the data."]
         result = merger.process(sentences)
-        assert result == ["As shown in Fig. 3.2", "the data."]
+        assert result == ["As shown in Fig. 3.2 the data."]
 
 
 class TestMergePage:
@@ -112,12 +112,12 @@ class TestMergePage:
     def test_p_single(self, merger):
         sentences = ["See p.", "42 for reference."]
         result = merger.process(sentences)
-        assert result == ["See p. 42", "for reference."]
+        assert result == ["See p. 42 for reference."]
 
     def test_pp_range(self, merger):
         sentences = ["See pp.", "42-50 for context."]
         result = merger.process(sentences)
-        assert result == ["See pp. 42-50", "for context."]
+        assert result == ["See pp. 42-50 for context."]
 
 
 class TestMergeArticle:
@@ -126,7 +126,7 @@ class TestMergeArticle:
     def test_art(self, merger):
         sentences = ["Under art.", "5 of the treaty."]
         result = merger.process(sentences)
-        assert result == ["Under art. 5", "of the treaty."]
+        assert result == ["Under art. 5 of the treaty."]
 
 
 class TestNoMerge:
