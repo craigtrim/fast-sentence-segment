@@ -436,8 +436,12 @@ MERGE_PATTERNS: List[Tuple[str, str]] = [
     (r"(?i)\bMs\.$", r"^(.+)$"),
     (r"(?i)\bDr\.$", r"^(.+)$"),
     (r"(?i)\bProf\.$", r"^(.+)$"),
-    (r"(?i)\bSr\.$", r"^(.+)$"),
-    (r"(?i)\bJr\.$", r"^(.+)$"),
+    # Sr./Jr. — only merge when next fragment starts with lowercase/digit.
+    # Capital-starting fragments after Sr./Jr. are new sentences, not continuations.
+    # e.g. "Robert Harrington Sr. His son took over" → split at Sr.
+    # e.g. "Martin Luther King Sr. founded..." → no split (spaCy keeps together)
+    (r"(?i)\bSr\.$", r"^([a-z0-9].+)$"),
+    (r"(?i)\bJr\.$", r"^([a-z0-9].+)$"),
     (r"(?i)\bRev\.$", r"^(.+)$"),
 
     # ── Military titles ───────────────────────────────────────────────────────
@@ -568,18 +572,23 @@ MERGE_PATTERNS: List[Tuple[str, str]] = [
     #              sentence boundaries like "Apple Inc. They are hiring.")
     (r"(?i)^Inc\.$", r"^(.+)$"),
     (rf"(?i)\b{_FUNC_WORD_SEQ}\s+Inc\.$", r"^(.+)$"),
+    (r"(?i)[—–]\s*Inc\.$", r"^(.+)$"),   # em/en-dash → inside parenthetical
     (r"(?i)\bInc\.$", r"^([a-z0-9].+)$"),
     (r"(?i)^Corp\.$", r"^(.+)$"),
     (rf"(?i)\b{_FUNC_WORD_SEQ}\s+Corp\.$", r"^(.+)$"),
+    (r"(?i)[—–]\s*Corp\.$", r"^(.+)$"),
     (r"(?i)\bCorp\.$", r"^([a-z0-9].+)$"),
     (r"(?i)^Ltd\.$", r"^(.+)$"),
     (rf"(?i)\b{_FUNC_WORD_SEQ}\s+Ltd\.$", r"^(.+)$"),
+    (r"(?i)[—–]\s*Ltd\.$", r"^(.+)$"),
     (r"(?i)\bLtd\.$", r"^([a-z0-9].+)$"),
     (r"(?i)^Co\.$", r"^(.+)$"),
     (rf"(?i)\b{_FUNC_WORD_SEQ}\s+Co\.$", r"^(.+)$"),
+    (r"(?i)[—–]\s*Co\.$", r"^(.+)$"),
     (r"(?i)\bCo\.$", r"^([a-z0-9].+)$"),
     (r"(?i)^Bros\.$", r"^(.+)$"),
     (rf"(?i)\b{_FUNC_WORD_SEQ}\s+Bros\.$", r"^(.+)$"),
+    (r"(?i)[—–]\s*Bros\.$", r"^(.+)$"),
     (r"(?i)\bBros\.$", r"^([a-z0-9].+)$"),
 
     # ── Measurement abbreviations ─────────────────────────────────────────────
@@ -833,6 +842,27 @@ class AbbreviationMerger(BaseObject):
                         current_for_merge = current[:-1]
                     result.append(current_for_merge + " " + next_sent.strip())
                     i += 2
+                    continue
+
+                # Secondary check: when spaCy splits at a clause-level
+                # punctuation mark (";", ":"), the following fragment is still
+                # part of the same sentence.  If that fragment's first token
+                # matches one of our known MERGE_PATTERNS abbreviations, re-join.
+                # e.g. "Two sources agree;" + "n.b. Week 3..." → one sentence
+                # e.g. "The rule is:" + "c.f. Week 7 provides the answer." → one
+                # Note: only fires for abbreviations that remain in MERGE_PATTERNS
+                # (personal-title abbreviations that have been removed will not
+                # trigger this path).
+                if current and current[-1] in (';', ':') and next_sent:
+                    first_tok = next_sent.split()[0]
+                    for ep, _ in self._patterns:
+                        if ep.search(first_tok):
+                            result.append(current + " " + next_sent.strip())
+                            i += 2
+                            break
+                    else:
+                        result.append(current)
+                        i += 1
                     continue
 
             result.append(current)

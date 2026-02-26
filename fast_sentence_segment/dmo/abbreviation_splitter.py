@@ -248,8 +248,13 @@ class AbbreviationSplitter(BaseObject):
         if not last_word:
             return True  # No preceding word — treat as sentence-initial
 
-        # If preceded by a known function/preposition word → don't split
+        # If preceded by a known function/preposition word → don't split.
+        # Also strip any leading open-paren or dash that may be attached
+        # (e.g. "(see" in "The rule (see Inc. Week 7)" → stripped = "see").
         if last_word in _NON_SPLIT_PRECEDING_WORDS:
+            return True
+        stripped_last = last_word.lstrip("(—–")
+        if stripped_last in _NON_SPLIT_PRECEDING_WORDS:
             return True
 
         # If preceded by an em-dash, en-dash, or open-paren → inside a parenthetical
@@ -290,7 +295,16 @@ class AbbreviationSplitter(BaseObject):
 
         words = text_before.split()
         last_word = words[-1].lower() if words else ""
-        return last_word in _MEASUREMENT_NON_SPLIT_WORDS
+        if last_word in _MEASUREMENT_NON_SPLIT_WORDS:
+            return True
+        # Strip leading paren/dash attached to the preceding word (e.g. "(approx.")
+        stripped_last = last_word.lstrip("(—–")
+        if stripped_last in _MEASUREMENT_NON_SPLIT_WORDS:
+            return True
+        # Standalone paren/dash token → inside a parenthetical phrase
+        if words[-1] in _NON_SPLIT_PRECEDING_TOKENS:
+            return True
+        return False
 
     def _is_part_of_compound_abbrev(self, sentence: str, match: re.Match) -> bool:
         """Check if the matched abbreviation is the second word of a compound abbreviation.
@@ -316,7 +330,10 @@ class AbbreviationSplitter(BaseObject):
             return False
 
         last_word = text_before.split()[-1].lower()
-        return last_word in preceding_words
+        if last_word in preceding_words:
+            return True
+        # Strip leading paren/dash (e.g. "(in ext." → last_word = "(in" → "in")
+        return last_word.lstrip("(—–") in preceding_words
 
     def _is_followed_by_title_abbrev(self, sentence: str, match: re.Match) -> bool:
         """Check if the abbreviation is followed by a title abbreviation at sentence start.
