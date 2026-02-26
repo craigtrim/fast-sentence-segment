@@ -60,9 +60,12 @@ class NewlinesToPeriods(BaseObject):
         # `; \n` → `; . `   and   `: \n` → `: . `
         result = _CLAUSE_TERMINAL_NEWLINE.sub(r'\1. ', input_text)
 
-        # Step 2: Replace all remaining newlines with a plain space so that
-        # hard-wrapped prose is rejoined into a single sentence (original
-        # behaviour, preserved from 20230309).
-        result = result.replace('\n', ' ')
+        # Step 2: Replace all remaining newlines with a single space so that
+        # hard-wrapped prose is rejoined into a single sentence.  Each line is
+        # stripped first to remove leading indent (e.g. the 4-space indent used
+        # by Project Gutenberg plain-text files) and any trailing whitespace,
+        # preventing multi-space gaps that downstream _clean_spacing + BulletPointCleaner
+        # would corrupt into spurious periods (issue #42).
+        result = ' '.join(line.strip() for line in result.split('\n'))
 
         return result
