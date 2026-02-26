@@ -112,6 +112,16 @@ _DAYS_OF_WEEK = frozenset({
     "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
 })
 
+# Connector words that, when immediately following a day-of-week name after a
+# time abbreviation, indicate a time qualifier continuation rather than the
+# start of an independent clause.  e.g. "at 9 a.m. Monday and Tuesday." stays
+# together, but "at 3 p.m. Saturday was busy." splits at p.m.
+_TIME_QUALIFIER_CONNECTORS = frozenset({
+    "and", "or", "but", "nor",
+    "at", "from", "to", "through", "between",
+    "morning", "afternoon", "evening",
+})
+
 # Set for O(1) lookup
 _PROPER_NOUN_SET = set(COUNTRY_ABBREV_PROPER_NOUNS)
 
@@ -304,6 +314,13 @@ class AbbreviationSplitter(BaseObject):
         # Standalone paren/dash token → inside a parenthetical phrase
         if words[-1] in _NON_SPLIT_PRECEDING_TOKENS:
             return True
+        # Colon / semicolon context: when the text before ends with ":" or ";",
+        # the abbreviation is introduced by a clause connector and is NOT a
+        # sentence end.
+        # e.g. "The rule is: approx. Week 7" → do NOT split at approx.
+        # e.g. "Two sources agree; approx. Week 3..." → do NOT split at approx.
+        if text_before.endswith(':') or text_before.endswith(';'):
+            return True
         return False
 
     def _is_part_of_compound_abbrev(self, sentence: str, match: re.Match) -> bool:
@@ -400,12 +417,16 @@ class AbbreviationSplitter(BaseObject):
         phrase, not the start of a new sentence.  Splitting here would produce
         the nonsense fragment "Monday." as a standalone sentence.
 
+        However, if the day name is followed by an independent predicate
+        (e.g. "Saturday was busy."), then the day IS the subject of a new
+        sentence and a split SHOULD occur.
+
         Args:
             sentence: The sentence being processed
             match: The regex match object
 
         Returns:
-            True if we should NOT split here (time abbrev + day name)
+            True if we should NOT split here (time abbrev + day name as qualifier)
         """
         abbrev = match.group(1)
         if abbrev not in _TIME_ABBREVS:
@@ -419,7 +440,25 @@ class AbbreviationSplitter(BaseObject):
             return False
 
         next_word = word_match.group(1)
-        return next_word in _DAYS_OF_WEEK
+        if next_word not in _DAYS_OF_WEEK:
+            return False
+
+        # The day name is present.  Now check if it is a time qualifier
+        # (day name alone or followed by a connector) or an independent clause
+        # subject (day name followed by a predicate).
+        # e.g. "at 9 a.m. Monday."             → qualifier → no split
+        # e.g. "at 9 a.m. Monday and Tuesday." → qualifier → no split
+        # e.g. "at 3 p.m. Saturday was busy."  → new sentence → split
+        rest_after_day = rest[word_match.end():].strip()
+        if rest_after_day and rest_after_day != '.':
+            next_word_match = re.match(r'([A-Za-z]+)', rest_after_day)
+            if next_word_match:
+                first_word_after_day = next_word_match.group(1).lower()
+                if first_word_after_day not in _TIME_QUALIFIER_CONNECTORS:
+                    # Independent predicate follows — allow the split
+                    return False
+
+        return True
 
     def _split_sentence(self, sentence: str) -> List[str]:
         """Split a single sentence at abbreviation boundaries.
