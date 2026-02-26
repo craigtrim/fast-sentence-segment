@@ -6,8 +6,8 @@
 [![Golden Rules](https://img.shields.io/badge/pySBD_Golden_Rules-48/48-gold)](https://github.com/craigtrim/fast-sentence-segment/tree/master/tests/benchmark)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![Downloads](https://static.pepy.tech/badge/fast-sentence-segment)](https://pepy.tech/project/fast-sentence-segment)
-[![Downloads/Month](https://static.pepy.tech/badge/fast-sentence-segment/month)](https://pepy.tech/project/fast-sentence-segment)
+[![Downloads](https://img.shields.io/pypi/dd/fast-sentence-segment)](https://pepy.tech/project/fast-sentence-segment)
+[![Downloads/Month](https://img.shields.io/pypi/dm/fast-sentence-segment)](https://pepy.tech/project/fast-sentence-segment)
 
 Fast and efficient sentence segmentation using spaCy with surgical post-processing fixes. Handles complex edge cases like abbreviations (Dr., Mr., etc.), ellipses, quoted text, and multi-paragraph documents.
 
