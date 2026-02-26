@@ -1,6 +1,6 @@
 [project]
 name = "fast-sentence-segment"
-version = "1.8.0"
+version = "1.8.1"
 description = "Fast and Efficient Sentence Segmentation"
 readme = "README.md"
 license = "MIT"
