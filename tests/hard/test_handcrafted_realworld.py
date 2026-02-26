@@ -122,9 +122,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["The decision in Smith vs. Jones established the precedent for informed consent."]
 
     def test_legal_statute_section_reference(self, segment: SegmentationFunc):
-        """Statute section reference with sec. and para."""
+        """Statute section reference with sec. — must not split."""
         text = "Liability is governed by sec. 47(2)(b) of the Compensation Act 2006."
-        assert segment(text) == ['Liability is governed by sec. 47', '(2)(b) of the Compensation Act 2006.']
+        assert segment(text) == ['Liability is governed by sec. 47(2)(b) of the Compensation Act 2006.']
 
     def test_legal_ibid_in_brief(self, segment: SegmentationFunc):
         """ibid. reference in a legal brief."""
@@ -157,9 +157,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["The motion was submitted by Jane Carter, Esq. of Carter & Associates."]
 
     def test_legal_hon_judge(self, segment: SegmentationFunc):
-        """Hon. before a judge's name in a court document."""
+        """Hon. before a judge's name in a court document — must not split."""
         text = "The matter came before the Hon. Justice O'Brien in chambers."
-        assert segment(text) == ['The matter came before the Hon.', "Justice O'Brien in chambers."]
+        assert segment(text) == ["The matter came before the Hon. Justice O'Brien in chambers."]
 
     def test_legal_vs_with_corp_parties(self, segment: SegmentationFunc):
         """vs. with corporate parties."""
@@ -167,9 +167,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["In Acme Corp. vs. Widget Inc. the court found no breach of contract."]
 
     def test_legal_pp_in_court_transcript(self, segment: SegmentationFunc):
-        """pp. in a court transcript page reference."""
+        """pp. in a court transcript page reference — must not split."""
         text = "The witness's testimony appears on pp. 234-237 of the trial transcript."
-        assert segment(text) == ["The witness's testimony appears on pp. 234-237", 'of the trial transcript.']
+        assert segment(text) == ["The witness's testimony appears on pp. 234-237 of the trial transcript."]
 
     def test_legal_re_before_matter_name(self, segment: SegmentationFunc):
         """re: in a legal matter heading."""
@@ -202,9 +202,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ['First decided 1948; repr. [1992].', '1 AC 440 in the House of Lords.']
 
     def test_legal_sec_in_regulation(self, segment: SegmentationFunc):
-        """sec. in a regulatory reference."""
+        """sec. in a regulatory reference — must not split."""
         text = "The exemption is available under sec. 8 of the Financial Services Act."
-        assert segment(text) == ['The exemption is available under sec. 8', 'of the Financial Services Act.']
+        assert segment(text) == ['The exemption is available under sec. 8 of the Financial Services Act.']
 
     def test_legal_multiple_abbreviations_brief(self, segment: SegmentationFunc):
         """Legal brief excerpt with cf., para., and p. in one sentence."""
@@ -239,9 +239,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["See the BNF p. 784 for the recommended dosage range."]
 
     def test_medical_fig_in_radiology_report(self, segment: SegmentationFunc):
-        """fig. in a radiology report referencing an image."""
+        """fig. in a radiology report referencing an image — must not split."""
         text = "The lesion is clearly visible in fig. 3 of the attached MRI report."
-        assert segment(text) == ['The lesion is clearly visible in fig. 3', 'of the attached MRI report.']
+        assert segment(text) == ['The lesion is clearly visible in fig. 3 of the attached MRI report.']
 
     def test_medical_ca_before_date_in_history(self, segment: SegmentationFunc):
         """ca. in a patient history for approximate date."""
@@ -296,9 +296,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["Previous work by Zhang et al. 2022 demonstrated this effect under controlled conditions."]
 
     def test_scientific_fig_caption(self, segment: SegmentationFunc):
-        """fig. in a figure caption reference in results text."""
+        """fig. in a figure caption reference in results text — must not split."""
         text = "As shown in fig. 4, the peak response occurs at 520 nm."
-        assert segment(text) == ['As shown in fig. 4', ', the peak response occurs at 520 nm.']
+        assert segment(text) == ['As shown in fig. 4, the peak response occurs at 520 nm.']
 
     def test_scientific_cf_related_work(self, segment: SegmentationFunc):
         """cf. in a related work section."""
@@ -306,9 +306,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["A similar observation was made, cf. Johnson 2018 and references therein."]
 
     def test_scientific_vol_journal_reference(self, segment: SegmentationFunc):
-        """vol. in a journal reference in the methods section."""
+        """vol. in a journal reference in the methods section — must not split."""
         text = "The protocol was adapted from Li et al. vol. 4 of the methods series."
-        assert segment(text) == ['The protocol was adapted from Li et al. vol. 4', 'of the methods series.']
+        assert segment(text) == ['The protocol was adapted from Li et al. vol. 4 of the methods series.']
 
     def test_scientific_ca_approximate_value(self, segment: SegmentationFunc):
         """ca. for an approximate measurement value."""
@@ -321,9 +321,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["Several spectroscopic techniques were employed, e.g. XRF, FTIR, and Raman spectroscopy."]
 
     def test_scientific_pp_supplement(self, segment: SegmentationFunc):
-        """pp. referencing supplementary material page range."""
+        """pp. referencing supplementary material page range — must not split."""
         text = "The full derivation is given in the Supplementary Information, pp. S1-S14."
-        assert segment(text) == ['The full derivation is given in the Supplementary Information, pp.', 'S1-S14.']
+        assert segment(text) == ['The full derivation is given in the Supplementary Information, pp. S1-S14.']
 
     def test_scientific_nb_in_methods(self, segment: SegmentationFunc):
         """N.B. in a methods section cautionary note."""
@@ -356,14 +356,14 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["The primary finding, i.e. a 30% reduction in latency, has practical implications."]
 
     def test_scientific_fig_multiple_panels(self, segment: SegmentationFunc):
-        """Multiple fig. references in the same sentence."""
+        """Multiple fig. references in the same sentence — must not split."""
         text = "The raw and processed data are shown in fig. 2a and fig. 2b respectively."
-        assert segment(text) == ['The raw and processed data are shown in fig. 2', 'a and fig. 2', 'b respectively.']
+        assert segment(text) == ['The raw and processed data are shown in fig. 2a and fig. 2b respectively.']
 
     def test_scientific_sec_cross_reference(self, segment: SegmentationFunc):
-        """sec. cross-reference in a paper."""
+        """sec. cross-reference in a paper — must not split."""
         text = "The statistical methods are described in sec. 2.4 of the supplementary text."
-        assert segment(text) == ['The statistical methods are described in sec. 2.4', 'of the supplementary text.']
+        assert segment(text) == ['The statistical methods are described in sec. 2.4 of the supplementary text.']
 
     # ---------------------------------------------------- News articles --
 
@@ -378,9 +378,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["Gen. Milley testified before the Senate Armed Services Committee yesterday."]
 
     def test_news_pres_in_political_report(self, segment: SegmentationFunc):
-        """Pres. in a political news report."""
+        """Pres. in a political news report — must not split."""
         text = "Pres. Biden signed the executive order on climate change last Thursday."
-        assert segment(text) == ['Pres.', 'Biden signed the executive order on climate change last Thursday.']
+        assert segment(text) == ['Pres. Biden signed the executive order on climate change last Thursday.']
 
     def test_news_gov_in_state_politics(self, segment: SegmentationFunc):
         """Gov. in a state-level political news story."""
@@ -403,9 +403,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["Prof. Harrington of MIT described the discovery as 'a game changer'."]
 
     def test_news_amb_in_diplomatic_story(self, segment: SegmentationFunc):
-        """Amb. in a diplomatic news story."""
+        """Amb. in a diplomatic news story — must not split."""
         text = "Amb. Greenfield called for an emergency session of the Security Council."
-        assert segment(text) == ['Amb.', 'Greenfield called for an emergency session of the Security Council.']
+        assert segment(text) == ['Amb. Greenfield called for an emergency session of the Security Council.']
 
     def test_news_two_sentences_split(self, segment: SegmentationFunc):
         """News article two sentences split correctly."""
@@ -433,9 +433,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["The policy has no precedent in modern governance; cf. The Roosevelt Era for the closest analogy."]
 
     def test_news_sec_treasury_reference(self, segment: SegmentationFunc):
-        """Sec. (Secretary) in a news story about Treasury."""
+        """Sec. (Secretary) in a news story about Treasury — must not split."""
         text = "Sec. Yellen met with G7 finance ministers to discuss the global minimum tax."
-        assert segment(text) == ['Sec.', 'Yellen met with G7 finance ministers to discuss the global minimum tax.']
+        assert segment(text) == ['Sec. Yellen met with G7 finance ministers to discuss the global minimum tax.']
 
     def test_news_adm_navy_story(self, segment: SegmentationFunc):
         """Adm. in a navy or defence news story."""
@@ -564,14 +564,14 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["Climbers rescued from Mt. Everest following sudden storm."]
 
     def test_geographic_ave_mid_sentence(self, segment: SegmentationFunc):
-        """Ave. in a mailing address context."""
+        """Ave. in a mailing address context — must not split."""
         text = "The office relocated to 500 Fifth Ave. last quarter."
-        assert segment(text) == ['The office relocated to 500 Fifth Ave.', 'last quarter.']
+        assert segment(text) == ['The office relocated to 500 Fifth Ave. last quarter.']
 
     def test_geographic_blvd_in_address(self, segment: SegmentationFunc):
-        """Blvd. in a street address mid-sentence."""
+        """Blvd. in a street address mid-sentence — must not split."""
         text = "The new headquarters at 1200 Sunset Blvd. opens next month."
-        assert segment(text) == ['The new headquarters at 1200 Sunset Blvd.', 'opens next month.']
+        assert segment(text) == ['The new headquarters at 1200 Sunset Blvd. opens next month.']
 
     def test_geographic_st_paul_city(self, segment: SegmentationFunc):
         """St. in St. Paul city name."""
@@ -663,9 +663,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["Sen. Warren cited the study by Roberts et al. 2019 in her floor speech."]
 
     def test_combo_prof_and_vol_same_sentence(self, segment: SegmentationFunc):
-        """Prof. and vol. in the same sentence."""
+        """Prof. and vol. in the same sentence — must not split."""
         text = "Prof. Williams' work appears in vol. 12 of the Annual Review."
-        assert segment(text) == ["Prof. Williams' work appears in vol. 12", 'of the Annual Review.']
+        assert segment(text) == ["Prof. Williams' work appears in vol. 12 of the Annual Review."]
 
     def test_combo_mr_and_no_same_sentence(self, segment: SegmentationFunc):
         """Mr. and no. in the same sentence."""
@@ -698,9 +698,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["The exchange between Col. Murray and Prof. Jenkins became a landmark debate."]
 
     def test_combo_mme_and_cf_same_sentence(self, segment: SegmentationFunc):
-        """Mme. and cf. in the same sentence."""
+        """Mme. and cf. in the same sentence — must not split."""
         text = "Mme. Curie's methods, cf. Radioactive Substances 1903, became the standard."
-        assert segment(text) == ['Mme.', "Curie's methods, cf. Radioactive Substances 1903, became the standard."]
+        assert segment(text) == ["Mme. Curie's methods, cf. Radioactive Substances 1903, became the standard."]
 
     def test_combo_eg_and_vol(self, segment: SegmentationFunc):
         """e.g. and vol. in the same sentence."""
@@ -713,9 +713,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["N.B. para. 7(b) was amended in 2022 and supersedes the earlier text."]
 
     def test_combo_viz_and_fig(self, segment: SegmentationFunc):
-        """viz. and fig. in the same sentence."""
+        """viz. and fig. in the same sentence — must not split."""
         text = "The structural elements, viz. fig. 3 components, are described below."
-        assert segment(text) == ['The structural elements, viz. fig. 3', 'components, are described below.']
+        assert segment(text) == ['The structural elements, viz. fig. 3 components, are described below.']
 
     def test_combo_cf_vol_no_triple(self, segment: SegmentationFunc):
         """cf., vol., and no. all in one sentence."""
@@ -770,9 +770,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ['See Liu.', 'et al. 2019 for the full dataset.']
 
     def test_edge_ocr_double_space_vol(self, segment: SegmentationFunc):
-        """OCR-style double space after vol."""
+        """OCR-style double space after vol. — must not split."""
         text = "The paper appears in vol.  12 of the journal."
-        assert segment(text) == ['The paper appears in vol. 12', 'of the journal.']
+        assert segment(text) == ['The paper appears in vol. 12 of the journal.']
 
     def test_edge_ocr_double_space_sen(self, segment: SegmentationFunc):
         """OCR-style double space between Sen. and name."""
@@ -812,9 +812,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["The results were statistically significant.", "The study was replicated three times."]
 
     def test_correct_split_abbreviation_in_first_sentence_only(self, segment: SegmentationFunc):
-        """Abbreviation in first sentence — split must occur at full stop after that sentence."""
+        """Abbreviation in first sentence — must not split within sentence; splits at sentence boundary."""
         text = "The data appears in vol. 3 of the dataset. The analysis was done in Python."
-        assert segment(text) == ['The data appears in vol. 3', 'of the dataset.', 'The analysis was done in Python.']
+        assert segment(text) == ['The data appears in vol. 3 of the dataset.', 'The analysis was done in Python.']
 
     def test_correct_split_title_in_first_sentence_only(self, segment: SegmentationFunc):
         """Title in first sentence — split must occur between the two sentences."""
@@ -889,9 +889,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["For the preparatory material refer to cf. Module 3 Introduction."]
 
     def test_legal_vol_in_law_reports(self, segment: SegmentationFunc):
-        """vol. in a law report citation."""
+        """vol. in a law report citation — must not split."""
         text = "The case is reported at [2003] vol. 1 AC 15."
-        assert segment(text) == ['The case is reported at [2003] vol. 1', 'AC 15.']
+        assert segment(text) == ['The case is reported at [2003] vol. 1 AC 15.']
 
     def test_medical_pp_in_clinical_guideline(self, segment: SegmentationFunc):
         """pp. in a clinical guideline page reference."""
@@ -904,9 +904,9 @@ class TestHandcraftedRealWorld:
         assert segment(text) == ["The specimen is catalogued as no. NH-34872 in the Natural History Museum collection."]
 
     def test_news_pres_at_sentence_end_split(self, segment: SegmentationFunc):
-        """Pres. at end of a sentence that then continues with a second sentence."""
+        """Pres. before surname — splits at real sentence boundary after surname."""
         text = "The veto was cast by Pres. Carter. Congress overrode it the same week."
-        assert segment(text) == ['The veto was cast by Pres.', 'Carter.', 'Congress overrode it the same week.']
+        assert segment(text) == ['The veto was cast by Pres. Carter.', 'Congress overrode it the same week.']
 
     def test_edge_cf_before_roman_numeral(self, segment: SegmentationFunc):
         """cf. before a Roman numeral — should not split."""

@@ -10,6 +10,7 @@ Module-level case count: 5,250 no-split + 21 must-split = 5,271 total cases
 """
 
 import itertools
+import re
 from typing import Callable, List
 
 import pytest
@@ -263,7 +264,12 @@ def _build_no_split_cases():
         templates = _templates_for(category)
         for abbrev, template in itertools.product(abbrevs, templates):
             text = template.replace("{a}", abbrev)
-            cases.append((text, [text]))
+            # PostProcessStructure normalizes isolated ".." (not ellipsis) to ".".
+            # When a template ends with "." and the abbreviation also ends with
+            # ".", the combined text has a trailing "..".  The expected output
+            # reflects the cleaned form.
+            expected = re.sub(r'(?<!\.)\.\.(?!\.)$', '.', text)
+            cases.append((text, [expected]))
     return cases
 
 

@@ -239,22 +239,22 @@ class TestHandcraftedTitles:
     def test_hon_before_surname(self, segment: SegmentationFunc):
         """Hon. before a surname — must not split."""
         text = "Hon. Baker presided over the inquiry."
-        assert segment(text) == ['Hon.', 'Baker presided over the inquiry.']
+        assert segment(text) == ['Hon. Baker presided over the inquiry.']
 
     def test_hon_before_full_name(self, segment: SegmentationFunc):
         """Hon. before full name."""
         text = "The award was presented by Hon. Margaret Foster."
-        assert segment(text) == ['The award was presented by Hon.', 'Margaret Foster.']
+        assert segment(text) == ['The award was presented by Hon. Margaret Foster.']
 
     def test_hon_sentence_initial(self, segment: SegmentationFunc):
         """Hon. at sentence start."""
         text = "Hon. Mr. Justice Birkett delivered the judgment."
-        assert segment(text) == ['Hon.', 'Mr. Justice Birkett delivered the judgment.']
+        assert segment(text) == ['Hon. Mr. Justice Birkett delivered the judgment.']
 
     def test_hon_at_sentence_end_split(self, segment: SegmentationFunc):
         """Hon. at end of sentence then new sentence."""
         text = "The motion was introduced by Hon. Reid. It passed on second reading."
-        assert segment(text) == ['The motion was introduced by Hon.', 'Reid.', 'It passed on second reading.']
+        assert segment(text) == ['The motion was introduced by Hon. Reid.', 'It passed on second reading.']
 
     # ----------------------------------------------------------------- Esq. --
 
@@ -477,76 +477,76 @@ class TestHandcraftedTitles:
     def test_sgt_before_surname(self, segment: SegmentationFunc):
         """Sgt. before a surname — must not split."""
         text = "Sgt. Pepper's band was renowned for its innovative recordings."
-        assert segment(text) == ['Sgt.', "Pepper's band was renowned for its innovative recordings."]
+        assert segment(text) == ["Sgt. Pepper's band was renowned for its innovative recordings."]
 
     def test_sgt_in_military_order(self, segment: SegmentationFunc):
         """Sgt. in a military-order style sentence."""
         text = "The orders were carried out by Sgt. Daniels without question."
-        assert segment(text) == ['The orders were carried out by Sgt.', 'Daniels without question.']
+        assert segment(text) == ['The orders were carried out by Sgt. Daniels without question.']
 
     def test_sgt_sentence_initial(self, segment: SegmentationFunc):
         """Sgt. at sentence start."""
         text = "Sgt. Murphy reported back to headquarters after the patrol."
-        assert segment(text) == ['Sgt.', 'Murphy reported back to headquarters after the patrol.']
+        assert segment(text) == ['Sgt. Murphy reported back to headquarters after the patrol.']
 
     def test_sgt_at_sentence_end_split(self, segment: SegmentationFunc):
         """Sentence ending at Sgt. name then new sentence."""
         text = "The testimony was given by Sgt. Robinson. The court accepted it without challenge."
-        assert segment(text) == ['The testimony was given by Sgt.', 'Robinson.', 'The court accepted it without challenge.']
+        assert segment(text) == ['The testimony was given by Sgt. Robinson.', 'The court accepted it without challenge.']
 
     def test_sgt_before_full_name(self, segment: SegmentationFunc):
         """Sgt. before a full name."""
         text = "Sgt. Henry Walters was awarded a posthumous commendation."
-        assert segment(text) == ['Sgt.', 'Henry Walters was awarded a posthumous commendation.']
+        assert segment(text) == ['Sgt. Henry Walters was awarded a posthumous commendation.']
 
     # ----------------------------------------------------------------- Cpl. --
 
     def test_cpl_before_surname(self, segment: SegmentationFunc):
         """Cpl. before a surname."""
         text = "Cpl. Dixon carried the wounded soldier to the aid station."
-        assert segment(text) == ['Cpl.', 'Dixon carried the wounded soldier to the aid station.']
+        assert segment(text) == ['Cpl. Dixon carried the wounded soldier to the aid station.']
 
     def test_cpl_sentence_initial(self, segment: SegmentationFunc):
         """Cpl. at sentence start."""
         text = "Cpl. Evans was promoted to the rank of sergeant after the engagement."
-        assert segment(text) == ['Cpl.', 'Evans was promoted to the rank of sergeant after the engagement.']
+        assert segment(text) == ['Cpl. Evans was promoted to the rank of sergeant after the engagement.']
 
     def test_cpl_at_sentence_end_split(self, segment: SegmentationFunc):
         """Sentence ending at Cpl. name then new sentence."""
         text = "The patrol was led by Cpl. Okafor. They returned at dusk."
-        assert segment(text) == ['The patrol was led by Cpl.', 'Okafor.', 'They returned at dusk.']
+        assert segment(text) == ['The patrol was led by Cpl. Okafor.', 'They returned at dusk.']
 
     def test_cpl_before_full_name(self, segment: SegmentationFunc):
         """Cpl. before a full name."""
         text = "Cpl. James Whitfield completed the sabotage mission undetected."
-        assert segment(text) == ['Cpl.', 'James Whitfield completed the sabotage mission undetected.']
+        assert segment(text) == ['Cpl. James Whitfield completed the sabotage mission undetected.']
 
     def test_cpl_with_sgt_same_sentence(self, segment: SegmentationFunc):
         """Cpl. and Sgt. in the same sentence."""
         text = "Both Cpl. Lee and Sgt. Kim were decorated after the operation."
-        assert segment(text) == ['Both Cpl.', 'Lee and Sgt.', 'Kim were decorated after the operation.']
+        assert segment(text) == ['Both Cpl. Lee and Sgt. Kim were decorated after the operation.']
 
     # ----------------------------------------------------------------- Pvt. --
 
     def test_pvt_before_surname(self, segment: SegmentationFunc):
         """Pvt. before a surname."""
         text = "Pvt. Ryan had been separated from his unit since Omaha Beach."
-        assert segment(text) == ['Pvt.', 'Ryan had been separated from his unit since Omaha Beach.']
+        assert segment(text) == ['Pvt. Ryan had been separated from his unit since Omaha Beach.']
 
     def test_pvt_sentence_initial(self, segment: SegmentationFunc):
         """Pvt. at sentence start."""
         text = "Pvt. Chen completed his basic training in eight weeks."
-        assert segment(text) == ['Pvt.', 'Chen completed his basic training in eight weeks.']
+        assert segment(text) == ['Pvt. Chen completed his basic training in eight weeks.']
 
     def test_pvt_at_sentence_end_split(self, segment: SegmentationFunc):
         """Sentence ending at Pvt. name then new sentence."""
         text = "The dispatch was carried by Pvt. Hall. It reached the commander by midnight."
-        assert segment(text) == ['The dispatch was carried by Pvt.', 'Hall.', 'It reached the commander by midnight.']
+        assert segment(text) == ['The dispatch was carried by Pvt. Hall.', 'It reached the commander by midnight.']
 
     def test_pvt_before_full_name(self, segment: SegmentationFunc):
         """Pvt. before a full name."""
         text = "Pvt. Thomas Atkins became the generic name for British soldiers."
-        assert segment(text) == ['Pvt.', 'Thomas Atkins became the generic name for British soldiers.']
+        assert segment(text) == ['Pvt. Thomas Atkins became the generic name for British soldiers.']
 
     # ----------------------------------------------------------------- Adm. --
 
@@ -580,100 +580,100 @@ class TestHandcraftedTitles:
     def test_cmdr_before_surname(self, segment: SegmentationFunc):
         """Cmdr. before a surname — must not split."""
         text = "Cmdr. Riker was first officer aboard the Enterprise."
-        assert segment(text) == ['Cmdr.', 'Riker was first officer aboard the Enterprise.']
+        assert segment(text) == ['Cmdr. Riker was first officer aboard the Enterprise.']
 
     def test_cmdr_before_name_sentence_end(self, segment: SegmentationFunc):
         """Cmdr. at natural end of sentence — must split correctly."""
         text = "The order came from Cmdr. Willis. The crew obeyed immediately."
-        assert segment(text) == ['The order came from Cmdr.', 'Willis.', 'The crew obeyed immediately.']
+        assert segment(text) == ['The order came from Cmdr. Willis.', 'The crew obeyed immediately.']
 
     def test_cmdr_sentence_initial(self, segment: SegmentationFunc):
         """Cmdr. at sentence start."""
         text = "Cmdr. Picard set course for the neutral zone."
-        assert segment(text) == ['Cmdr.', 'Picard set course for the neutral zone.']
+        assert segment(text) == ['Cmdr. Picard set course for the neutral zone.']
 
     def test_cmdr_before_full_name(self, segment: SegmentationFunc):
         """Cmdr. before a full name."""
         text = "Cmdr. Edward Blake assumed command of the destroyer."
-        assert segment(text) == ['Cmdr.', 'Edward Blake assumed command of the destroyer.']
+        assert segment(text) == ['Cmdr. Edward Blake assumed command of the destroyer.']
 
     def test_cmdr_with_lt_same_sentence(self, segment: SegmentationFunc):
         """Cmdr. and Lt. in the same sentence."""
         text = "The briefing was attended by Cmdr. Hayes and Lt. Santiago."
-        assert segment(text) == ['The briefing was attended by Cmdr.', 'Hayes and Lt. Santiago.']
+        assert segment(text) == ['The briefing was attended by Cmdr. Hayes and Lt. Santiago.']
 
     # ----------------------------------------------------------------- Ens. --
 
     def test_ens_before_surname(self, segment: SegmentationFunc):
         """Ens. before a surname."""
         text = "Ens. Chekov monitored the ship's sensors throughout the night watch."
-        assert segment(text) == ['Ens.', "Chekov monitored the ship's sensors throughout the night watch."]
+        assert segment(text) == ["Ens. Chekov monitored the ship's sensors throughout the night watch."]
 
     def test_ens_sentence_initial(self, segment: SegmentationFunc):
         """Ens. at sentence start."""
         text = "Ens. Parker was assigned to the navigation division on her first posting."
-        assert segment(text) == ['Ens.', 'Parker was assigned to the navigation division on her first posting.']
+        assert segment(text) == ['Ens. Parker was assigned to the navigation division on her first posting.']
 
     def test_ens_at_sentence_end_split(self, segment: SegmentationFunc):
         """Sentence ending at Ens. name then new sentence."""
         text = "The watch was stood down by Ens. Tran. The ship continued on autopilot."
-        assert segment(text) == ['The watch was stood down by Ens.', 'Tran.', 'The ship continued on autopilot.']
+        assert segment(text) == ['The watch was stood down by Ens. Tran.', 'The ship continued on autopilot.']
 
     # ---------------------------------------------------------------- Brig. --
 
     def test_brig_before_surname(self, segment: SegmentationFunc):
         """Brig. before a surname."""
         text = "Brig. Thompson commanded the 3rd Infantry Brigade."
-        assert segment(text) == ['Brig.', 'Thompson commanded the 3rd Infantry Brigade.']
+        assert segment(text) == ['Brig. Thompson commanded the 3rd Infantry Brigade.']
 
     def test_brig_gen_compound_rank(self, segment: SegmentationFunc):
         """Brig. Gen. compound rank before a name."""
         text = "Brig. Gen. Rawlinson directed operations from the forward command post."
-        assert segment(text) == ['Brig.', 'Gen. Rawlinson directed operations from the forward command post.']
+        assert segment(text) == ['Brig. Gen. Rawlinson directed operations from the forward command post.']
 
     def test_brig_sentence_initial(self, segment: SegmentationFunc):
         """Brig. at sentence start."""
         text = "Brig. Hartley was responsible for the sector from Ypres to the canal."
-        assert segment(text) == ['Brig.', 'Hartley was responsible for the sector from Ypres to the canal.']
+        assert segment(text) == ['Brig. Hartley was responsible for the sector from Ypres to the canal.']
 
     def test_brig_at_sentence_end_split(self, segment: SegmentationFunc):
         """Sentence ending at Brig. name then new sentence."""
         text = "The order was issued by Brig. Wolfe. Execution commenced at dawn."
-        assert segment(text) == ['The order was issued by Brig.', 'Wolfe.', 'Execution commenced at dawn.']
+        assert segment(text) == ['The order was issued by Brig. Wolfe.', 'Execution commenced at dawn.']
 
     # ---------------------------------------------------------------- Spec. --
 
     def test_spec_before_surname(self, segment: SegmentationFunc):
         """Spec. before a surname."""
         text = "Spec. Dawson operated the communications equipment throughout the mission."
-        assert segment(text) == ['Spec.', 'Dawson operated the communications equipment throughout the mission.']
+        assert segment(text) == ['Spec. Dawson operated the communications equipment throughout the mission.']
 
     def test_spec_sentence_initial(self, segment: SegmentationFunc):
         """Spec. at sentence start."""
         text = "Spec. Rodriguez was assigned to the explosives ordnance disposal unit."
-        assert segment(text) == ['Spec.', 'Rodriguez was assigned to the explosives ordnance disposal unit.']
+        assert segment(text) == ['Spec. Rodriguez was assigned to the explosives ordnance disposal unit.']
 
     def test_spec_at_sentence_end_split(self, segment: SegmentationFunc):
         """Sentence ending at Spec. name then new sentence."""
         text = "The device was disarmed by Spec. Kim. The area was declared safe."
-        assert segment(text) == ['The device was disarmed by Spec.', 'Kim.', 'The area was declared safe.']
+        assert segment(text) == ['The device was disarmed by Spec. Kim.', 'The area was declared safe.']
 
     # ----------------------------------------------------------------- Pfc. --
 
     def test_pfc_before_surname(self, segment: SegmentationFunc):
         """Pfc. before a surname."""
         text = "Pfc. Anderson was the youngest member of the platoon."
-        assert segment(text) == ['Pfc.', 'Anderson was the youngest member of the platoon.']
+        assert segment(text) == ['Pfc. Anderson was the youngest member of the platoon.']
 
     def test_pfc_sentence_initial(self, segment: SegmentationFunc):
         """Pfc. at sentence start."""
         text = "Pfc. Williams distinguished herself during the night engagement."
-        assert segment(text) == ['Pfc.', 'Williams distinguished herself during the night engagement.']
+        assert segment(text) == ['Pfc. Williams distinguished herself during the night engagement.']
 
     def test_pfc_at_sentence_end_split(self, segment: SegmentationFunc):
         """Sentence ending at Pfc. name then new sentence."""
         text = "The message was relayed by Pfc. Martinez. The command acknowledged receipt."
-        assert segment(text) == ['The message was relayed by Pfc.', 'Martinez.', 'The command acknowledged receipt.']
+        assert segment(text) == ['The message was relayed by Pfc. Martinez.', 'The command acknowledged receipt.']
 
     # ----------------------------------------------------------------- Gov. --
 
@@ -756,93 +756,93 @@ class TestHandcraftedTitles:
     def test_pres_before_surname(self, segment: SegmentationFunc):
         """Pres. before a surname."""
         text = "Pres. Lincoln signed the Emancipation Proclamation in 1863."
-        assert segment(text) == ['Pres.', 'Lincoln signed the Emancipation Proclamation in 1863.']
+        assert segment(text) == ['Pres. Lincoln signed the Emancipation Proclamation in 1863.']
 
     def test_pres_before_full_name(self, segment: SegmentationFunc):
         """Pres. before a full name."""
         text = "Pres. Franklin Roosevelt introduced the New Deal during the Depression."
-        assert segment(text) == ['Pres.', 'Franklin Roosevelt introduced the New Deal during the Depression.']
+        assert segment(text) == ['Pres. Franklin Roosevelt introduced the New Deal during the Depression.']
 
     def test_pres_sentence_initial(self, segment: SegmentationFunc):
         """Pres. at sentence start."""
         text = "Pres. Kennedy delivered his famous inaugural address in January 1961."
-        assert segment(text) == ['Pres.', 'Kennedy delivered his famous inaugural address in January 1961.']
+        assert segment(text) == ['Pres. Kennedy delivered his famous inaugural address in January 1961.']
 
     def test_pres_at_sentence_end_split(self, segment: SegmentationFunc):
         """Sentence ending with Pres. name then new sentence."""
         text = "The treaty was ratified under Pres. Wilson. It was short-lived."
-        assert segment(text) == ['The treaty was ratified under Pres.', 'Wilson.', 'It was short-lived.']
+        assert segment(text) == ['The treaty was ratified under Pres. Wilson.', 'It was short-lived.']
 
     # ----------------------------------------------------------------- Sec. --
 
     def test_sec_before_surname_government(self, segment: SegmentationFunc):
         """Sec. (Secretary) before a surname in government context."""
         text = "Sec. Kerry negotiated the Iran nuclear agreement."
-        assert segment(text) == ['Sec.', 'Kerry negotiated the Iran nuclear agreement.']
+        assert segment(text) == ['Sec. Kerry negotiated the Iran nuclear agreement.']
 
     def test_sec_before_full_name(self, segment: SegmentationFunc):
         """Sec. before a full name."""
         text = "Sec. Henry Stimson advised President Roosevelt on wartime strategy."
-        assert segment(text) == ['Sec.', 'Henry Stimson advised President Roosevelt on wartime strategy.']
+        assert segment(text) == ['Sec. Henry Stimson advised President Roosevelt on wartime strategy.']
 
     def test_sec_sentence_initial(self, segment: SegmentationFunc):
         """Sec. at sentence start."""
         text = "Sec. Albright was the first woman to serve as US Secretary of State."
-        assert segment(text) == ['Sec.', 'Albright was the first woman to serve as US Secretary of State.']
+        assert segment(text) == ['Sec. Albright was the first woman to serve as US Secretary of State.']
 
     def test_sec_at_sentence_end_split(self, segment: SegmentationFunc):
         """Sentence ending at Sec. name then new sentence."""
         text = "The briefing was led by Sec. Pompeo. The committee sought further clarification."
-        assert segment(text) == ['The briefing was led by Sec.', 'Pompeo.', 'The committee sought further clarification.']
+        assert segment(text) == ['The briefing was led by Sec. Pompeo.', 'The committee sought further clarification.']
 
     # ----------------------------------------------------------------- Amb. --
 
     def test_amb_before_surname(self, segment: SegmentationFunc):
         """Amb. before a surname."""
         text = "Amb. Power addressed the Security Council on the humanitarian situation."
-        assert segment(text) == ['Amb.', 'Power addressed the Security Council on the humanitarian situation.']
+        assert segment(text) == ['Amb. Power addressed the Security Council on the humanitarian situation.']
 
     def test_amb_before_full_name(self, segment: SegmentationFunc):
         """Amb. before a full name."""
         text = "Amb. Richard Holbrooke brokered the Dayton Peace Accords."
-        assert segment(text) == ['Amb.', 'Richard Holbrooke brokered the Dayton Peace Accords.']
+        assert segment(text) == ['Amb. Richard Holbrooke brokered the Dayton Peace Accords.']
 
     def test_amb_sentence_initial(self, segment: SegmentationFunc):
         """Amb. at sentence start."""
         text = "Amb. Stevens was killed in Benghazi in September 2012."
-        assert segment(text) == ['Amb.', 'Stevens was killed in Benghazi in September 2012.']
+        assert segment(text) == ['Amb. Stevens was killed in Benghazi in September 2012.']
 
     def test_amb_at_sentence_end_split(self, segment: SegmentationFunc):
         """Sentence ending at Amb. name then new sentence."""
         text = "The diplomatic channel was opened by Amb. Burns. Negotiations lasted six months."
-        assert segment(text) == ['The diplomatic channel was opened by Amb.', 'Burns.', 'Negotiations lasted six months.']
+        assert segment(text) == ['The diplomatic channel was opened by Amb. Burns.', 'Negotiations lasted six months.']
 
     # ---------------------------------------------------------------- French titles --
 
     def test_mme_before_surname(self, segment: SegmentationFunc):
         """Mme. (Madame) before a surname — should not split."""
         text = "Mme. Curie conducted her pioneering research in radioactivity."
-        assert segment(text) == ['Mme.', 'Curie conducted her pioneering research in radioactivity.']
+        assert segment(text) == ['Mme. Curie conducted her pioneering research in radioactivity.']
 
     def test_mme_before_full_name(self, segment: SegmentationFunc):
         """Mme. before a full name."""
         text = "Mme. Marie Curie was the first woman to win a Nobel Prize."
-        assert segment(text) == ['Mme.', 'Marie Curie was the first woman to win a Nobel Prize.']
+        assert segment(text) == ['Mme. Marie Curie was the first woman to win a Nobel Prize.']
 
     def test_mme_at_sentence_end_split(self, segment: SegmentationFunc):
         """Sentence ending at Mme. name then new sentence."""
         text = "The correspondence was addressed to Mme. Beaumont. It was never answered."
-        assert segment(text) == ['The correspondence was addressed to Mme.', 'Beaumont.', 'It was never answered.']
+        assert segment(text) == ['The correspondence was addressed to Mme. Beaumont.', 'It was never answered.']
 
     def test_mlle_before_surname(self, segment: SegmentationFunc):
         """Mlle. (Mademoiselle) before a surname."""
         text = "Mlle. Dupont was the first to translate the document into French."
-        assert segment(text) == ['Mlle.', 'Dupont was the first to translate the document into French.']
+        assert segment(text) == ['Mlle. Dupont was the first to translate the document into French.']
 
     def test_mlle_sentence_initial(self, segment: SegmentationFunc):
         """Mlle. at sentence start."""
         text = "Mlle. Laurent prepared the exhibition catalogue for the Louvre."
-        assert segment(text) == ['Mlle.', 'Laurent prepared the exhibition catalogue for the Louvre.']
+        assert segment(text) == ['Mlle. Laurent prepared the exhibition catalogue for the Louvre.']
 
     def test_messrs_before_firm_name(self, segment: SegmentationFunc):
         """Messrs. before a firm or partnership name."""
@@ -859,37 +859,37 @@ class TestHandcraftedTitles:
     def test_fr_before_surname(self, segment: SegmentationFunc):
         """Fr. (Father) before a surname — must not split."""
         text = "Fr. O'Brien heard the confession and administered last rites."
-        assert segment(text) == ['Fr.', "O'Brien heard the confession and administered last rites."]
+        assert segment(text) == ["Fr. O'Brien heard the confession and administered last rites."]
 
     def test_fr_before_full_name(self, segment: SegmentationFunc):
         """Fr. before a full name."""
         text = "Fr. Thomas Aquinas wrote the Summa Theologiae in the 13th century."
-        assert segment(text) == ['Fr.', 'Thomas Aquinas wrote the Summa Theologiae in the 13th century.']
+        assert segment(text) == ['Fr. Thomas Aquinas wrote the Summa Theologiae in the 13th century.']
 
     def test_fr_sentence_initial(self, segment: SegmentationFunc):
         """Fr. at sentence start."""
         text = "Fr. Murphy delivered a homily that moved the entire congregation."
-        assert segment(text) == ['Fr.', 'Murphy delivered a homily that moved the entire congregation.']
+        assert segment(text) == ['Fr. Murphy delivered a homily that moved the entire congregation.']
 
     def test_fr_at_sentence_end_split(self, segment: SegmentationFunc):
         """Sentence ending at Fr. name then new sentence."""
         text = "The parish was established by Fr. Walsh. It celebrated its centenary last year."
-        assert segment(text) == ['The parish was established by Fr.', 'Walsh.', 'It celebrated its centenary last year.']
+        assert segment(text) == ['The parish was established by Fr. Walsh.', 'It celebrated its centenary last year.']
 
     def test_msgr_before_surname(self, segment: SegmentationFunc):
         """Msgr. (Monsignor) before a surname."""
         text = "Msgr. Donovan presided over the diocesan court."
-        assert segment(text) == ['Msgr.', 'Donovan presided over the diocesan court.']
+        assert segment(text) == ['Msgr. Donovan presided over the diocesan court.']
 
     def test_msgr_before_full_name(self, segment: SegmentationFunc):
         """Msgr. before a full name."""
         text = "Msgr. Pietro Romano visited the seminary during the annual retreat."
-        assert segment(text) == ['Msgr.', 'Pietro Romano visited the seminary during the annual retreat.']
+        assert segment(text) == ['Msgr. Pietro Romano visited the seminary during the annual retreat.']
 
     def test_msgr_at_sentence_end_split(self, segment: SegmentationFunc):
         """Sentence ending at Msgr. name then new sentence."""
         text = "The ruling was announced by Msgr. Flynn. It was later upheld on appeal."
-        assert segment(text) == ['The ruling was announced by Msgr.', 'Flynn.', 'It was later upheld on appeal.']
+        assert segment(text) == ['The ruling was announced by Msgr. Flynn.', 'It was later upheld on appeal.']
 
     # -------------------------------------------------------- mixed / complex --
 

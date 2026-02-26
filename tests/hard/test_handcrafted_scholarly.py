@@ -297,13 +297,9 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["The same wording appears in ibid., p. 199 without alteration."]
 
     def test_ibid_after_semicolon(self, segment: SegmentationFunc):
-        """ibid. after semicolon in a note.
-
-        The pipeline splits after the page range 'ibid. pp. 45-46', treating the
-        continuation 'for the extended argument.' as a separate segment.
-        """
+        """ibid. after semicolon in a note — must not split."""
         text = "See Smith 2008, p. 12; ibid. pp. 45-46 for the extended argument."
-        assert segment(text) == ["See Smith 2008, p. 12; ibid. pp. 45-46", "for the extended argument."]
+        assert segment(text) == ["See Smith 2008, p. 12; ibid. pp. 45-46 for the extended argument."]
 
     def test_ibid_before_proper_noun(self, segment: SegmentationFunc):
         """ibid. before a proper noun — should not split."""
@@ -538,23 +534,14 @@ class TestHandcraftedScholarly:
     # ----------------------------------------------------------------- vol. --
 
     def test_vol_before_arabic_numeral(self, segment: SegmentationFunc):
-        """vol. followed by an Arabic numeral.
-
-        The digit-only extract pattern merges vol. with the number (12), but the
-        lowercase continuation 'of the journal.' is not captured and becomes a
-        separate segment.
-        """
+        """vol. followed by an Arabic numeral — must not split."""
         text = "The study appears in vol. 12 of the journal."
-        assert segment(text) == ["The study appears in vol. 12", "of the journal."]
+        assert segment(text) == ["The study appears in vol. 12 of the journal."]
 
     def test_vol_before_roman_numeral(self, segment: SegmentationFunc):
-        """vol. followed by a Roman numeral.
-
-        The pipeline splits at 'vol.' treating the Roman numeral 'III' and the
-        rest of the text as a separate segment.
-        """
+        """vol. followed by a Roman numeral — must not split."""
         text = "See vol. III of the collected works for the correspondence."
-        assert segment(text) == ["See vol.", "III of the collected works for the correspondence."]
+        assert segment(text) == ["See vol. III of the collected works for the correspondence."]
 
     def test_vol_with_no_citation(self, segment: SegmentationFunc):
         """vol. and no. in the same citation reference."""
@@ -572,23 +559,14 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["See Brown et al. vol. 7 for the experimental protocol."]
 
     def test_vol_at_sentence_start(self, segment: SegmentationFunc):
-        """vol. at the start of a reference sentence.
-
-        The digit-only extract pattern merges vol. with the number (2), but the
-        lowercase continuation 'of this series...' is not captured and becomes a
-        separate segment.
-        """
+        """vol. at the start of a reference sentence — must not split."""
         text = "vol. 2 of this series has been translated into twelve languages."
-        assert segment(text) == ["vol. 2", "of this series has been translated into twelve languages."]
+        assert segment(text) == ["vol. 2 of this series has been translated into twelve languages."]
 
     def test_vol_before_page_range(self, segment: SegmentationFunc):
-        """vol. combined with pp. in a complete citation.
-
-        The pipeline splits after the page range 'pp. 234-256', treating
-        'of the proceedings.' as a separate segment.
-        """
+        """vol. combined with pp. in a complete citation — must not split."""
         text = "The paper appears in vol. 18, pp. 234-256 of the proceedings."
-        assert segment(text) == ["The paper appears in vol. 18, pp. 234-256", "of the proceedings."]
+        assert segment(text) == ["The paper appears in vol. 18, pp. 234-256 of the proceedings."]
 
     def test_vol_in_parenthetical_citation(self, segment: SegmentationFunc):
         """vol. inside a parenthetical citation."""
@@ -596,23 +574,14 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["This argument has been contested (Miller, vol. 3, p. 98)."]
 
     def test_vol_two_sentences_split(self, segment: SegmentationFunc):
-        """vol. in first sentence, second sentence should still split.
-
-        The digit-only extract pattern merges vol. with the number (2), but the
-        lowercase continuation 'of the atlas.' becomes a separate segment.
-        The second sentence 'The methodology is in vol. 3.' splits correctly.
-        """
+        """vol. in first sentence — must not split within sentence, splits at sentence boundary."""
         text = "The data is in vol. 2 of the atlas. The methodology is in vol. 3."
-        assert segment(text) == ["The data is in vol. 2", "of the atlas.", "The methodology is in vol. 3."]
+        assert segment(text) == ["The data is in vol. 2 of the atlas.", "The methodology is in vol. 3."]
 
     def test_vol_with_caps_after(self, segment: SegmentationFunc):
-        """vol. followed by a capitalized word that is NOT a sentence start.
-
-        The pipeline splits at 'vol.' treating the capitalized proper noun
-        'Annals of Science, issue 14.' as a separate segment.
-        """
+        """vol. followed by a capitalized proper noun title — must not split."""
         text = "See the discussion in vol. Annals of Science, issue 14."
-        assert segment(text) == ["See the discussion in vol.", "Annals of Science, issue 14."]
+        assert segment(text) == ["See the discussion in vol. Annals of Science, issue 14."]
 
     # ------------------------------------------------------------------ p. --
 
@@ -659,13 +628,9 @@ class TestHandcraftedScholarly:
     # ----------------------------------------------------------------- pp. --
 
     def test_pp_range_in_citation(self, segment: SegmentationFunc):
-        """pp. in a page range citation.
-
-        The pipeline splits at the en-dash, producing 'pp. 34' as one segment
-        and '–56 of the monograph.' as another.
-        """
+        """pp. in a page range citation — must not split."""
         text = "The argument is developed on pp. 34–56 of the monograph."
-        assert segment(text) == ["The argument is developed on pp. 34", "–56 of the monograph."]
+        assert segment(text) == ["The argument is developed on pp. 34–56 of the monograph."]
 
     def test_pp_in_parenthetical_apa(self, segment: SegmentationFunc):
         """pp. in a parenthetical APA-style citation."""
@@ -673,13 +638,9 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["This interpretation is challenged by others (Davis, 2020, pp. 88-91)."]
 
     def test_pp_before_roman_numeral_range(self, segment: SegmentationFunc):
-        """pp. before a Roman numeral range.
-
-        The pipeline splits at 'pp.' treating the Roman numeral range
-        'i-xxiv and is essential reading.' as a separate segment.
-        """
+        """pp. before a Roman numeral range — must not split."""
         text = "The introduction spans pp. i-xxiv and is essential reading."
-        assert segment(text) == ["The introduction spans pp.", "i-xxiv and is essential reading."]
+        assert segment(text) == ["The introduction spans pp. i-xxiv and is essential reading."]
 
     def test_pp_in_mla_citation(self, segment: SegmentationFunc):
         """pp. in an MLA-style citation fragment."""
@@ -687,13 +648,9 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["Smith, John. The Long Arc. New York: Penguin, 2019. pp. 44-67."]
 
     def test_pp_followed_by_proper_noun(self, segment: SegmentationFunc):
-        """pp. followed by a proper-noun title.
-
-        The pipeline splits at 'pp.' treating 'Table 3 of the supplementary materials.'
-        as a separate segment.
-        """
+        """pp. followed by a proper-noun title — must not split."""
         text = "The comparison is drawn on pp. Table 3 of the supplementary materials."
-        assert segment(text) == ["The comparison is drawn on pp.", "Table 3 of the supplementary materials."]
+        assert segment(text) == ["The comparison is drawn on pp. Table 3 of the supplementary materials."]
 
     def test_pp_with_et_al_citation(self, segment: SegmentationFunc):
         """pp. in a citation that also includes et al."""
@@ -711,22 +668,14 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["The definition is given on pp. 5-6.", "The second chapter extends this."]
 
     def test_pp_before_arabic_with_dash(self, segment: SegmentationFunc):
-        """pp. with hyphenated page range.
-
-        The pipeline splits after the page range 'pp. 102-130', treating
-        'of the volume.' as a separate segment.
-        """
+        """pp. with hyphenated page range — must not split."""
         text = "The relevant section occupies pp. 102-130 of the volume."
-        assert segment(text) == ["The relevant section occupies pp. 102-130", "of the volume."]
+        assert segment(text) == ["The relevant section occupies pp. 102-130 of the volume."]
 
     def test_pp_sentence_initial(self, segment: SegmentationFunc):
-        """pp. at sentence start.
-
-        The pipeline splits after the page range 'pp. 45-78', treating
-        'contain the most detailed exposition of the theory.' as a separate segment.
-        """
+        """pp. at sentence start — must not split."""
         text = "pp. 45-78 contain the most detailed exposition of the theory."
-        assert segment(text) == ["pp. 45-78", "contain the most detailed exposition of the theory."]
+        assert segment(text) == ["pp. 45-78 contain the most detailed exposition of the theory."]
 
     # ----------------------------------------------------------------- no. --
 
@@ -746,13 +695,9 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["The invention is described in US Patent no. 7,891,234."]
 
     def test_no_followed_by_proper_noun(self, segment: SegmentationFunc):
-        """no. followed by a proper noun.
-
-        The pipeline splits at 'no.' treating 'Alpha remains unclassified in the
-        current taxonomy.' as a separate segment.
-        """
+        """no. followed by a proper noun — must not split."""
         text = "Entry no. Alpha remains unclassified in the current taxonomy."
-        assert segment(text) == ["Entry no.", "Alpha remains unclassified in the current taxonomy."]
+        assert segment(text) == ["Entry no. Alpha remains unclassified in the current taxonomy."]
 
     def test_no_in_orchestra_program_note(self, segment: SegmentationFunc):
         """no. in an orchestra program note."""
@@ -770,13 +715,9 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["The journal issue is no. 4 of this year's volume.", "It features three major papers."]
 
     def test_no_before_roman_numeral(self, segment: SegmentationFunc):
-        """no. before a Roman numeral identifier.
-
-        The pipeline splits at 'no.' treating the Roman numeral 'XIV in the
-        register contains the original deed.' as a separate segment.
-        """
+        """no. before a Roman numeral identifier — must not split."""
         text = "Entry no. XIV in the register contains the original deed."
-        assert segment(text) == ["Entry no.", "XIV in the register contains the original deed."]
+        assert segment(text) == ["Entry no. XIV in the register contains the original deed."]
 
     def test_no_in_academic_series(self, segment: SegmentationFunc):
         """no. in an academic series reference."""
@@ -796,23 +737,14 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["The data plotted in fig. 3 confirms the hypothesis."]
 
     def test_fig_before_decimal_reference(self, segment: SegmentationFunc):
-        """fig. before a decimal figure reference.
-
-        The pipeline splits after 'fig. 2.4', treating ', the curve reaches a
-        plateau.' as a separate segment (including the leading comma).
-        """
+        """fig. before a decimal figure reference — must not split."""
         text = "As illustrated in fig. 2.4, the curve reaches a plateau."
-        assert segment(text) == ["As illustrated in fig. 2.4", ", the curve reaches a plateau."]
+        assert segment(text) == ["As illustrated in fig. 2.4, the curve reaches a plateau."]
 
     def test_fig_sentence_initial(self, segment: SegmentationFunc):
-        """fig. at start of a caption-like sentence.
-
-        The pipeline merges fig. with the digit (1) but the lowercase continuation
-        'shows...' is not captured by the digit-only extract pattern, so it
-        remains a separate segment.
-        """
+        """fig. at start of a caption-like sentence — must not split."""
         text = "fig. 1 shows the overall distribution of the data."
-        assert segment(text) == ["fig. 1", "shows the overall distribution of the data."]
+        assert segment(text) == ["fig. 1 shows the overall distribution of the data."]
 
     def test_fig_in_parenthetical(self, segment: SegmentationFunc):
         """fig. inside parentheses."""
@@ -820,23 +752,14 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["The structure is well-preserved (fig. 4a) and shows clear layering."]
 
     def test_fig_caps_before_proper(self, segment: SegmentationFunc):
-        """Fig. capitalized before a reference.
-
-        The pipeline splits at 'Fig.' treating 'A1 in the appendix provides
-        additional supporting data.' as a separate segment.
-        """
+        """Fig. capitalized before a reference — must not split."""
         text = "Fig. A1 in the appendix provides additional supporting data."
-        assert segment(text) == ["Fig.", "A1 in the appendix provides additional supporting data."]
+        assert segment(text) == ["Fig. A1 in the appendix provides additional supporting data."]
 
     def test_fig_with_cf_in_same_sentence(self, segment: SegmentationFunc):
-        """fig. with cf. in the same sentence.
-
-        cf. uses full-capture to merge with fig., and fig. merges the digit (3)
-        via its digit-only extract pattern. The lowercase continuation 'for...'
-        is not captured, so it remains a separate segment.
-        """
+        """fig. with cf. in the same sentence — must not split."""
         text = "cf. fig. 3 for the schematic diagram of the apparatus."
-        assert segment(text) == ["cf. fig. 3", "for the schematic diagram of the apparatus."]
+        assert segment(text) == ["cf. fig. 3 for the schematic diagram of the apparatus."]
 
     def test_fig_two_sentences_split(self, segment: SegmentationFunc):
         """fig. reference followed by second sentence — split at natural boundary."""
@@ -844,13 +767,9 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["The results are summarised in fig. 5.", "This supports the main hypothesis."]
 
     def test_fig_before_letter_label(self, segment: SegmentationFunc):
-        """fig. before a letter label (fig. A, fig. B).
-
-        The pipeline splits at 'fig.' treating 'B and described in the text below.'
-        as a separate segment.
-        """
+        """fig. before a letter label (fig. A, fig. B) — must not split."""
         text = "The process is shown in fig. B and described in the text below."
-        assert segment(text) == ["The process is shown in fig.", "B and described in the text below."]
+        assert segment(text) == ["The process is shown in fig. B and described in the text below."]
 
     # ----------------------------------------------------------------- ch. --
 
@@ -870,22 +789,14 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["This point (ch. 2) is developed further in later sections."]
 
     def test_ch_before_roman_numeral(self, segment: SegmentationFunc):
-        """ch. before a Roman numeral chapter reference.
-
-        The pipeline splits at 'ch.' treating 'IV for the discussion of primary
-        sources.' as a separate segment.
-        """
+        """ch. before a Roman numeral chapter reference — must not split."""
         text = "See ch. IV for the discussion of primary sources."
-        assert segment(text) == ["See ch.", "IV for the discussion of primary sources."]
+        assert segment(text) == ["See ch. IV for the discussion of primary sources."]
 
     def test_ch_followed_by_proper_noun(self, segment: SegmentationFunc):
-        """ch. followed by a proper noun title.
-
-        The pipeline splits at 'ch.' treating 'Methodology and its subsections.'
-        as a separate segment.
-        """
+        """ch. followed by a proper noun title — must not split."""
         text = "The topic is covered in ch. Methodology and its subsections."
-        assert segment(text) == ["The topic is covered in ch.", "Methodology and its subsections."]
+        assert segment(text) == ["The topic is covered in ch. Methodology and its subsections."]
 
     def test_ch_two_sentences_split(self, segment: SegmentationFunc):
         """ch. reference followed by a second sentence."""
@@ -895,13 +806,9 @@ class TestHandcraftedScholarly:
     # ---------------------------------------------------------------- sec. --
 
     def test_sec_before_number(self, segment: SegmentationFunc):
-        """sec. before a section number.
-
-        The pipeline splits after 'sec. 4.2', treating 'of the standard.' as
-        a separate segment.
-        """
+        """sec. before a section number — must not split."""
         text = "The requirement is stated in sec. 4.2 of the standard."
-        assert segment(text) == ["The requirement is stated in sec. 4.2", "of the standard."]
+        assert segment(text) == ["The requirement is stated in sec. 4.2 of the standard."]
 
     def test_sec_at_sentence_start(self, segment: SegmentationFunc):
         """sec. at sentence start before a numeral."""
@@ -919,13 +826,9 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["The exclusion (sec. 8.1) does not apply to charitable organisations."]
 
     def test_sec_followed_by_proper_noun(self, segment: SegmentationFunc):
-        """sec. followed by a proper noun heading.
-
-        The pipeline splits at 'sec.' treating 'Methods and is stated precisely.'
-        as a separate segment.
-        """
+        """sec. followed by a proper noun heading — must not split."""
         text = "The key constraint appears in sec. Methods and is stated precisely."
-        assert segment(text) == ["The key constraint appears in sec.", "Methods and is stated precisely."]
+        assert segment(text) == ["The key constraint appears in sec. Methods and is stated precisely."]
 
     def test_sec_two_references_in_sentence(self, segment: SegmentationFunc):
         """Two sec. references in the same sentence."""
@@ -1024,13 +927,9 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["The analysis continues in pt. 2 of this study."]
 
     def test_pt_before_roman_numeral(self, segment: SegmentationFunc):
-        """pt. before a Roman numeral.
-
-        The pipeline handles 'pt. III' without splitting but then splits at the
-        second 'pt.' treating 'IV of the argument.' as a separate segment.
-        """
+        """pt. before a Roman numeral — must not split."""
         text = "The second volume covers pt. III and pt. IV of the argument."
-        assert segment(text) == ["The second volume covers pt. III and pt.", "IV of the argument."]
+        assert segment(text) == ["The second volume covers pt. III and pt. IV of the argument."]
 
     # ----------------------------------------------------------------- ser. --
 
@@ -1226,13 +1125,9 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["cf. Smith et al. 2015 for the most comprehensive treatment of this topic."]
 
     def test_vol_pp_no_all_in_citation(self, segment: SegmentationFunc):
-        """vol., pp., and no. all in the same citation.
-
-        The pipeline splits after the page range 'pp. 45-67', treating
-        'of the journal.' as a separate segment.
-        """
+        """vol., pp., and no. all in the same citation — must not split."""
         text = "Published in vol. 12, no. 3, pp. 45-67 of the journal."
-        assert segment(text) == ["Published in vol. 12, no. 3, pp. 45-67", "of the journal."]
+        assert segment(text) == ["Published in vol. 12, no. 3, pp. 45-67 of the journal."]
 
     def test_eg_and_cf_same_sentence(self, segment: SegmentationFunc):
         """e.g. and cf. both appearing in the same sentence."""
@@ -1260,22 +1155,14 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["ibid. p. 45 gives a fuller account of the argument summarised here."]
 
     def test_et_al_vol_pp_triple_combo(self, segment: SegmentationFunc):
-        """Three abbreviations: et al., vol., and pp. in a single sentence.
-
-        The pipeline splits after the page range 'pp. 101-115', treating
-        'provides the primary dataset for our analysis.' as a separate segment.
-        """
+        """Three abbreviations: et al., vol., and pp. in a single sentence — must not split."""
         text = "Zhang et al. vol. 9, pp. 101-115 provides the primary dataset for our analysis."
-        assert segment(text) == ["Zhang et al. vol. 9, pp. 101-115", "provides the primary dataset for our analysis."]
+        assert segment(text) == ["Zhang et al. vol. 9, pp. 101-115 provides the primary dataset for our analysis."]
 
     def test_cf_sec_no_triple_combo(self, segment: SegmentationFunc):
-        """Three abbreviations: cf., sec., and no. in a single sentence.
-
-        cf. merges with sec., then sec. merges the digit (4) via digit-only extract.
-        'of Report no. 7 for the relevant findings.' is left as the remainder.
-        """
+        """Three abbreviations: cf., sec., and no. in a single sentence — must not split."""
         text = "cf. sec. 4 of Report no. 7 for the relevant findings."
-        assert segment(text) == ["cf. sec. 4", "of Report no. 7 for the relevant findings."]
+        assert segment(text) == ["cf. sec. 4 of Report no. 7 for the relevant findings."]
 
     def test_nb_eg_viz_triple_combo(self, segment: SegmentationFunc):
         """Three abbreviations: N.B., e.g., and viz. in a single sentence."""
@@ -1300,14 +1187,9 @@ class TestHandcraftedScholarly:
         assert segment(text) == ["The review by Carter et al. covers the period 1980-2010.", "Subsequent work is not included."]
 
     def test_vol_first_sentence_then_second(self, segment: SegmentationFunc):
-        """vol. in first sentence, split before second sentence.
-
-        vol. merges the digit (3) via digit-only extract pattern. The lowercase
-        continuation 'of the encyclopedia.' is not captured, so it becomes a
-        separate segment. The second sentence remains distinct.
-        """
+        """vol. in first sentence — must not split within sentence; splits at sentence boundary."""
         text = "The main source is vol. 3 of the encyclopedia. Translations are cited from the German."
-        assert segment(text) == ["The main source is vol. 3", "of the encyclopedia.", "Translations are cited from the German."]
+        assert segment(text) == ["The main source is vol. 3 of the encyclopedia.", "Translations are cited from the German."]
 
     def test_three_sentences_with_abbreviations(self, segment: SegmentationFunc):
         """Three sentences each containing abbreviations — all three must separate."""
