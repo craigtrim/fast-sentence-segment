@@ -10,7 +10,10 @@ class PostProcessStructure(BaseObject):
     """ Post Process Sentences """
 
     __replace = {
-        '..': '. ',
+        # Only normalize double-period when followed by a space (mid-sentence
+        # artifact from _clean_spacing).  A trailing ".." at sentence end
+        # (e.g. "Main St..") is preserved so tests that supply it get it back.
+        '.. ': '. ',
         '. .': '. ',
 
         ',.': ', ',

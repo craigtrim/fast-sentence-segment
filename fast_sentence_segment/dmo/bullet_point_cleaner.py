@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 """ Prevent Bullet Points from Triggering False Positive Segmentation """
 
+import re
 
 from fast_sentence_segment.core import BaseObject
 
@@ -38,10 +39,14 @@ class BulletPointCleaner(BaseObject):
         if "  " in input_text:
             input_text = input_text.replace("  ", " ")
 
-        # the replacement routine above leaves double '..' in the text
-        # this replacement will solve that
-        while ".." in input_text:
-            input_text = input_text.replace("..", ".")
+        # Strip double-period artifacts.  _clean_spacing() converts double-
+        # spaces to ". " which can create ".." sequences in the output
+        # (e.g., "abbrev.  next" → "abbrev.. next").  Strip ".." ONLY when
+        # it is followed by at least one more character — this preserves a
+        # deliberate trailing ".." at the very end of the string (e.g.,
+        # "Main St..") which appears in scholarly and abbreviation contexts.
+        while re.search(r'\.\.(?=.)', input_text):
+            input_text = re.sub(r'\.\.(?=.)', '.', input_text)
 
         while ". -" in input_text:  # segment_text_3_test.py
             input_text = input_text.replace(". -", ". ")

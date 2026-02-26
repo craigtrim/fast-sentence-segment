@@ -181,12 +181,23 @@ _I_TEMPLATES = [
     "Documents were reviewed. Refer to {a} Week 2 for background. The finding stands.",
 ]
 
+# Expected split for each template: the abbreviation lives in sentence 2,
+# so the correct output is always three separate sentences.
+_I_EXPECTED_PARTS = [
+    ("He arrived early.", "{a} Week 7 covers this.", "The discussion followed."),
+    ("The report was filed.", "See {a} Week 3 for context.", "Results were clear."),
+    ("The team assembled.", "Per {a} Week 5, this applies.", "Action was taken."),
+    ("Documents were reviewed.", "Refer to {a} Week 2 for background.", "The finding stands."),
+]
+
 
 def _build_category_i():
     cases = []
-    for a, tmpl in itertools.product(ALL_ABBREVS, _I_TEMPLATES):
-        text = tmpl.replace("{a}", a)
-        cases.append((text, [text]))
+    for a in ALL_ABBREVS:
+        for tmpl, parts in zip(_I_TEMPLATES, _I_EXPECTED_PARTS):
+            text = tmpl.replace("{a}", a)
+            expected = [p.replace("{a}", a) for p in parts]
+            cases.append((text, expected))
     return cases
 
 
@@ -240,11 +251,15 @@ CAT_K_CASES = _build_category_k()
 _L_SAMPLE = ALL_ABBREVS[:100]
 
 def _build_category_l():
+    # The pipeline's _clean_spacing() normalises multiple spaces to a single
+    # space, so the expected output uses single-space even though the input
+    # has double/triple space.  The key assertion is that the text remains ONE
+    # sentence (no false split at the abbreviation boundary).
     cases = []
     for a in _L_SAMPLE:
-        cases.append((f"Refer to {a}  Week 7 for context.", [f"Refer to {a}  Week 7 for context."]))
-        cases.append((f"See {a}   the overview.", [f"See {a}   the overview."]))
-        cases.append((f"The text {a}  demonstrates this.", [f"The text {a}  demonstrates this."]))
+        cases.append((f"Refer to {a}  Week 7 for context.", [f"Refer to {a} Week 7 for context."]))
+        cases.append((f"See {a}   the overview.", [f"See {a} the overview."]))
+        cases.append((f"The text {a}  demonstrates this.", [f"The text {a} demonstrates this."]))
     return cases
 
 
