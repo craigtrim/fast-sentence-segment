@@ -76,15 +76,25 @@ class BracketContentNormalizer(BaseObject):
             placeholder: The placeholder created by _encode_bracket
 
         Returns:
-            The original bracket text
+            The original bracket text, or the raw placeholder if decoding fails.
+
+        Related GitHub Issue:
+            #49 - UnicodeDecodeError in bracket_content_normalizer
+            https://github.com/craigtrim/fast-sentence-segment/issues/49
         """
         # Extract the encoded part between xbracket and xend
         encoded = placeholder[8:-4]  # Remove 'xbracket' prefix and 'xend' suffix
         # Add back padding if needed for base64 decoding
         while len(encoded) % 4 != 0:
             encoded += '='
-        # Decode using URL-safe base64
-        return base64.urlsafe_b64decode(encoded.encode('ascii')).decode('utf-8')
+        try:
+            # Decode using URL-safe base64
+            # Use errors='replace' to handle non-UTF-8 bytes gracefully
+            return base64.urlsafe_b64decode(encoded.encode('ascii')).decode('utf-8', errors='replace')
+        except Exception:
+            # If base64 decoding itself fails (corrupted placeholder),
+            # return the original placeholder unchanged
+            return placeholder
 
     def _normalize(self, text: str) -> str:
         """Replace bracketed content with placeholders.
@@ -116,7 +126,11 @@ class BracketContentNormalizer(BaseObject):
             Text with bracketed content restored.
         """
         # Find all bracket placeholders
-        placeholder_pattern = re.compile(r'xbracket[A-Za-z0-9]+xend')
+        # Include - and _ which are valid URL-safe base64 characters
+        # Related GitHub Issue:
+        #     #49 - UnicodeDecodeError in bracket_content_normalizer
+        #     https://github.com/craigtrim/fast-sentence-segment/issues/49
+        placeholder_pattern = re.compile(r'xbracket[A-Za-z0-9_-]+xend')
 
         def restore_bracket(match):
             """Restore a single placeholder to its original bracket text."""

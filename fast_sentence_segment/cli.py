@@ -114,7 +114,11 @@ def main():
 
     # Get input text
     if args.file:
-        with open(args.file, "r", encoding="utf-8") as f:
+        # Use errors='replace' to handle non-UTF-8 files gracefully
+        # Related GitHub Issue:
+        #     #49 - UnicodeDecodeError in bracket_content_normalizer
+        #     https://github.com/craigtrim/fast-sentence-segment/issues/49
+        with open(args.file, "r", encoding="utf-8", errors="replace") as f:
             text = f.read()
     elif args.text:
         text = args.text
@@ -165,8 +169,12 @@ def _process_single_file(
     print()
 
     # Step 1: Read file
+    # Use errors='replace' to handle non-UTF-8 files gracefully
+    # Related GitHub Issue:
+    #     #49 - UnicodeDecodeError in bracket_content_normalizer
+    #     https://github.com/craigtrim/fast-sentence-segment/issues/49
     print(f"  {YELLOW}→{RESET} Reading input file...")
-    with open(input_file, "r", encoding="utf-8") as f:
+    with open(input_file, "r", encoding="utf-8", errors="replace") as f:
         text = f.read()
     print(f"  {GREEN}✓{RESET} Read {len(text):,} characters")
 
