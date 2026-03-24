@@ -70,3 +70,4 @@ requirements.txt
 pypi.key
 scripts/
 resources/debug/
+CLAUDE.md
